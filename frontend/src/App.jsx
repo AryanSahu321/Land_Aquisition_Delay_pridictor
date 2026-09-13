@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Dashboard from "./components/Dashboard";
 import CorridorMap from "./components/CorridorMap";
+import CorridorHeatmap from "./components/CorridorHeatmap";
+import PackageBottleneckChart from "./components/PackageBottleneckChart";
+import SurvivalCurveChart from "./components/SurvivalCurveChart";
 import SimulationDrawer from "./components/SimulationDrawer";
 import TestParcelModal from "./components/TestParcelModal";
 import {
@@ -9,7 +12,10 @@ import {
   Sliders,
   ShieldCheck,
   RefreshCw,
-  ExternalLink,
+  BarChart3,
+  Activity,
+  Flame,
+  Zap,
   MapPin,
 } from "lucide-react";
 
@@ -21,7 +27,7 @@ export default function App() {
   const [simulationOpen, setSimulationOpen] = useState(false);
   const [simulationParcel, setSimulationParcel] = useState(null);
   const [testModalOpen, setTestModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard"); // 'dashboard' or 'corridor'
+  const [activeTab, setActiveTab] = useState("dashboard"); // 'dashboard' | 'echarts' | 'survival' | 'corridor'
   const [loading, setLoading] = useState(true);
 
   // Load executive stats based on active role
@@ -32,19 +38,6 @@ export default function App() {
         setStats(data);
       })
       .catch((err) => console.error("Stats load error:", err));
-  };
-
-  // Load corridor GeoJSON
-  const fetchCorridor = () => {
-    fetch("/api/v1/corridor/geojson")
-      .then((res) => res.json())
-      .then((data) => {
-        setCorridorGeojson(data);
-        if (data?.features?.length > 0 && !selectedParcel) {
-          setSelectedParcel(data.features[0].properties);
-        }
-      })
-      .catch((err) => console.error("Corridor load error:", err));
   };
 
   useEffect(() => {
@@ -59,7 +52,6 @@ export default function App() {
         setStats(statsData);
         setCorridorGeojson(corridorData);
         if (corridorData?.features?.length > 0) {
-          // Default select the first parcel with highest risk or first in chainage
           const highRisk = corridorData.features.find(
             (f) => f.properties.risk_category === "High",
           );
@@ -90,7 +82,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-600">
       {/* Top Global Navigation Bar */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-white shadow-md shadow-blue-500/20">
@@ -102,11 +94,12 @@ export default function App() {
                   GatiShakti AI
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">
-                  NHAI &bull; CALA
+                  NHAI &bull; CALA &bull; MoRTH
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Statutory Land Acquisition Risk Intelligence
+                Statutory Land Acquisition Intelligence &amp; Decision Support
+                System
               </p>
             </div>
           </div>
@@ -115,7 +108,7 @@ export default function App() {
           <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
                 activeTab === "dashboard"
                   ? "bg-blue-600 text-white shadow"
                   : "text-slate-400 hover:text-white"
@@ -124,8 +117,30 @@ export default function App() {
               Executive View
             </button>
             <button
+              onClick={() => setActiveTab("echarts")}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${
+                activeTab === "echarts"
+                  ? "bg-blue-600 text-white shadow"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              ECharts Packages
+            </button>
+            <button
+              onClick={() => setActiveTab("survival")}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${
+                activeTab === "survival"
+                  ? "bg-blue-600 text-white shadow"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5" />
+              Survival Analysis
+            </button>
+            <button
               onClick={() => setActiveTab("corridor")}
-              className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition flex items-center gap-1.5 ${
                 activeTab === "corridor"
                   ? "bg-blue-600 text-white shadow"
                   : "text-slate-400 hover:text-white"
@@ -147,7 +162,7 @@ export default function App() {
             </button>
             <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-600/30">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>ML Service Online</span>
+              <span>Redis Cache &lt;10ms</span>
             </div>
           </div>
         </div>
@@ -159,12 +174,12 @@ export default function App() {
           <div className="h-96 flex flex-col items-center justify-center text-slate-400 space-y-3">
             <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
             <p className="text-sm">
-              Connecting to GatiShakti Statutory Intelligence Pipeline...
+              Connecting to GatiShakti Distributed Intelligence Pipeline...
             </p>
           </div>
         ) : (
           <>
-            {/* View Tab 1: Executive Dashboard with Overview */}
+            {/* Tab 1: Executive Dashboard with Overview */}
             {activeTab === "dashboard" && (
               <div className="space-y-8">
                 <Dashboard
@@ -178,7 +193,7 @@ export default function App() {
                   }}
                 />
 
-                {/* Embedded GIS Corridor Section */}
+                {/* Embedded GIS Corridor Preview */}
                 <div className="pt-2">
                   <CorridorMap
                     corridorData={corridorGeojson}
@@ -190,7 +205,21 @@ export default function App() {
               </div>
             )}
 
-            {/* View Tab 2: Dedicated Full GIS Corridor View */}
+            {/* Tab 2: Apache ECharts Stacked Bar Chart */}
+            {activeTab === "echarts" && (
+              <div className="space-y-6">
+                <PackageBottleneckChart />
+              </div>
+            )}
+
+            {/* Tab 3: Lifelines CoxPH Survival Curve */}
+            {activeTab === "survival" && (
+              <div className="space-y-6">
+                <SurvivalCurveChart />
+              </div>
+            )}
+
+            {/* Tab 4: Full GIS Corridor & Spatial Heatmap */}
             {activeTab === "corridor" && (
               <div className="space-y-6">
                 <CorridorMap
@@ -199,6 +228,7 @@ export default function App() {
                   onSelectParcel={setSelectedParcel}
                   onOpenSimulation={handleOpenSimulation}
                 />
+                <CorridorHeatmap corridorData={corridorGeojson} />
               </div>
             )}
           </>
@@ -225,11 +255,12 @@ export default function App() {
       <footer className="border-t border-slate-800/80 bg-slate-950 py-4 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
-            Ministry of Road Transport & Highways &bull; National Highways
+            Ministry of Road Transport &amp; Highways &bull; National Highways
             Authority of India (NHAI)
           </span>
           <span className="font-mono text-slate-400">
-            RFCTLARR Act 2013 &bull; NH Act 1956 Sections 3A-3E
+            RFCTLARR Act 2013 &bull; NH Act 1956 &bull; Airflow, PostGIS &amp;
+            Celery Microservices
           </span>
         </div>
       </footer>

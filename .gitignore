@@ -25,3 +25,23 @@ env/
 .DS_Store
 .vscode/
 .idea/
+
+# Spatial & GIS temporary files
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+
+# Airflow runtime artifacts
+airflow.db
+airflow.cfg
+logs/
+unittests.cfg
+
+# Celery state & local database files
+celerybeat-schedule
+celerybeat.pid
+*.sqlite
+*.db
+land_intelligence.db

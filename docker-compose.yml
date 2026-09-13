@@ -1,0 +1,135 @@
+version: "3.8"
+
+services:
+  # --------------------------------------------------------------------------
+  # Spatial Database: PostgreSQL + PostGIS Extension
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: gatishakti_postgis
+    environment:
+      POSTGRES_DB: land_intelligence
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/init_postgis.sql:/docker-entrypoint-initdb.d/init_postgis.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gatishakti_network
+
+  # --------------------------------------------------------------------------
+  # In-Memory Cache & Message Broker: Redis
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: gatishakti_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - gatishakti_network
+
+  # --------------------------------------------------------------------------
+  # Distributed Backend: FastAPI Application Layer
+  # --------------------------------------------------------------------------
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gatishakti_api
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/land_intelligence
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+    networks:
+      - gatishakti_network
+
+  # --------------------------------------------------------------------------
+  # Asynchronous ML Engine: Celery Distributed Worker (XGBoost + TreeSHAP)
+  # --------------------------------------------------------------------------
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gatishakti_celery_worker
+    command: celery -A celery_app.celery worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@postgres:5432/land_intelligence
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+    networks:
+      - gatishakti_network
+
+  # --------------------------------------------------------------------------
+  # Pipeline Orchestrator: Apache Airflow (Daily Ingestion & Spatial ETL)
+  # --------------------------------------------------------------------------
+  airflow-webserver:
+    image: apache/airflow:2.8.2-python3.11
+    container_name: gatishakti_airflow_webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgrespassword@postgres:5432/land_intelligence
+      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqJZPo=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dags:/opt/airflow/dags
+    networks:
+      - gatishakti_network
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.2-python3.11
+    container_name: gatishakti_airflow_scheduler
+    command: scheduler
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgrespassword@postgres:5432/land_intelligence
+      - AIRFLOW__CORE__FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqJZPo=
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./dags:/opt/airflow/dags
+    networks:
+      - gatishakti_network
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  gatishakti_network:
+    driver: bridge
