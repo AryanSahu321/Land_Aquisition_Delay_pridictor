@@ -1,0 +1,1488 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "corridor_name": "NH-19 Expressway Expansion Package 3 Right-of-Way Corridor",
+    "statutory_act": "National Highways Act, 1956 & RFCTLARR Act, 2013",
+    "total_parcels": 25,
+    "center_lat": 25.463,
+    "center_lon": 81.922,
+    "zoom": 13
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "UP-VAR-PND-275-2",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.87,
+              25.4523
+            ],
+            [
+              81.8742,
+              25.453265
+            ],
+            [
+              81.8742,
+              25.452665
+            ],
+            [
+              81.87,
+              25.4517
+            ],
+            [
+              81.87,
+              25.4523
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-PND-275-2",
+        "khasra_no": "275/2",
+        "khatauni_no": "KH-2243",
+        "village_name": "Kalyanpur",
+        "village": "Kalyanpur",
+        "tehsil": "Pindra",
+        "district": "Varanasi",
+        "chainage_km": "km 14+000 to km 14+327",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 89,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 0.46,
+        "area_hectares": 0.46,
+        "affected_families_count": 1,
+        "compensation_disbursed_pct": 57.1,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 0.0,
+        "actual_delay_days": 26,
+        "center_lat": 25.452483,
+        "center_lon": 81.8721,
+        "sequence_no": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-HND-188-6",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8742,
+              25.453265
+            ],
+            [
+              81.8784,
+              25.454224
+            ],
+            [
+              81.8784,
+              25.453624
+            ],
+            [
+              81.8742,
+              25.452665
+            ],
+            [
+              81.8742,
+              25.453265
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-HND-188-6",
+        "khasra_no": "188/6",
+        "khatauni_no": "KH-4562",
+        "village_name": "Dahiyawan",
+        "village": "Dahiyawan",
+        "tehsil": "Handia",
+        "district": "Prayagraj",
+        "chainage_km": "km 14+300 to km 14+548",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 106,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 1.81,
+        "area_hectares": 1.81,
+        "affected_families_count": 5,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 54.8,
+        "actual_delay_days": 54,
+        "center_lat": 25.453445,
+        "center_lon": 81.8763,
+        "sequence_no": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-RJT-221-6",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8784,
+              25.454224
+            ],
+            [
+              81.8826,
+              25.455168
+            ],
+            [
+              81.8826,
+              25.454568
+            ],
+            [
+              81.8784,
+              25.453624
+            ],
+            [
+              81.8784,
+              25.454224
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-RJT-221-6",
+        "khasra_no": "221/6",
+        "khatauni_no": "KH-1669",
+        "village_name": "Maharajganj",
+        "village": "Maharajganj",
+        "tehsil": "Raja Talab",
+        "district": "Varanasi",
+        "chainage_km": "km 14+600 to km 14+789",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 324,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 2.28,
+        "area_hectares": 2.28,
+        "affected_families_count": 11,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 12.5,
+        "actual_delay_days": 99,
+        "center_lat": 25.454396,
+        "center_lon": 81.8805,
+        "sequence_no": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-192-4",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8826,
+              25.455168
+            ],
+            [
+              81.8868,
+              25.456094
+            ],
+            [
+              81.8868,
+              25.455494
+            ],
+            [
+              81.8826,
+              25.454568
+            ],
+            [
+              81.8826,
+              25.455168
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-192-4",
+        "khasra_no": "192/4",
+        "khatauni_no": "KH-4208",
+        "village_name": "Jalalpur",
+        "village": "Jalalpur",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 14+900 to km 15+134",
+        "statutory_stage": "Section 3E (Notice for Taking Possession)",
+        "days_in_current_stage": 86,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 1.72,
+        "area_hectares": 1.72,
+        "affected_families_count": 8,
+        "compensation_disbursed_pct": 98.7,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 20.6,
+        "actual_delay_days": 86,
+        "center_lat": 25.455331,
+        "center_lon": 81.8847,
+        "sequence_no": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-171-3",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8868,
+              25.456094
+            ],
+            [
+              81.891,
+              25.456999
+            ],
+            [
+              81.891,
+              25.456399
+            ],
+            [
+              81.8868,
+              25.455494
+            ],
+            [
+              81.8868,
+              25.456094
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-171-3",
+        "khasra_no": "171/3",
+        "khatauni_no": "KH-2243",
+        "village_name": "Taraon",
+        "village": "Taraon",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 15+200 to km 15+429",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 179,
+        "land_type": "Private Commercial",
+        "total_area_hectares": 2.18,
+        "area_hectares": 2.18,
+        "affected_families_count": 23,
+        "compensation_disbursed_pct": 20.5,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 32.7,
+        "actual_delay_days": 93,
+        "center_lat": 25.456247,
+        "center_lon": 81.8889,
+        "sequence_no": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-RJT-90-4",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.891,
+              25.456999
+            ],
+            [
+              81.8952,
+              25.457882
+            ],
+            [
+              81.8952,
+              25.457282
+            ],
+            [
+              81.891,
+              25.456399
+            ],
+            [
+              81.891,
+              25.456999
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-RJT-90-4",
+        "khasra_no": "90/4",
+        "khatauni_no": "KH-4226",
+        "village_name": "Katra",
+        "village": "Katra",
+        "tehsil": "Raja Talab",
+        "district": "Varanasi",
+        "chainage_km": "km 15+500 to km 15+799",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 94,
+        "land_type": "Government Abadi",
+        "total_area_hectares": 4.05,
+        "area_hectares": 4.05,
+        "affected_families_count": 8,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 76.0,
+        "actual_delay_days": 52,
+        "center_lat": 25.45714,
+        "center_lon": 81.8931,
+        "sequence_no": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-PHL-28-6",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8952,
+              25.457882
+            ],
+            [
+              81.8994,
+              25.458745
+            ],
+            [
+              81.8994,
+              25.458145
+            ],
+            [
+              81.8952,
+              25.457282
+            ],
+            [
+              81.8952,
+              25.457882
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-PHL-28-6",
+        "khasra_no": "28/6",
+        "khatauni_no": "KH-8274",
+        "village_name": "Taraon",
+        "village": "Taraon",
+        "tehsil": "Phulpur",
+        "district": "Prayagraj",
+        "chainage_km": "km 15+800 to km 16+124",
+        "statutory_stage": "Section 3E (Notice for Taking Possession)",
+        "days_in_current_stage": 37,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 0.78,
+        "area_hectares": 0.78,
+        "affected_families_count": 3,
+        "compensation_disbursed_pct": 87.8,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 31.5,
+        "actual_delay_days": 27,
+        "center_lat": 25.458013,
+        "center_lon": 81.8973,
+        "sequence_no": 7
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-MIR-LLG-525-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.8994,
+              25.458745
+            ],
+            [
+              81.9036,
+              25.459591
+            ],
+            [
+              81.9036,
+              25.458991
+            ],
+            [
+              81.8994,
+              25.458145
+            ],
+            [
+              81.8994,
+              25.458745
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-MIR-LLG-525-1",
+        "khasra_no": "525/1",
+        "khatauni_no": "KH-2016",
+        "village_name": "Bishunpur",
+        "village": "Bishunpur",
+        "tehsil": "Lalganj",
+        "district": "Mirzapur",
+        "chainage_km": "km 16+100 to km 16+466",
+        "statutory_stage": "Section 3E (Notice for Taking Possession)",
+        "days_in_current_stage": 54,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 1.36,
+        "area_hectares": 1.36,
+        "affected_families_count": 5,
+        "compensation_disbursed_pct": 87.3,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 48.0,
+        "actual_delay_days": 127,
+        "center_lat": 25.458868,
+        "center_lon": 81.9015,
+        "sequence_no": 8
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-241-5",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9036,
+              25.459591
+            ],
+            [
+              81.9078,
+              25.460428
+            ],
+            [
+              81.9078,
+              25.459828
+            ],
+            [
+              81.9036,
+              25.458991
+            ],
+            [
+              81.9036,
+              25.459591
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-241-5",
+        "khasra_no": "241/5",
+        "khatauni_no": "KH-7287",
+        "village_name": "Shivpur",
+        "village": "Shivpur",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 16+400 to km 16+726",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 99,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 0.84,
+        "area_hectares": 0.84,
+        "affected_families_count": 2,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 27.6,
+        "actual_delay_days": 34,
+        "center_lat": 25.45971,
+        "center_lon": 81.9057,
+        "sequence_no": 9
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-SOR-97-5",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9078,
+              25.460428
+            ],
+            [
+              81.912,
+              25.461262
+            ],
+            [
+              81.912,
+              25.460662
+            ],
+            [
+              81.9078,
+              25.459828
+            ],
+            [
+              81.9078,
+              25.460428
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-SOR-97-5",
+        "khasra_no": "97/5",
+        "khatauni_no": "KH-3049",
+        "village_name": "Bishunpur",
+        "village": "Bishunpur",
+        "tehsil": "Soraon",
+        "district": "Prayagraj",
+        "chainage_km": "km 16+700 to km 16+936",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 168,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 4.37,
+        "area_hectares": 4.37,
+        "affected_families_count": 17,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 30.1,
+        "actual_delay_days": 124,
+        "center_lat": 25.460545,
+        "center_lon": 81.9099,
+        "sequence_no": 10
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-125-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.912,
+              25.461262
+            ],
+            [
+              81.9162,
+              25.4621
+            ],
+            [
+              81.9162,
+              25.4615
+            ],
+            [
+              81.912,
+              25.460662
+            ],
+            [
+              81.912,
+              25.461262
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-125-1",
+        "khasra_no": "125/1",
+        "khatauni_no": "KH-4398",
+        "village_name": "Mandor",
+        "village": "Mandor",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 17+000 to km 17+326",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 100,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 1.14,
+        "area_hectares": 1.14,
+        "affected_families_count": 4,
+        "compensation_disbursed_pct": 41.6,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 26.0,
+        "actual_delay_days": 56,
+        "center_lat": 25.461381,
+        "center_lon": 81.9141,
+        "sequence_no": 11
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-SOR-267-2",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9162,
+              25.4621
+            ],
+            [
+              81.9204,
+              25.462949
+            ],
+            [
+              81.9204,
+              25.462349
+            ],
+            [
+              81.9162,
+              25.4615
+            ],
+            [
+              81.9162,
+              25.4621
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-SOR-267-2",
+        "khasra_no": "267/2",
+        "khatauni_no": "KH-4429",
+        "village_name": "Sarai Gopal",
+        "village": "Sarai Gopal",
+        "tehsil": "Soraon",
+        "district": "Prayagraj",
+        "chainage_km": "km 17+300 to km 17+577",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 122,
+        "land_type": "Government Abadi",
+        "total_area_hectares": 1.47,
+        "area_hectares": 1.47,
+        "affected_families_count": 33,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 33.2,
+        "actual_delay_days": 111,
+        "center_lat": 25.462224,
+        "center_lon": 81.9183,
+        "sequence_no": 12
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-PND-247-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9204,
+              25.462949
+            ],
+            [
+              81.9246,
+              25.463814
+            ],
+            [
+              81.9246,
+              25.463214
+            ],
+            [
+              81.9204,
+              25.462349
+            ],
+            [
+              81.9204,
+              25.462949
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-PND-247-1",
+        "khasra_no": "247/1",
+        "khatauni_no": "KH-5844",
+        "village_name": "Rampur",
+        "village": "Rampur",
+        "tehsil": "Pindra",
+        "district": "Varanasi",
+        "chainage_km": "km 17+600 to km 17+927",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 165,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 4.01,
+        "area_hectares": 4.01,
+        "affected_families_count": 10,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 35.5,
+        "actual_delay_days": 112,
+        "center_lat": 25.463081,
+        "center_lon": 81.9225,
+        "sequence_no": 13
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-PHL-633-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9246,
+              25.463814
+            ],
+            [
+              81.9288,
+              25.4647
+            ],
+            [
+              81.9288,
+              25.4641
+            ],
+            [
+              81.9246,
+              25.463214
+            ],
+            [
+              81.9246,
+              25.463814
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-PHL-633-1",
+        "khasra_no": "633/1",
+        "khatauni_no": "KH-6173",
+        "village_name": "Maharajganj",
+        "village": "Maharajganj",
+        "tehsil": "Phulpur",
+        "district": "Prayagraj",
+        "chainage_km": "km 17+900 to km 18+096",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 206,
+        "land_type": "Government Abadi",
+        "total_area_hectares": 1.2,
+        "area_hectares": 1.2,
+        "affected_families_count": 30,
+        "compensation_disbursed_pct": 24.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 69.5,
+        "actual_delay_days": 115,
+        "center_lat": 25.463957,
+        "center_lon": 81.9267,
+        "sequence_no": 14
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-100-5",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9288,
+              25.4647
+            ],
+            [
+              81.933,
+              25.465608
+            ],
+            [
+              81.933,
+              25.465008
+            ],
+            [
+              81.9288,
+              25.4641
+            ],
+            [
+              81.9288,
+              25.4647
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-100-5",
+        "khasra_no": "100/5",
+        "khatauni_no": "KH-2846",
+        "village_name": "Bhagwanpur",
+        "village": "Bhagwanpur",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 18+200 to km 18+481",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 109,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 3.93,
+        "area_hectares": 3.93,
+        "affected_families_count": 17,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 3,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 24.7,
+        "actual_delay_days": 329,
+        "center_lat": 25.464854,
+        "center_lon": 81.9309,
+        "sequence_no": 15
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-PND-143-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.933,
+              25.465608
+            ],
+            [
+              81.9372,
+              25.466537
+            ],
+            [
+              81.9372,
+              25.465937
+            ],
+            [
+              81.933,
+              25.465008
+            ],
+            [
+              81.933,
+              25.465608
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-PND-143-1",
+        "khasra_no": "143/1",
+        "khatauni_no": "KH-7181",
+        "village_name": "Kalyanpur",
+        "village": "Kalyanpur",
+        "tehsil": "Pindra",
+        "district": "Varanasi",
+        "chainage_km": "km 18+500 to km 18+791",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 184,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 1.8,
+        "area_hectares": 1.8,
+        "affected_families_count": 8,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 25.7,
+        "actual_delay_days": 53,
+        "center_lat": 25.465773,
+        "center_lon": 81.9351,
+        "sequence_no": 16
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-MIR-CNR-366-2",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9372,
+              25.466537
+            ],
+            [
+              81.9414,
+              25.467484
+            ],
+            [
+              81.9414,
+              25.466884
+            ],
+            [
+              81.9372,
+              25.465937
+            ],
+            [
+              81.9372,
+              25.466537
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-MIR-CNR-366-2",
+        "khasra_no": "366/2",
+        "khatauni_no": "KH-6319",
+        "village_name": "Dahiyawan",
+        "village": "Dahiyawan",
+        "tehsil": "Chunar",
+        "district": "Mirzapur",
+        "chainage_km": "km 18+800 to km 19+176",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 133,
+        "land_type": "Government Abadi",
+        "total_area_hectares": 3.31,
+        "area_hectares": 3.31,
+        "affected_families_count": 12,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 34.2,
+        "actual_delay_days": 172,
+        "center_lat": 25.466711,
+        "center_lon": 81.9393,
+        "sequence_no": 17
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-PND-240-6",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9414,
+              25.467484
+            ],
+            [
+              81.9456,
+              25.468444
+            ],
+            [
+              81.9456,
+              25.467844
+            ],
+            [
+              81.9414,
+              25.466884
+            ],
+            [
+              81.9414,
+              25.467484
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-PND-240-6",
+        "khasra_no": "240/6",
+        "khatauni_no": "KH-3144",
+        "village_name": "Chandpur",
+        "village": "Chandpur",
+        "tehsil": "Pindra",
+        "district": "Varanasi",
+        "chainage_km": "km 19+100 to km 19+413",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 173,
+        "land_type": "Forest Land",
+        "total_area_hectares": 2.08,
+        "area_hectares": 2.08,
+        "affected_families_count": 2,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 0.0,
+        "actual_delay_days": 214,
+        "center_lat": 25.467664,
+        "center_lon": 81.9435,
+        "sequence_no": 18
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-HND-279-3",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9456,
+              25.468444
+            ],
+            [
+              81.9498,
+              25.46941
+            ],
+            [
+              81.9498,
+              25.46881
+            ],
+            [
+              81.9456,
+              25.467844
+            ],
+            [
+              81.9456,
+              25.468444
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-HND-279-3",
+        "khasra_no": "279/3",
+        "khatauni_no": "KH-2404",
+        "village_name": "Shivpur",
+        "village": "Shivpur",
+        "tehsil": "Handia",
+        "district": "Prayagraj",
+        "chainage_km": "km 19+400 to km 19+737",
+        "statutory_stage": "Section 3A (Notice of Intent)",
+        "days_in_current_stage": 29,
+        "land_type": "Government Abadi",
+        "total_area_hectares": 1.83,
+        "area_hectares": 1.83,
+        "affected_families_count": 34,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 68.2,
+        "actual_delay_days": 97,
+        "center_lat": 25.468627,
+        "center_lon": 81.9477,
+        "sequence_no": 19
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-MIR-MZP-546-4",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9498,
+              25.46941
+            ],
+            [
+              81.954,
+              25.470375
+            ],
+            [
+              81.954,
+              25.469775
+            ],
+            [
+              81.9498,
+              25.46881
+            ],
+            [
+              81.9498,
+              25.46941
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-MIR-MZP-546-4",
+        "khasra_no": "546/4",
+        "khatauni_no": "KH-6666",
+        "village_name": "Chandpur",
+        "village": "Chandpur",
+        "tehsil": "Mirzapur Sadar",
+        "district": "Mirzapur",
+        "chainage_km": "km 19+700 to km 20+076",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 37,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 4.52,
+        "area_hectares": 4.52,
+        "affected_families_count": 12,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": false,
+        "joint_measurement_survey_done": false,
+        "missing_title_deeds_pct": 57.7,
+        "actual_delay_days": 123,
+        "center_lat": 25.469592,
+        "center_lon": 81.9519,
+        "sequence_no": 20
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-VAR-VNS-419-5",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.954,
+              25.470375
+            ],
+            [
+              81.9582,
+              25.471331
+            ],
+            [
+              81.9582,
+              25.470731
+            ],
+            [
+              81.954,
+              25.469775
+            ],
+            [
+              81.954,
+              25.470375
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-VAR-VNS-419-5",
+        "khasra_no": "419/5",
+        "khatauni_no": "KH-2657",
+        "village_name": "Bhagwanpur",
+        "village": "Bhagwanpur",
+        "tehsil": "Varanasi Sadar",
+        "district": "Varanasi",
+        "chainage_km": "km 20+000 to km 20+231",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 45,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 3.81,
+        "area_hectares": 3.81,
+        "affected_families_count": 17,
+        "compensation_disbursed_pct": 40.9,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": true,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 10.5,
+        "actual_delay_days": 47,
+        "center_lat": 25.470553,
+        "center_lon": 81.9561,
+        "sequence_no": 21
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-HND-341-6",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9582,
+              25.471331
+            ],
+            [
+              81.9624,
+              25.472273
+            ],
+            [
+              81.9624,
+              25.471673
+            ],
+            [
+              81.9582,
+              25.470731
+            ],
+            [
+              81.9582,
+              25.471331
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-HND-341-6",
+        "khasra_no": "341/6",
+        "khatauni_no": "KH-4445",
+        "village_name": "Bikrampur",
+        "village": "Bikrampur",
+        "tehsil": "Handia",
+        "district": "Prayagraj",
+        "chainage_km": "km 20+300 to km 20+545",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 110,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 3.2,
+        "area_hectares": 3.2,
+        "affected_families_count": 11,
+        "compensation_disbursed_pct": 49.1,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 7.4,
+        "actual_delay_days": 30,
+        "center_lat": 25.471502,
+        "center_lon": 81.9603,
+        "sequence_no": 22
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-HND-477-4",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9624,
+              25.472273
+            ],
+            [
+              81.9666,
+              25.473197
+            ],
+            [
+              81.9666,
+              25.472597
+            ],
+            [
+              81.9624,
+              25.471673
+            ],
+            [
+              81.9624,
+              25.472273
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-HND-477-4",
+        "khasra_no": "477/4",
+        "khatauni_no": "KH-6634",
+        "village_name": "Taraon",
+        "village": "Taraon",
+        "tehsil": "Handia",
+        "district": "Prayagraj",
+        "chainage_km": "km 20+600 to km 20+823",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 233,
+        "land_type": "Private Commercial",
+        "total_area_hectares": 3.17,
+        "area_hectares": 3.17,
+        "affected_families_count": 14,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 1,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 5.7,
+        "actual_delay_days": 125,
+        "center_lat": 25.472435,
+        "center_lon": 81.9645,
+        "sequence_no": 23
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-PRA-PHL-50-1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9666,
+              25.473197
+            ],
+            [
+              81.9708,
+              25.474098
+            ],
+            [
+              81.9708,
+              25.473498
+            ],
+            [
+              81.9666,
+              25.472597
+            ],
+            [
+              81.9666,
+              25.473197
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-PRA-PHL-50-1",
+        "khasra_no": "50/1",
+        "khatauni_no": "KH-3105",
+        "village_name": "Kasidaha",
+        "village": "Kasidaha",
+        "tehsil": "Phulpur",
+        "district": "Prayagraj",
+        "chainage_km": "km 20+900 to km 21+277",
+        "statutory_stage": "Section 3G (Award of Compensation)",
+        "days_in_current_stage": 82,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 4.16,
+        "area_hectares": 4.16,
+        "affected_families_count": 17,
+        "compensation_disbursed_pct": 39.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 0.0,
+        "actual_delay_days": 28,
+        "center_lat": 25.473347,
+        "center_lon": 81.9687,
+        "sequence_no": 24
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UP-MIR-CNR-249-2",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              81.9708,
+              25.474098
+            ],
+            [
+              81.975,
+              25.474977
+            ],
+            [
+              81.975,
+              25.474377
+            ],
+            [
+              81.9708,
+              25.473498
+            ],
+            [
+              81.9708,
+              25.474098
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "project_id": "NH19-EXP-PKG3",
+        "project_name": "NH-19 Expressway Expansion, Package 3 (Prayagraj-Varanasi Corridor)",
+        "parcel_id": "UP-MIR-CNR-249-2",
+        "khasra_no": "249/2",
+        "khatauni_no": "KH-7687",
+        "village_name": "Shivpur",
+        "village": "Shivpur",
+        "tehsil": "Chunar",
+        "district": "Mirzapur",
+        "chainage_km": "km 21+200 to km 21+572",
+        "statutory_stage": "Section 3D (Declaration of Acquisition)",
+        "days_in_current_stage": 42,
+        "land_type": "Private Agricultural",
+        "total_area_hectares": 4.29,
+        "area_hectares": 4.29,
+        "affected_families_count": 11,
+        "compensation_disbursed_pct": 0.0,
+        "pending_court_injunctions": 0,
+        "sec_3h_escrow_deposited": false,
+        "jms_completed": true,
+        "joint_measurement_survey_done": true,
+        "missing_title_deeds_pct": 0.0,
+        "actual_delay_days": 14,
+        "center_lat": 25.474238,
+        "center_lon": 81.9729,
+        "sequence_no": 25
+      }
+    }
+  ]
+}
