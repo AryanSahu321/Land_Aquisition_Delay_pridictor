@@ -25,6 +25,9 @@ celery.conf.update(
     task_track_started=True,
     task_time_limit=300,  # 5 min max
     worker_prefetch_multiplier=1,
-    broker_connection_retry_on_startup=True
+    broker_connection_retry_on_startup=False,
+    broker_connection_max_retries=0,
+    task_publish_retry=False,
+    broker_transport_options={"max_retries": 0}
 )
 

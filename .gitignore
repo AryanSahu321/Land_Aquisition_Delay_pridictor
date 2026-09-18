@@ -45,3 +45,8 @@ celerybeat.pid
 *.sqlite
 *.db
 land_intelligence.db
+
+backend/data/
+venv/
+__pycache__/
+*.json
