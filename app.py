@@ -1,7 +1,6 @@
 import os
 import sys
 
-# Ensure backend directory is in sys.path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BACKEND_DIR = os.path.join(BASE_DIR, "backend")
 if BACKEND_DIR not in sys.path:
@@ -9,9 +8,9 @@ if BACKEND_DIR not in sys.path:
 
 from backend.main import app as fastapi_app
 
-# On Hugging Face Spaces, Gradio is pre-installed
 try:
     import gradio as gr
+    
     with gr.Blocks(title="PM GatiShakti Land Acquisition Intelligence API") as demo:
         gr.Markdown("""
         # 🏛️ PM GatiShakti &bull; Land Acquisition Intelligence Platform
@@ -23,12 +22,18 @@ try:
         - **Search Projects API**: `/api/v1/projects/search-options` & `/api/v1/projects/parse-and-predict`
         - **ML Ensemble**: Soft-Voting XGBoost + LightGBM + TreeSHAP Explainability
         """)
-    app = gr.mount_gradio_app(fastapi_app, demo, path="/")
+
+    # Attach all FastAPI routes into demo.app so Gradio serves both UI and all API endpoints
+    for route in fastapi_app.routes:
+        demo.app.routes.append(route)
+
+    app = demo.app
+
+    if __name__ == "__main__":
+        demo.launch(server_name="0.0.0.0", server_port=7860)
 except ImportError:
     app = fastapi_app
-
-if __name__ == "__main__":
-    import uvicorn
-    # Hugging Face Spaces uses port 7860
-    port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    if __name__ == "__main__":
+        import uvicorn
+        port = int(os.environ.get("PORT", 8000))
+        uvicorn.run(app, host="0.0.0.0", port=port)
