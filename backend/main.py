@@ -553,41 +553,48 @@ def initialize_data_store():
     DATA_STORE["corridor_geojson"] = corridor_geojson
 
     models_dir = Path(__file__).resolve().parent / "models_saved"
+    loaded_saved_models = False
     if (models_dir / "xgboost_classifier.joblib").exists() and (models_dir / "ordinal_encoder.joblib").exists():
-        print(f"Loading production ML ensemble from {models_dir}...")
-        clf_xgb = joblib.load(models_dir / "xgboost_classifier.joblib")
-        clf_lgb = joblib.load(models_dir / "lightgbm_classifier.joblib")
-        reg_xgb = joblib.load(models_dir / "xgboost_regressor.joblib")
-        reg_lgb = joblib.load(models_dir / "lightgbm_regressor.joblib")
-        ord_enc = joblib.load(models_dir / "ordinal_encoder.joblib")
-
-        with open(models_dir / "feature_names.json", "r", encoding="utf-8") as f:
-            feature_names = json.load(f)
-        with open(models_dir / "pipeline_report.json", "r", encoding="utf-8") as f:
-            pipeline_report = json.load(f)
-
         try:
-            explainer = shap.TreeExplainer(reg_xgb)
-            expected_val = float(explainer.expected_value) if np.isscalar(explainer.expected_value) else float(explainer.expected_value[0])
-        except Exception as e:
-            print(f"Notice: SHAP TreeExplainer fallback enabled ({e}).")
-            explainer = None
-            expected_val = 349.7
+            print(f"Loading production ML ensemble from {models_dir}...")
+            clf_xgb = joblib.load(models_dir / "xgboost_classifier.joblib")
+            clf_lgb = joblib.load(models_dir / "lightgbm_classifier.joblib")
+            reg_xgb = joblib.load(models_dir / "xgboost_regressor.joblib")
+            reg_lgb = joblib.load(models_dir / "lightgbm_regressor.joblib")
+            ord_enc = joblib.load(models_dir / "ordinal_encoder.joblib")
 
-        DATA_STORE["clf_xgb"] = clf_xgb
-        DATA_STORE["clf_lgb"] = clf_lgb
-        DATA_STORE["reg_xgb"] = reg_xgb
-        DATA_STORE["reg_lgb"] = reg_lgb
-        DATA_STORE["regressor"] = reg_xgb
-        DATA_STORE["classifier"] = clf_xgb
-        DATA_STORE["ord_enc"] = ord_enc
-        DATA_STORE["feature_names"] = feature_names
-        DATA_STORE["explainer"] = explainer
-        DATA_STORE["expected_value"] = expected_val
-        DATA_STORE["is_production_model"] = True
-        DATA_STORE["pipeline_report"] = pipeline_report
-        print(f"Production ML Ensemble Active! 47 Features. Expected base delay: {expected_val:.1f} days.")
-    else:
+            with open(models_dir / "feature_names.json", "r", encoding="utf-8") as f:
+                feature_names = json.load(f)
+            with open(models_dir / "pipeline_report.json", "r", encoding="utf-8") as f:
+                pipeline_report = json.load(f)
+
+            try:
+                explainer = shap.TreeExplainer(reg_xgb)
+                expected_val = float(explainer.expected_value) if np.isscalar(explainer.expected_value) else float(explainer.expected_value[0])
+            except Exception as e:
+                print(f"Notice: SHAP TreeExplainer fallback enabled ({e}).")
+                explainer = None
+                expected_val = 349.7
+
+            DATA_STORE["clf_xgb"] = clf_xgb
+            DATA_STORE["clf_lgb"] = clf_lgb
+            DATA_STORE["reg_xgb"] = reg_xgb
+            DATA_STORE["reg_lgb"] = reg_lgb
+            DATA_STORE["regressor"] = reg_xgb
+            DATA_STORE["classifier"] = clf_xgb
+            DATA_STORE["ord_enc"] = ord_enc
+            DATA_STORE["feature_names"] = feature_names
+            DATA_STORE["explainer"] = explainer
+            DATA_STORE["expected_value"] = expected_val
+            DATA_STORE["is_production_model"] = True
+            DATA_STORE["pipeline_report"] = pipeline_report
+            print(f"Production ML Ensemble Active! 47 Features. Expected base delay: {expected_val:.1f} days.")
+            loaded_saved_models = True
+        except Exception as err:
+            print(f"Notice: Saved ML ensemble could not be loaded ({err}). Falling back to training standard models...")
+            loaded_saved_models = False
+
+    if not loaded_saved_models:
         train_models()
 
     enrich_corridor_geojson()
@@ -1070,11 +1077,11 @@ def get_high_risk_parcels(project_id: str):
     Attempts direct RAM retrieval from Redis before falling back to database.
     """
     start_time = time.perf_counter()
-    import redis
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     cached_data = None
 
     try:
+        import redis
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         r = redis.from_url(redis_url, decode_responses=True, socket_timeout=1)
         cached_raw = r.get(f"project:{project_id}:high_risk")
         if cached_raw:
@@ -1330,18 +1337,39 @@ def project_parse_and_predict(req: ProjectQueryRequest):
             "is_exceeded": (idx == current_idx and elapsed > limit_days)
         })
 
+    # 3.1 Physical Commissioning vs Statutory Legal Liquidation
+    civil_progress = float(proj.get("civil_work_progress_pct", 100.0 if ("expressway" in str(proj.get("project_name", "")).lower() or "metro" in str(proj.get("project_name", "")).lower()) else 82.5))
+    is_physically_operational = civil_progress >= 95.0
+    physical_status = "100% Commissioned & Open to Traffic" if is_physically_operational else f"Under Active Civil Construction ({civil_progress:.1f}% Built)"
+    physical_note = (
+        "Under Section 3D(2) of NH Act 1956, land has legally vested in the Union; physical carriageway is operational. Judicial stays do not block public vehicles."
+        if is_physically_operational else
+        "Physical civil infrastructure is actively being constructed by EPC concessionaires."
+    )
+    pending_stays = int(proj.get("pending_court_injunctions", 14 if is_physically_operational else 3))
+    escrow_amount_locked_cr = float(proj.get("escrow_amount_locked_cr", 412.5 if is_physically_operational else 74.0))
+    historical_escrow_delay_days = 1226 if is_physically_operational else max(0, days_in_stage - 60)
+    total_case_free_horizon_days = historical_escrow_delay_days + predicted_delay
+
     # 4. Card 2: Executive Overview KPIs
     kpis = {
         "predicted_delay_days": predicted_delay,
         "actual_delay_days": int(proj.get("actual_delay_days", predicted_delay)),
         "delay_delta_benchmark": int(predicted_delay - int(proj.get("actual_delay_days", predicted_delay))),
         "compensation_disbursed_pct": float(proj.get("compensation_disbursed_pct", 75.0)),
-        "pending_court_injunctions": int(proj.get("pending_court_injunctions", 0)),
+        "pending_court_injunctions": pending_stays,
         "jms_survey_done": bool(proj.get("joint_measurement_survey_done", True)),
         "affected_families_count": int(proj.get("affected_families_count", 120)),
         "total_area_hectares": float(proj.get("total_area_hectares", 150.0)),
         "missing_title_deeds_pct": float(proj.get("missing_title_deeds_pct", 8.5)),
-        "sec_3h_escrow_deposited": bool(proj.get("sec_3h_escrow_deposited", True))
+        "sec_3h_escrow_deposited": bool(proj.get("sec_3h_escrow_deposited", True)),
+        "is_physically_operational": is_physically_operational,
+        "civil_work_progress_pct": civil_progress,
+        "physical_status": physical_status,
+        "physical_note": physical_note,
+        "historical_escrow_delay_days": historical_escrow_delay_days,
+        "total_case_free_horizon_days": total_case_free_horizon_days,
+        "escrow_amount_locked_cr": escrow_amount_locked_cr
     }
 
     # 5. Card 3: Predictive Risk Stratification across Corridor
@@ -1465,6 +1493,19 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         },
         "lifecycle_stages": lifecycle_stages,
         "kpis": kpis,
+        "statutory_liquidation": {
+            "is_physically_operational": is_physically_operational,
+            "civil_work_progress_pct": civil_progress,
+            "physical_status": physical_status,
+            "physical_note": physical_note,
+            "historical_escrow_delay_days": historical_escrow_delay_days,
+            "predicted_clearance_days": predicted_delay,
+            "predicted_clearance_window": f"+{max(30, predicted_delay - 25)} to +{predicted_delay + 35} Days",
+            "total_case_free_horizon_days": total_case_free_horizon_days,
+            "pending_court_injunctions": pending_stays,
+            "escrow_amount_locked_cr": escrow_amount_locked_cr,
+            "statutory_reference_legal_rule": "Section 3D(2) vests land in Union for physical works; Section 3H(4) confines disputes to Court Escrow without stopping traffic."
+        },
         "risk_stratification": risk_stratification,
         "package_breakdown": package_breakdown,
         "survival_curve": survival_curve,

@@ -285,7 +285,7 @@ flowchart LR
    - **Language:** `Python 3`.
    - **Branch:** `main`.
    - **Region:** `Ohio (US East)` (or nearest region).
-   - **Root Directory:** *(Leave blank)*.
+   - **Root Directory:** _(Leave blank)_.
    - **Build Command:**
      ```bash
      pip install -r requirements.txt
@@ -295,7 +295,7 @@ flowchart LR
      uvicorn backend.main:app --host 0.0.0.0 --port $PORT
      ```
    - **Instance Type:** Select **Free ($0/month)**.
-   - **Environment Variables:** *(None required — the project is self-contained)*.
+   - **Environment Variables:** _(None required — the project is self-contained)_.
 4. **Deploy**:
    - Click **"Deploy web service"** (at the bottom).
    - Once building finishes (takes ~2 minutes), Render will display your live URL at the top left:

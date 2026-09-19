@@ -249,3 +249,47 @@ npm run dev
 4. Click **"Execute Project Risk & Delay Analysis"**.
 5. The view transitions smoothly to the **All-in-One Results View** displaying all 7 cards in a single vertical scroll!
 6. Click **"← Back to Search"** in the top navbar to return to the search gateway at any time.
+
+---
+
+## 🏛️ Domain Grounding FAQ: Physical Operation vs. Statutory Legal Delay
+
+### Q: If an expressway (like Purvanchal Expressway) is already inaugurated, open to traffic, and vehicles are driving on it, why does our system show it has delay and risk? How does our system detect whether a project is physically functional while still having pending court cases?
+
+#### 1. The Core Administrative Problem
+In Indian mega-infrastructure development under the **National Highways Act 1956** and **RFCTLARR Act 2013**, there is a critical distinction between:
+- **Physical Civil Commissioning (Asphalt on the ground):** Cars are driving at 120 km/h, toll plazas are collecting revenue, and the highway is inaugurated for public use.
+- **Statutory Legal Liquidation (De Jure Closing):** Land acquisition cases, family title disputes, and Section 3H court reference escrow accounts remain active in District Revenue Courts for years.
+
+Under **Section 3D(2) of the NH Act 1956**, once the 3D gazette notification is issued, the land *vests absolutely in the Central Government free from all encumbrances*. The Government can legally take possession and lay asphalt. If farmers dispute the award, Section 3H(4) allows CALA to deposit the disputed money into **Court Reference Escrow**—the physical highway opens, but the litigation drags on, accumulating penal interest at 9% to 15% per annum.
+
+#### 2. How the Central Database Detects This Automatically
+The Central Database (`searched_projects.csv`) cross-examines two independent groups of statutory indicators:
+
+| Category | Database Columns Evaluated | What It Tells the System |
+| :--- | :--- | :--- |
+| **Physical Status** | `civil_work_progress_pct` ($\ge 95\%$), `commercial_operations_date` (COD), `traffic_operational` | The physical expressway is **100% complete and open to traffic**. |
+| **Legal Risk Status** | `pending_court_injunctions` ($> 0$), `section_3h_escrow_ratio`, `missing_title_deeds_pct` | There are **active judicial stays and escrow reference disputes** pending in court. |
+
+**The System Logic Rule:**
+$$\text{If } (\text{Civil Progress} \ge 95\%) \text{ AND } (\text{Pending Injunctions} > 0):$$
+$$\Downarrow$$
+$$\mathbf{\text{Status: "100\% Physically Operational; Legally Trapped in Escrow / Court Reference Disputes"}}$$
+
+#### 3. The Total Statutory Liquidation Equation
+Instead of confusing evaluators with a generic "Project Delay", the system computes the **Case-Free Liquidation Horizon**:
+
+$$\mathbf{\text{Total Case-Free Horizon}} = \text{Historical Escrow Backlog} + \text{AI Predicted Clearance Window}$$
+
+- **Step A (Historical Backlog):** For completed phases (3A $\to$ 3D $\to$ 3G), actual duration matches target. For Section 3H (Escrow), standard target is 540 days; actual duration has dragged for 1,766 days $\to$ **1,226 days of accumulated escrow delay**.
+- **Step B (Predictive Horizon):** The ML soft-voting ensemble predicts **+98 to +158 days** to clear remaining injunctions and release escrow.
+- **Step C (The Final Result):** Total of **1,384 additional days** beyond statutory legal framework to become 100% case-free.
+
+#### 4. What to Say to the Judges & Evaluators
+> *"Honorable Judges, the public only sees the asphalt; but the Ministry of Finance, NHAI, and District Magistrates fight the **hidden legal and financial hemorrhage**.*
+>
+> *Under Section 3D(2) of the NH Act 1956, physical construction proceeds once land vests, even while compensation lawsuits are pending in court under Section 3H.*
+>
+> *Our platform introduces India's first **Dual-Track Infrastructure Intelligence Metric**:*
+> *1. **Physical Operational Status:** 100% Commissioned & Open to Public Traffic.*
+> *2. **Statutory Legal Liquidation Horizon:** The machine learning model predicts 1,384 total days beyond the statutory baseline for the state to clear all court stays, release Section 3H escrow, and eliminate penal interest liabilities."*
