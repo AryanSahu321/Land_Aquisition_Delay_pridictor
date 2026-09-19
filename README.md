@@ -1,3 +1,15 @@
+---
+title: Land Delay Predictor Api
+emoji: 🏛️
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 5.20.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # PM GatiShakti &bull; Enterprise Land Acquisition Intelligence Platform
 
 ### Distributed AI-Powered Decision Support System under NH Act 1956 & RFCTLARR Act 2013
