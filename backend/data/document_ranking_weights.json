@@ -1,0 +1,85 @@
+{
+  "Gazette_Sec3D_Declaration": {
+    "priority_score": 0.551,
+    "historical_latency_ms": 8.6,
+    "statutory_field_yield": [
+      "total_area_hectares",
+      "missing_title_deeds_pct",
+      "co_sharer_mutation_pending",
+      "forest_clearance_stage",
+      "is_critical_path_asset"
+    ],
+    "total_scans": 26
+  },
+  "CALA_Award_Disbursement_Order": {
+    "priority_score": 0.65,
+    "historical_latency_ms": 10.1,
+    "statutory_field_yield": [
+      "compensation_disbursed_pct",
+      "pending_court_injunctions",
+      "sec_3h_escrow_deposited",
+      "competent_authority_fund_liquidity"
+    ],
+    "total_scans": 49
+  },
+  "Gazette_Sec3A_Notification": {
+    "priority_score": 0.88,
+    "historical_latency_ms": 130,
+    "statutory_field_yield": [
+      "statutory_stage",
+      "days_in_current_stage",
+      "total_area_hectares",
+      "affected_families_count",
+      "land_type"
+    ],
+    "total_scans": 1
+  },
+  "DPR_Executive_Summary": {
+    "priority_score": 0.402,
+    "historical_latency_ms": 8.0,
+    "statutory_field_yield": [
+      "structures_count_residential",
+      "commercial_establishments_count",
+      "monsoon_disruption_probability",
+      "soil_bearing_capacity_variance",
+      "contractor_past_delay_index"
+    ],
+    "total_scans": 26
+  },
+  "Flash_Report_MoSPI": {
+    "priority_score": 0.8,
+    "historical_latency_ms": 190,
+    "statutory_field_yield": [
+      "actual_delay_days",
+      "project_status",
+      "days_in_current_stage"
+    ],
+    "total_scans": 1
+  },
+  "QPISR_Status_Report": {
+    "priority_score": 0.78,
+    "historical_latency_ms": 210,
+    "statutory_field_yield": [
+      "utility_lines_to_relocate_count",
+      "joint_measurement_survey_done",
+      "compensation_disbursed_pct"
+    ],
+    "total_scans": 1
+  },
+  "Resettlement_Plan_ADB_WB": {
+    "priority_score": 0.686,
+    "historical_latency_ms": 164.8,
+    "statutory_field_yield": [
+      "affected_families_count",
+      "structures_count_residential",
+      "compensation_disbursed_pct"
+    ],
+    "total_scans": 3
+  },
+  "General_Document": {
+    "priority_score": 0.412,
+    "historical_latency_ms": 297.4,
+    "statutory_field_yield": [],
+    "total_scans": 7
+  }
+}

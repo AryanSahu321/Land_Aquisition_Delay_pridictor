@@ -62,18 +62,14 @@ def run_tests():
     print(f"  -> Primary Bottleneck: {exp_data['primary_bottleneck']}")
     assert len(exp_data["prescriptive_actions"]) > 0 or len(exp_data.get("prescriptions", [])) > 0
 
-    # 3. Role-Filtered Executive Statistics
-    print("\n[3/7] Testing Role-Filtered Executive Statistics (NHAI PD, CALA, DM)...")
-    roles = [
-        "Project Director (NHAI)",
-        "Competent Authority Land Acquisition (CALA) / SLAO",
-        "District Magistrate"
-    ]
-    for r in roles:
-        res_stats = client.get(f"/api/v1/stats?role={r}")
-        assert res_stats.status_code == 200, f"Failed for role {r}: {res_stats.text}"
-        stats_data = res_stats.json()
-        print(f"  -> Role: {r} -> {stats_data['role_focus']['title']} | KPIs: {len(stats_data['role_focus']['critical_kpis'])}")
+    # 3. Corridor Executive Statistics
+    print("\n[3/7] Testing Corridor Executive Statistics (/api/v1/stats)...")
+    res_stats = client.get("/api/v1/stats")
+    assert res_stats.status_code == 200, f"Failed stats: {res_stats.text}"
+    stats_data = res_stats.json()
+    assert "summary" in stats_data
+    assert "stage_breakdown" in stats_data
+    print(f"  -> Total Parcels: {stats_data['summary']['total_parcels']} | Avg Predicted Delay: +{stats_data['summary']['avg_predicted_delay_days']}d | Area: {stats_data['summary']['total_area_hectares']} ha")
 
     # 4. Asynchronous Bulk Update (Phase 2)
     print("\n[4/7] Testing High-Volume Bulk Update Dispatch (Phase 2)...")
@@ -134,8 +130,53 @@ def run_tests():
     sync_data = res_sync.json()
     print(f"  -> Sync Trigger: {sync_data['status']} - {sync_data['message']}")
 
+    # 9. Project Search Options (Landing Page Autocomplete)
+    print("\n[9/11] Testing Project Search Options from Central Database...")
+    res_opts = client.get("/api/v1/projects/search-options")
+    assert res_opts.status_code == 200
+    opts = res_opts.json()
+    assert len(opts["projects"]) > 0
+    assert len(opts["agencies"]) > 0
+    assert len(opts["ministries"]) > 0
+    print(f"  -> Central DB Projects: {len(opts['projects'])} | Agencies: {len(opts['agencies'])} | Ministries: {len(opts['ministries'])}")
+
+    # 10. Decoupled Model Inference Gateway (All 7 Cards)
+    print("\n[10/11] Testing Decoupled Model Inference (All-in-One 7 Cards)...")
+    res_pred = client.post("/api/v1/projects/parse-and-predict", json={
+        "project_name": "Purvanchal Expressway",
+        "agency": "UPEIDA",
+        "ministry": "Dept of Infrastructure & Industrial Development (Govt of UP)",
+        "government_type": "State Gov"
+    })
+    assert res_pred.status_code == 200
+    p_data = res_pred.json()
+    assert "lifecycle_stages" in p_data
+    assert "kpis" in p_data
+    assert "risk_stratification" in p_data
+    assert "package_breakdown" in p_data
+    assert "survival_curve" in p_data
+    assert "gis_corridor" in p_data
+    assert "xai_explanation" in p_data
+    assert "database_audit" in p_data
+    print(f"  -> Project: {p_data['project']['project_name']}")
+    print(f"  -> Predicted Delay: {p_data['kpis']['predicted_delay_days']} days | Risk: {p_data['risk_stratification']['risk_category']}")
+    print(f"  -> Database Audit: Source='{p_data['database_audit']['source']}', Latency={p_data['database_audit']['query_latency_ms']}ms")
+    print(f"  -> Lifecycle Stages: {len(p_data['lifecycle_stages'])} | Packages: {len(p_data['package_breakdown'])}")
+
+    # 11. Active Learning Feedback
+    print("\n[11/11] Testing Active Learning Feedback Loop...")
+    res_fb = client.post("/api/v1/ml/feedback", json={
+        "project_id": p_data['project']['project_id'],
+        "statutory_stage": "Section_3H_Compensation_Disbursed",
+        "actual_delay_days": 42,
+        "notes": "Tehsil disbursement camp concluded; 92% compensation released."
+    })
+    assert res_fb.status_code == 200
+    fb_data = res_fb.json()
+    print(f"  -> Feedback Status: {fb_data['status']} | Recorded Delay: {fb_data['recorded_delay_days']}d")
+
     print("\n==================================================================")
-    print("ALL 8 ENTERPRISE PLATFORM TEST SUITES PASSED SUCCESSFULLY!")
+    print("ALL 11 ENTERPRISE PLATFORM TEST SUITES PASSED SUCCESSFULLY!")
     print("==================================================================")
 
 if __name__ == "__main__":

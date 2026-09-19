@@ -25,16 +25,8 @@ import {
   Layers,
 } from "lucide-react";
 
-const ROLES = [
-  "Project Director (NHAI)",
-  "Competent Authority Land Acquisition (CALA) / SLAO",
-  "District Magistrate",
-];
-
 export default function Dashboard({
   stats,
-  currentRole,
-  onRoleChange,
   onOpenTestModal,
   onSelectParcelFromCorridor,
 }) {
@@ -83,11 +75,11 @@ export default function Dashboard({
     );
   }
 
-  const { summary, role_focus, stage_breakdown, district_breakdown } = stats;
+  const { summary, stage_breakdown, district_breakdown } = stats;
 
   return (
     <div className="space-y-6">
-      {/* Top Header & Role Switcher */}
+      {/* Top Header & Test Parcel Action */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-slate-900/80 p-5 rounded-xl border border-slate-800 shadow-xl backdrop-blur">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -110,97 +102,15 @@ export default function Dashboard({
           </p>
         </div>
 
-        {/* Role Switcher */}
-        <div className="flex items-center gap-3 bg-slate-950/70 p-2.5 rounded-lg border border-slate-700/80">
-          <div className="text-right">
-            <span className="block text-[11px] uppercase tracking-wider text-slate-400 font-medium">
-              Administrative Lens
-            </span>
-            <span className="text-xs font-semibold text-blue-300">
-              Switch Governance Role
-            </span>
-          </div>
-          <select
-            value={currentRole}
-            onChange={(e) => onRoleChange(e.target.value)}
-            className="bg-slate-800 hover:bg-slate-750 text-white font-medium text-sm px-3.5 py-2 rounded-md border border-blue-500/40 focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer"
+        {/* Action Button: Test a Parcel (Live ML) */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onOpenTestModal}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-lg shadow-md transition shadow-blue-500/20 hover:scale-[1.02] cursor-pointer"
           >
-            {ROLES.map((role) => (
-              <option
-                key={role}
-                value={role}
-                className="bg-slate-900 text-white"
-              >
-                {role}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Role-Specific Lens Banner */}
-      <div className="bg-gradient-to-r from-blue-950/60 via-slate-900 to-indigo-950/50 p-5 rounded-xl border border-blue-800/40 shadow-lg">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="space-y-1 max-w-3xl">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
-              <h2 className="text-lg font-semibold text-blue-200">
-                {role_focus?.title}
-              </h2>
-            </div>
-            <p className="text-xs text-slate-300 font-medium">
-              Objective:{" "}
-              <span className="text-white">
-                {role_focus?.primary_objective}
-              </span>
-            </p>
-            <div className="text-xs text-amber-200 bg-amber-950/40 border border-amber-600/30 px-3 py-1.5 rounded-md mt-2 flex items-start gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-              <span>
-                <strong>Priority Statutory Action:</strong>{" "}
-                {role_focus?.top_action}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onOpenTestModal}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-lg shadow-md transition shadow-blue-500/20 hover:scale-[1.02]"
-            >
-              <Sliders className="w-4 h-4" />
-              <span>Test a Parcel (Live ML)</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Role KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800/80">
-          {role_focus?.critical_kpis?.map((kpi, idx) => (
-            <div
-              key={idx}
-              className="bg-slate-900/80 p-3 rounded-lg border border-slate-800"
-            >
-              <span className="text-[11px] text-slate-400 uppercase tracking-wide block">
-                {kpi.label}
-              </span>
-              <span
-                className={`text-base font-bold mt-0.5 block ${
-                  kpi.status === "critical"
-                    ? "text-red-400"
-                    : kpi.status === "alert"
-                      ? "text-amber-400"
-                      : kpi.status === "positive"
-                        ? "text-emerald-400"
-                        : kpi.status === "warning"
-                          ? "text-yellow-400"
-                          : "text-blue-300"
-                }`}
-              >
-                {kpi.value}
-              </span>
-            </div>
-          ))}
+            <Sliders className="w-4 h-4" />
+            <span>Test a Parcel (Live ML)</span>
+          </button>
         </div>
       </div>
 

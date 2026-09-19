@@ -154,15 +154,74 @@ npm run dev
 
 ---
 
-### Option B: Production Distributed Stack (Docker Compose)
+## 🌐 Production Deployment Plan & Architecture
 
-To launch the full containerized microservices stack (PostGIS + Redis + Celery + FastAPI + Airflow):
+For full, in-depth configuration files, Dockerfiles, and security specifications, see the dedicated [Deployment Plan Documentation](file:///c:/Users/aryan/OneDrive/Desktop/land/deployment_plan.md).
 
-```bash
-docker-compose up -d --build
+### 1. Architecture Overview
+
+```mermaid
+flowchart TD
+    Client["Client Browser (HTTPS / Port 443)"] --> Nginx["Nginx Reverse Proxy & SSL (Certbot)"]
+
+    subgraph Host ["Production Server / Container Host"]
+        Nginx -->|/ route (Static Assets)| Frontend["Static Web Server<br/>(Vite React Production Distribution in /dist)"]
+        Nginx -->|/api route (Reverse Proxy)| Backend["FastAPI Backend Service (Gunicorn + Uvicorn Workers)<br/>Port 8000"]
+
+        Backend --> ModelRAM["In-Memory Production ML Models<br/>(Loaded from backend/models_saved/*.joblib)"]
+        Backend --> StorageVol[("Persistent Volume Mount (/app/data)<br/>• searched_projects.csv (Central Database)<br/>• projects_db/ (Statutory PDF Repository)")]
+        Backend --> Tesseract["Tesseract OCR Engine<br/>(tesseract-ocr system package)"]
+    end
 ```
 
-- FastAPI Gateway: [http://localhost:8000](http://localhost:8000)
-- Apache Airflow Webserver: [http://localhost:8080](http://localhost:8080)
-- PostgreSQL / PostGIS: `localhost:5432` (db: `land_intelligence`)
-- Redis Cache: `localhost:6379`
+### 2. Sizing & Prerequisites
+
+| Resource    | Minimum          | Recommended Production | Notes                                          |
+| :---------- | :--------------- | :--------------------- | :--------------------------------------------- |
+| **OS**      | Ubuntu 22.04 LTS | Ubuntu 24.04 LTS       | Standard Linux LTS                             |
+| **vCPU**    | 2 vCPUs          | 4 vCPUs                | Handles Gunicorn Uvicorn workers               |
+| **RAM**     | 4 GB             | 8 GB                   | ML models (XGBoost, LightGBM, TreeSHAP) in RAM |
+| **Disk**    | 25 GB SSD        | 50 GB SSD              | Docker images, statutory PDFs, models          |
+| **Network** | 100 Mbps         | 1 Gbps                 | High-throughput GIS GeoJSON and PDF parsing    |
+
+---
+
+### 3. Deployment Options
+
+#### Option A: Single Cloud VM with Docker Compose (Recommended)
+
+_Ideal for standard government portals, agency pilot deployments, and self-hosted environments._
+
+```bash
+# 1. Clone repository on production server
+git clone https://github.com/AryanSahu321/Land_Aquisition_Delay_pridictor.git /opt/land-acquisition
+cd /opt/land-acquisition
+
+# 2. Configure environment variables
+cp .env.example .env
+
+# 3. Launch with Docker Compose
+docker compose -f docker-compose.prod.yml up -d --build
+
+# 4. Verify deployment health
+curl -f http://127.0.0.1:8000/api/v1/health
+```
+
+#### Option B: Cloud PaaS (Zero Infrastructure Management)
+
+- **Backend (FastAPI + ML Models)**: Deploy to [Render.com](https://render.com) or [Railway.app](https://railway.app) using the backend Dockerfile with a persistent disk attached at `/app/data`.
+- **Frontend (React + ECharts)**: Deploy `frontend/dist` to [Vercel](https://vercel.com) or [Netlify](https://netlify.com). Set `VITE_API_BASE_URL` to point to the backend domain.
+
+#### Option C: Sovereign Government Cloud / NIC MeghRaj
+
+- Deploy in private VPC on National Informatics Centre (NIC) MeghRaj Cloud or State Data Centre (SDC).
+- Connected to internal government intranets with hardware firewalls and SSL certificates from National Informatics Centre CA.
+
+---
+
+### 4. Key Deployment Invariants
+
+1. **Model Weights Pre-Loaded**: Pre-trained model weights (`backend/models_saved/*.joblib`) are loaded during server initialization in under 0.5s. Runtime queries never train models.
+2. **Decoupled Database**: The ML engine queries `backend/data/searched_projects.csv` directly with zero runtime PDF parsing latency.
+3. **Startup Ingestion**: Statutory PDFs in `backend/data/projects_db/` are parsed only once on server startup when new files are detected.
+4. **Persistent Volumes**: Ensure `/app/data` is mounted to persistent storage so newly parsed project records survive container restarts.

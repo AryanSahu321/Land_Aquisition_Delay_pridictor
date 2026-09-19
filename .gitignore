@@ -19,7 +19,10 @@ env/
 
 # Machine Learning / Data
 *.pkl
-*.joblib
+
+# Allow production pre-trained models
+!backend/models_saved/*.joblib
+!backend/models_saved/*.json
 
 # OS / Editor settings
 .DS_Store
@@ -46,7 +49,4 @@ celerybeat.pid
 *.db
 land_intelligence.db
 
-backend/data/
-venv/
-__pycache__/
-*.json
+# Invariant: 1.codebase is benchmark only

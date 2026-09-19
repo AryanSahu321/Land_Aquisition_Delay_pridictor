@@ -1,0 +1,241 @@
+{
+  "dataset_shape": [
+    2054,
+    43
+  ],
+  "split_sizes": {
+    "train": 1643,
+    "validation": 205,
+    "test": 206
+  },
+  "feature_counts": {
+    "total_features": 47,
+    "numerical": 21,
+    "boolean": 4,
+    "categorical": 15,
+    "identifiers_dropped": [
+      "project_id",
+      "project_name"
+    ]
+  },
+  "data_leakage_audit": {
+    "checks_passed": true,
+    "total_records_checked": 2054,
+    "findings": [
+      "Found 3 records in preliminary stage with >90% disbursement.",
+      "No deterministic leakage detected (all feature correlations < 0.85)."
+    ]
+  },
+  "classification_5fold_cv": {
+    "xgboost_mean_f1": 0.8406218587017875,
+    "xgboost_fold_f1": [
+      0.863,
+      0.8358,
+      0.8323,
+      0.8398,
+      0.8322
+    ],
+    "lightgbm_mean_f1": 0.8440503925486356,
+    "lightgbm_fold_f1": [
+      0.8573,
+      0.8359,
+      0.8341,
+      0.8476,
+      0.8454
+    ],
+    "ensemble_mean_f1": 0.8415692978758716,
+    "ensemble_fold_f1": [
+      0.867,
+      0.8329,
+      0.8291,
+      0.8404,
+      0.8384
+    ]
+  },
+  "classification_validation": {
+    "dataset": "Validation",
+    "f1_weighted_ensemble": 0.8440258420441346,
+    "f1_macro_ensemble": 0.7891865079365079,
+    "f1_weighted_xgb": 0.8579655120284464,
+    "f1_weighted_lgb": 0.8332771346146641,
+    "accuracy": 0.8439024390243902,
+    "classification_report": {
+      "Low": {
+        "precision": 0.9166666666666666,
+        "recall": 0.8048780487804879,
+        "f1-score": 0.8571428571428571,
+        "support": 82.0
+      },
+      "Medium": {
+        "precision": 0.5757575757575758,
+        "recall": 0.6129032258064516,
+        "f1-score": 0.59375,
+        "support": 31.0
+      },
+      "High": {
+        "precision": 0.88,
+        "recall": 0.9565217391304348,
+        "f1-score": 0.9166666666666666,
+        "support": 92.0
+      },
+      "accuracy": 0.8439024390243902,
+      "macro avg": {
+        "precision": 0.7908080808080808,
+        "recall": 0.7914343379057914,
+        "f1-score": 0.7891865079365079,
+        "support": 205.0
+      },
+      "weighted avg": {
+        "precision": 0.8486592756836657,
+        "recall": 0.8439024390243902,
+        "f1-score": 0.8440258420441346,
+        "support": 205.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        66,
+        10,
+        6
+      ],
+      [
+        6,
+        19,
+        6
+      ],
+      [
+        0,
+        4,
+        88
+      ]
+    ],
+    "target_benchmark_met": true
+  },
+  "classification_test": {
+    "dataset": "Hold-out Test",
+    "f1_weighted_ensemble": 0.8777848656959213,
+    "f1_macro_ensemble": 0.8418553450811516,
+    "f1_weighted_xgb": 0.8777050407522553,
+    "f1_weighted_lgb": 0.8733825013689936,
+    "accuracy": 0.8786407766990292,
+    "classification_report": {
+      "Low": {
+        "precision": 0.8809523809523809,
+        "recall": 0.9135802469135802,
+        "f1-score": 0.896969696969697,
+        "support": 81.0
+      },
+      "Medium": {
+        "precision": 0.7333333333333333,
+        "recall": 0.6875,
+        "f1-score": 0.7096774193548387,
+        "support": 32.0
+      },
+      "High": {
+        "precision": 0.9239130434782609,
+        "recall": 0.9139784946236559,
+        "f1-score": 0.918918918918919,
+        "support": 93.0
+      },
+      "accuracy": 0.8786407766990292,
+      "macro avg": {
+        "precision": 0.8460662525879917,
+        "recall": 0.8383529138457454,
+        "f1-score": 0.8418553450811516,
+        "support": 206.0
+      },
+      "weighted avg": {
+        "precision": 0.8774161289674164,
+        "recall": 0.8786407766990292,
+        "f1-score": 0.8777848656959213,
+        "support": 206.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        74,
+        3,
+        4
+      ],
+      [
+        7,
+        22,
+        3
+      ],
+      [
+        3,
+        5,
+        85
+      ]
+    ],
+    "target_benchmark_met": true
+  },
+  "regression_5fold_cv": {
+    "xgboost_mean_r2": 0.7501086235046387,
+    "xgboost_mean_mae": 141.65629119873046,
+    "lightgbm_mean_r2": 0.7563663292264796,
+    "lightgbm_mean_mae": 146.7830428952112,
+    "ensemble_mean_r2": 0.7617916439202944,
+    "ensemble_mean_mae": 140.61017165825382,
+    "ensemble_fold_r2": [
+      0.705,
+      0.6978,
+      0.7826,
+      0.8063,
+      0.8173
+    ]
+  },
+  "regression_validation": {
+    "dataset": "Validation",
+    "r2_score": 0.6779491354631627,
+    "mae_overall_days": 139.21090682361913,
+    "rmse_overall_days": 320.1835633256083,
+    "mae_low_risk_days": 101.02688812294491,
+    "mae_medium_risk_days": 67.86381684645652,
+    "mae_high_risk_days": 197.2853559839162,
+    "target_r2_benchmark_met": false
+  },
+  "regression_test": {
+    "dataset": "Hold-out Test",
+    "r2_score": 0.6135057170426641,
+    "mae_overall_days": 155.4160008605366,
+    "rmse_overall_days": 481.34405617872227,
+    "mae_low_risk_days": 60.80847907237576,
+    "mae_medium_risk_days": 132.84852985782223,
+    "mae_high_risk_days": 245.58125179524507,
+    "target_r2_benchmark_met": false
+  },
+  "survival_analysis": {
+    "median_survival_days": 2450.0,
+    "forest_median_days": 2750.0,
+    "non_forest_median_days": 2380.0,
+    "c_index": 0.7108365415730405,
+    "hazard_ratios": {
+      "has_forest_clearance": {
+        "coef": -0.5721796457597674,
+        "exp(coef)": 0.5642941359644063,
+        "p": 1.3937115359349241e-10
+      },
+      "pending_court_injunctions": {
+        "coef": -0.296630560293362,
+        "exp(coef)": 0.7433185730375709,
+        "p": 7.062433786375809e-07
+      },
+      "utility_relocations": {
+        "coef": -0.0014946221722114638,
+        "exp(coef)": 0.9985064942192436,
+        "p": 0.0008214533622468716
+      },
+      "compensation_disbursed_pct": {
+        "coef": 0.07135599059155903,
+        "exp(coef)": 1.0739634787192134,
+        "p": 8.03837790101323e-09
+      },
+      "missing_title_deeds_pct": {
+        "coef": -0.04817728937062062,
+        "exp(coef)": 0.9529648215666137,
+        "p": 0.04960615146440688
+      }
+    }
+  }
+}
