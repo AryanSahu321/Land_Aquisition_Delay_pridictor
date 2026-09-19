@@ -6,6 +6,16 @@ BACKEND_DIR = os.path.join(BASE_DIR, "backend")
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
+# Hugging Face ZeroGPU requires a decorated function
+try:
+    import spaces
+    @spaces.GPU
+    def zero_gpu_handler():
+        return True
+    print("ZeroGPU handler active.")
+except Exception as e:
+    print(f"Running without ZeroGPU decorator: {e}")
+
 from backend.main import app as fastapi_app
 
 try:
