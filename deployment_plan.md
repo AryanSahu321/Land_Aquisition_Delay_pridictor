@@ -255,3 +255,83 @@ docker-compose logs -f backend
 - [ ] **Inference Test**: Submit _Purvanchal Expressway_ $\to$ Verifies $<20\text{ ms}$ Central Database query and renders all 7 cards.
 - [ ] **Navigation Test**: Click "← Back to Search" $\to$ Returns smoothly to the landing portal.
 - [ ] **Feedback Test**: Submit a milestone date update $\to$ Verifies record is updated in `searched_projects.csv`.
+
+---
+
+## 9. 100% Free Cloud Deployment Runbook (Render + Vercel)
+
+This runbook documents the exact, step-by-step process for deploying both the backend API and frontend UI on 100% free cloud tiers without requiring credit cards or paid plans.
+
+```mermaid
+flowchart LR
+    User["User Browser"] -->|Visits Web Portal| Vercel["Vercel Global CDN<br/>(https://land-aquisition-delay-pridictor.vercel.app)"]
+    Vercel -->|Proxies /api/* requests| Render["Render Free Web Service<br/>(https://land-delay-api.onrender.com)"]
+    Render --> FastAPI["FastAPI + Uvicorn Engine"]
+    FastAPI --> DB[("Central DB (searched_projects.csv)")]
+    FastAPI --> Models["XGBoost + LightGBM Models"]
+```
+
+### Part A: Deploying Backend to Render.com (100% Free)
+
+1. **Create Web Service**:
+   - Go to your [Render Dashboard](https://dashboard.render.com).
+   - Click **"New +"** (top right) $\rightarrow$ select **"Web Service"**.
+2. **Connect Repository**:
+   - Click the **"Public Git Repository"** tab.
+   - Paste: `https://github.com/AryanSahu321/Land_Aquisition_Delay_pridictor`
+   - Click **"Connect"**.
+3. **Configure Build & Runtime Settings**:
+   - **Name:** `land-delay-api` (or any unique name).
+   - **Language:** `Python 3`.
+   - **Branch:** `main`.
+   - **Region:** `Ohio (US East)` (or nearest region).
+   - **Root Directory:** *(Leave blank)*.
+   - **Build Command:**
+     ```bash
+     pip install -r requirements.txt
+     ```
+   - **Start Command:**
+     ```bash
+     uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+     ```
+   - **Instance Type:** Select **Free ($0/month)**.
+   - **Environment Variables:** *(None required — the project is self-contained)*.
+4. **Deploy**:
+   - Click **"Deploy web service"** (at the bottom).
+   - Once building finishes (takes ~2 minutes), Render will display your live URL at the top left:
+     `https://<your-service-name>.onrender.com`.
+
+---
+
+### Part B: Connecting Vercel Frontend to Render Backend
+
+Once Render provides your backend URL (e.g. `https://land-delay-api.onrender.com`):
+
+1. **Update `frontend/vercel.json`**:
+   Replace the destination URL in `frontend/vercel.json`:
+   ```json
+   {
+     "version": 2,
+     "rewrites": [
+       {
+         "source": "/api/:path*",
+         "destination": "https://<your-render-service-name>.onrender.com/api/:path*"
+       },
+       {
+         "source": "/(.*)",
+         "destination": "/index.html"
+       }
+     ]
+   }
+   ```
+2. **Commit and Push to GitHub**:
+   ```powershell
+   git add frontend/vercel.json
+   git commit -m "Connect Vercel frontend to Render backend"
+   git push origin main
+   ```
+3. **Automatic Live Update**:
+   - Vercel automatically detects the git push and redeploys the frontend within 30 seconds.
+   - Open **`https://land-aquisition-delay-pridictor.vercel.app`**:
+     - Executing Agency and Ministry dropdowns will be automatically populated from all 50 projects.
+     - 1-Click Search and delay risk analysis will execute in real time!
