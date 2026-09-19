@@ -33,9 +33,9 @@ try:
         - **ML Ensemble**: Soft-Voting XGBoost + LightGBM + TreeSHAP Explainability
         """)
 
-    # Attach all FastAPI routes into demo.app so Gradio serves both UI and all API endpoints
-    for route in fastapi_app.routes:
-        demo.app.routes.append(route)
+    # Prepend all FastAPI API routes before Gradio's SPA wildcard handler
+    api_routes = [r for r in fastapi_app.routes if r.path.startswith("/api")]
+    demo.app.router.routes = api_routes + list(demo.app.router.routes)
 
     app = demo.app
 
