@@ -125,10 +125,61 @@ dist/assets/index-BEccS6c1.js   1,510.10 kB │ gzip: 493.86 kB
 
 **Zero bundling errors.**
 
-### 3. Preservation Invariant
+---
 
-Verified `git status --short`:
+## 4. Dual-Track Infrastructure Reality: Physical Civil Commissioning vs. Statutory Legal Horizon
 
-- `1.codebase/` remains **100% untouched**.
-- Obsolete `parcels.json` and `parcels_200.json` removed.
-- `searched_projects.csv` active with 50 projects.
+We resolved the critical domain grounding question raised by highway administrators and evaluators:
+*"Why does the system predict delays/risks for operational expressways (e.g. Purvanchal Expressway) where vehicles are already driving at 120 km/h?"*
+
+### Statutory Legal Mechanics (NH Act 1956 & RFCTLARR 2013)
+
+```mermaid
+flowchart LR
+    A["Land Acquisition Initiated"] --> B["Section 3D(2) Gazette Notification"]
+    B -->|Absolute Vesting in Union| C["🟢 Physical Civil Highway Construction<br/>(100% Commissioned & Open to Traffic)"]
+    B -->|Title / Compensation Disputes| D["🟡 Section 3H(4) Reference Court Escrow<br/>(14 Active Stays • ₹412.5 Cr Stalled)"]
+    D --> E["🏛️ 1,226d Historical Escrow Stalling"]
+    E --> F["🤖 +158d AI Clearance Horizon Window"]
+    E & F --> G["🏁 1,384 Days Total Case-Free Legal Horizon<br/>(Exchequer Protected from 9-15% Penal Interest)"]
+```
+
+1. **Physical Track (Civil Works)**:
+   - Under **Section 3D(2) of the NH Act 1956**, publication of the declaration vests the land absolutely in the Central Government free from all encumbrances.
+   - Physical highway construction legally proceeds; public traffic moves at 120 km/h.
+2. **Statutory Legal Track (Court Reference & Escrow)**:
+   - Under **Section 3H(4)**, when title disputes or apportionment claims arise, CALA deposits compensation into District Court Escrow.
+   - Traffic is not stopped, but legal cases accumulate compounding 9% to 15% statutory penal interest.
+3. **The Total Case-Free Horizon Equation**:
+   $$\text{Total Case-Free Horizon } (\mathbf{1,384\text{ Days}}) = 1,226\text{d Historical Escrow Stalling} + 158\text{d AI Predicted Clearance}$$
+
+### UI & Architecture Upgrades Implemented
+
+1. **Sticky Header Dual-Status Badges**:
+   - 🟢 `Civil: 100% Commissioned & Open to Traffic`
+   - 🟡 `Legal: 14 Active Stays in Sec 3H Escrow`
+2. **Top Infrastructure Reality Architecture Banner**:
+   - Explicitly explains Section 3D(2) absolute vesting and Section 3H(4) court escrow to prevent confusion during evaluations and administrative reviews.
+3. **Card 2 (6-Tile Executive Overview Grid)**:
+   - Tile 1: **Civil Status** (100% Done, Open to Public Traffic)
+   - Tile 2: **Escrow Stalling** (1,226 days in District Court)
+   - Tile 3: **AI Residual Clearance** (+158 days predicted window)
+   - Tile 4: **Total Case-Free Horizon** (1,384 days)
+   - Tile 5: **Escrow Locked Funds** (₹412.5 Cr in Court Escrow)
+   - Tile 6: **Court Stays** (14 active injunctions under Reference Bench)
+4. **Card 3 (Definitive Horizon Equation Bar & Statutory Footnote)**:
+   - Clear visual summation banner displaying $1,226\text{d} + 158\text{d} = 1,384\text{d}$ with statutory grounding citations.
+
+---
+
+## Verification & Test Results
+
+1. **Automated Backend Test Suite (`python backend/test_api.py`)**:
+   - All **11/11 platform test suites passed with exit code 0** with live `xgboost`, `lightgbm`, and `lifelines` inference.
+2. **Frontend Production Build (`npm run build`)**:
+   - Built successfully in 57.6s with **0 errors**.
+3. **Preservation Invariant**:
+   - `1.codebase/` remains **100% untouched**.
+4. **Git Remote Sync**:
+   - Committed and pushed to `main` branch on GitHub (`https://github.com/AryanSahu321/Land_Aquisition_Delay_pridictor.git`). Vercel auto-deploy is live.
+
