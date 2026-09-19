@@ -130,7 +130,7 @@ dist/assets/index-BEccS6c1.js   1,510.10 kB │ gzip: 493.86 kB
 ## 4. Dual-Track Infrastructure Reality: Physical Civil Commissioning vs. Statutory Legal Horizon
 
 We resolved the critical domain grounding question raised by highway administrators and evaluators:
-*"Why does the system predict delays/risks for operational expressways (e.g. Purvanchal Expressway) where vehicles are already driving at 120 km/h?"*
+_"Why does the system predict delays/risks for operational expressways (e.g. Purvanchal Expressway) where vehicles are already driving at 120 km/h?"_
 
 ### Statutory Legal Mechanics (NH Act 1956 & RFCTLARR 2013)
 
@@ -182,4 +182,3 @@ flowchart LR
    - `1.codebase/` remains **100% untouched**.
 4. **Git Remote Sync**:
    - Committed and pushed to `main` branch on GitHub (`https://github.com/AryanSahu321/Land_Aquisition_Delay_pridictor.git`). Vercel auto-deploy is live.
-
