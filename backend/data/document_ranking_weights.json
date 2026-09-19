@@ -12,15 +12,15 @@
     "total_scans": 26
   },
   "CALA_Award_Disbursement_Order": {
-    "priority_score": 0.65,
-    "historical_latency_ms": 10.1,
+    "priority_score": 0.401,
+    "historical_latency_ms": 0.6,
     "statutory_field_yield": [
       "compensation_disbursed_pct",
       "pending_court_injunctions",
       "sec_3h_escrow_deposited",
       "competent_authority_fund_liquidity"
     ],
-    "total_scans": 49
+    "total_scans": 77
   },
   "Gazette_Sec3A_Notification": {
     "priority_score": 0.88,
@@ -35,8 +35,8 @@
     "total_scans": 1
   },
   "DPR_Executive_Summary": {
-    "priority_score": 0.402,
-    "historical_latency_ms": 8.0,
+    "priority_score": 0.401,
+    "historical_latency_ms": 0.6,
     "statutory_field_yield": [
       "structures_count_residential",
       "commercial_establishments_count",
@@ -44,7 +44,7 @@
       "soil_bearing_capacity_variance",
       "contractor_past_delay_index"
     ],
-    "total_scans": 26
+    "total_scans": 54
   },
   "Flash_Report_MoSPI": {
     "priority_score": 0.8,
@@ -77,9 +77,9 @@
     "total_scans": 3
   },
   "General_Document": {
-    "priority_score": 0.412,
-    "historical_latency_ms": 297.4,
+    "priority_score": 0.401,
+    "historical_latency_ms": 0.8,
     "statutory_field_yield": [],
-    "total_scans": 7
+    "total_scans": 69
   }
 }
