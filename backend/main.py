@@ -9,10 +9,16 @@ Supports:
 """
 
 import os
+import sys
 import json
 import time
 from datetime import datetime
 from pathlib import Path
+
+# Ensure backend directory is in sys.path when launched from root
+CURRENT_DIR = Path(__file__).resolve().parent
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
 from typing import List, Dict, Any, Optional
 import numpy as np
 import pandas as pd
