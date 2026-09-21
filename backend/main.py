@@ -12,8 +12,12 @@ import os
 import sys
 import json
 import time
+import logging
 from datetime import datetime
 from pathlib import Path
+
+# Initialize logger
+logger = logging.getLogger("land_acquisition_api")
 
 # Ensure backend directory is in sys.path when launched from root
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -1100,7 +1104,7 @@ def get_high_risk_parcels(project_id: str):
     cached_data = None
 
     try:
-        import redis
+        import redis  # type: ignore
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         r = redis.from_url(redis_url, decode_responses=True, socket_timeout=1)
         cached_raw = r.get(f"project:{project_id}:high_risk")
