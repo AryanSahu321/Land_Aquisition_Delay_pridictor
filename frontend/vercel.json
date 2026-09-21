@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://aryan-321-land-delay-predictor-api.hf.space/api/:path*"
+      "destination": "https://land-delay-api.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

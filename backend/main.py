@@ -699,6 +699,20 @@ initialize_data_store()
 # ----------------------------------------------------------------------
 # API Endpoints
 # ----------------------------------------------------------------------
+@app.get("/")
+def root_index():
+    return {
+        "title": "PM GatiShakti Statutory Land Acquisition Intelligence API",
+        "status": "online",
+        "interactive_docs": "/docs",
+        "health_check": "/api/v1/health",
+        "endpoints": {
+            "search_options": "/api/v1/projects/search-options",
+            "parse_and_predict": "/api/v1/projects/parse-and-predict"
+        },
+        "frontend_portal": "https://land-aquisition-delay-pridictor.vercel.app"
+    }
+
 @app.get("/api/v1/health")
 def health_check():
     return {
