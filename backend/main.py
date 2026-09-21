@@ -1104,9 +1104,10 @@ def get_high_risk_parcels(project_id: str):
     cached_data = None
 
     try:
-        import redis  # type: ignore
+        import importlib
+        redis_mod = importlib.import_module("redis")
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        r = redis.from_url(redis_url, decode_responses=True, socket_timeout=1)
+        r = redis_mod.from_url(redis_url, decode_responses=True, socket_timeout=1)
         cached_raw = r.get(f"project:{project_id}:high_risk")
         if cached_raw:
             cached_data = json.loads(cached_raw)
