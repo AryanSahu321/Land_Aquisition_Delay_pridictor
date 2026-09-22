@@ -88,15 +88,16 @@ Yes! While the technical legal terms reflect statutory acts (NH Act 1956 and RFC
 ### Q6: Does "Court Escrow" mean the court stops or halts highway construction?
 
 #### **NO! In fact, the exact opposite is true.**
+
 **Escrow was enacted by the Indian Parliament specifically so development NEVER stops.**
 
-* **Under the Old Law (Land Acquisition Act, 1894)**:
+- **Under the Old Law (Land Acquisition Act, 1894)**:
   Whenever farmers disputed compensation or co-sharers fought over title, courts issued stay orders directly on the land. Bulldozers stopped, work was paralyzed, and national highway projects stalled for a decade.
-* **Under the Modern Law (National Highways Act, 1956 - Sections 3D & 3H)**:
+- **Under the Modern Law (National Highways Act, 1956 - Sections 3D & 3H)**:
   Parliament separated the physical land from the monetary dispute:
-  1. **Section 3D(2)** vests the land *absolutely in the Government*. Civil contractors work, asphalt is laid, and vehicles move at 120 km/h.
+  1. **Section 3D(2)** vests the land _absolutely in the Government_. Civil contractors work, asphalt is laid, and vehicles move at 120 km/h.
   2. **Section 3H(4)** moves the dispute into a **District Court Escrow Account**:
-     > *"The disputed compensation is deposited into the court's account. The parties can litigate their inheritance or apportionment claims in court, but they fight over the bank account—NOT over the physical highway."*
+     > _"The disputed compensation is deposited into the court's account. The parties can litigate their inheritance or apportionment claims in court, but they fight over the bank account—NOT over the physical highway."_
 
 ---
 
@@ -135,8 +136,64 @@ Card 2 provides high-level officials (District Magistrates, NHAI Project Directo
 
 Even though the road is physically built, the government cannot ignore this delay because of **Statutory Penal Interest Liabilities**:
 
-* Under **Section 34 of the Land Acquisition Act** and **Section 80 of the RFCTLARR Act 2013**:
+- Under **Section 34 of the Land Acquisition Act** and **Section 80 of the RFCTLARR Act 2013**:
   The government must pay **9% interest per annum for the first year**, which increases to **15% compounding penal interest per annum** for every subsequent year until compensation is fully disbursed.
-* On a contested balance of ₹400 Crore, a 1,226-day (~3.4 year) court stalling delay costs the public exchequer **over ₹150 Crore in penal interest alone**.
-* Our AI platform quantifies this horizon so administrative authorities can proactively settle court references, unfreeze escrow funds, and stop taxpayer money from bleeding.
+- On a contested balance of ₹400 Crore, a 1,226-day (~3.4 year) court stalling delay costs the public exchequer **over ₹150 Crore in penal interest alone**.
+- Our AI platform quantifies this horizon so administrative authorities can proactively settle court references, unfreeze escrow funds, and stop taxpayer money from bleeding.
+
+---
+
+### Q9: What does Card 5 ("Statutory Clearance & Environmental Dispute Survival Curve S(t)") mean?
+
+Card 5 visualizes how fast court cases, title disputes, and environmental objections get resolved and cleared over time using **Kaplan-Meier Survival Analysis**.
+
+```
+  Survival Probability S(t)
+    100% ┼ ● (Day 0: 100% cases pending)
+         │  \
+     80% ┼   \
+         │    \
+     60% ┼     \
+   --50% ┼------\------------------------- ─── Median Clearance: 5.8 mos
+         │       ● Month 6 (48.7% pending, 51.3% cleared)
+     40% ┼        \
+         │         \
+     20% ┼          `--.____
+         │                  `---.____
+      0% ┴───┬───┬───┬───┬───┬───┬───┬───┬───
+         0   3   6   9  12  18  24  30  36
+                     Months Elapsed (t)
+```
+
+#### 1. Why is it called a "Survival Curve" $S(t)$? (The Real-World Analogy):
+- In **medical science**, a survival curve tracks what fraction of patients are *still alive* after diagnosis.
+- In **Infrastructure & Indian Law**:
+  - The **"Subject"** is the **Court Case / Forest Clearance Objection**.
+  - The **"Event" (Death of the problem)** = The dispute is **Settled, Cleared & Closed**.
+  - **"Survival" $S(t)$** = The dispute is **STILL ALIVE / STILL PENDING in Court**.
+  - Therefore: **High Survival = Problems still pending. Low Survival = Disputes successfully cleared.**
+
+#### 2. How to Read the Axes:
+- **Horizontal Axis (Months Elapsed $t$)**: Time in months since the legal disputes or forest objections were formally lodged (from Month 0 to Month 36).
+- **Vertical Axis (Survival Probability $S(t)$)**: The percentage of disputes that remain **unresolved / pending** in court at that point in time.
+
+#### 3. What does Month 0 mean?
+- At **Month 0**: $S(0) = 100\%$.
+- When cases are first filed, **100% of disputes are still alive and unresolved**.
+
+#### 4. What does the Month 6 Tooltip mean?
+- **Month 6**: 6 months have elapsed since filings.
+- **Survival Probability $S(t) = 48.7\%$**: Only 48.7% of disputes are still lingering in court.
+- **Dispute Clearance = $51.3\%$**: More than half (**51.3%**) of the disputes have already been settled and cleared by the Competent Authority and District Court!
+
+#### 5. What does the Orange Dotted Line ("Median Clearance: 5.8 mos") mean?
+- The **Median** is the exact 50% milestone.
+- At **5.8 months**, exactly half (50%) of all legal disputes and environmental objections are resolved.
+- **In Plain English**: *"Within ~6 months, you can expect half of your legal disputes to be liquidated."*
+- By Month 12: Only ~23% remain pending.
+- By Month 24–36: The curve approaches ~0% (the difficult 'long-tail' cases are fully resolved).
+
+#### 6. Why is this card invaluable for Project Directors & Engineers?
+- Instead of guessing in the dark *"When will the court cases finish?"*, our AI engine uses historical court disposal velocity (Kaplan-Meier survival statistics) across similar corridors.
+- It gives project authorities an **actuarial, mathematically verified timeline** of when land will be 100% clear of litigation, allowing them to time contractor mobilization, schedule blacktop paving, and prevent interest penalties.
 

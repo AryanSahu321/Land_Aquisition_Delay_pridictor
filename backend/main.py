@@ -272,18 +272,39 @@ def encode_record_47(rec: Dict[str, Any]) -> pd.DataFrame:
     Transforms any incoming dictionary into the exact 47-feature matrix required
     by the production XGBoost and LightGBM ensemble, computing domain interaction terms.
     """
-    injunctions = int(rec.get("pending_court_injunctions", 0))
-    sec_3h = int(bool(rec.get("sec_3h_escrow_deposited", False)))
-    disbursed = float(rec.get("compensation_disbursed_pct", 50.0))
-    missing_deeds = float(rec.get("missing_title_deeds_pct", 15.0))
-    contractor_delay = float(rec.get("contractor_past_delay_index", 1.05))
-    telemetry = float(rec.get("equipment_telemetry_downtime", 12.0))
-    days_in_stage = float(rec.get("days_in_current_stage", 60))
-    families = float(rec.get("affected_families_count", 10))
-    area = float(rec.get("total_area_hectares", rec.get("area_hectares", 2.5)))
+    def _clean_str(val, default):
+        if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", ""]:
+            return default
+        return str(val).strip()
+
+    def _clean_float(val, default):
+        try:
+            if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", ""]:
+                return default
+            return float(val)
+        except Exception:
+            return default
+
+    def _clean_int(val, default):
+        try:
+            if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", ""]:
+                return default
+            return int(float(val))
+        except Exception:
+            return default
+
+    injunctions = _clean_int(rec.get("pending_court_injunctions"), 0)
+    sec_3h = 1 if bool(rec.get("sec_3h_escrow_deposited", False)) else 0
+    disbursed = _clean_float(rec.get("compensation_disbursed_pct"), 50.0)
+    missing_deeds = _clean_float(rec.get("missing_title_deeds_pct"), 15.0)
+    contractor_delay = _clean_float(rec.get("contractor_past_delay_index"), 1.05)
+    telemetry = _clean_float(rec.get("equipment_telemetry_downtime"), 12.0)
+    days_in_stage = _clean_float(rec.get("days_in_current_stage"), 60.0)
+    families = _clean_float(rec.get("affected_families_count"), 10.0)
+    area = _clean_float(rec.get("total_area_hectares", rec.get("area_hectares")), 2.5)
 
     # Resolve stage string safely
-    raw_stage = str(rec.get("statutory_stage", "Section_3G/23_Award"))
+    raw_stage = _clean_str(rec.get("statutory_stage"), "Section_3G/23_Award")
     if "3A" in raw_stage:
         clean_stage = "Section_3A/11_Preliminary"
     elif "3D" in raw_stage:
@@ -296,18 +317,26 @@ def encode_record_47(rec: Dict[str, Any]) -> pd.DataFrame:
         clean_stage = raw_stage.replace(" ", "_")
 
     # Resolve land type safely
-    raw_land = str(rec.get("land_type", "Private Agricultural"))
+    raw_land = _clean_str(rec.get("land_type"), "Private Agricultural")
     clean_land = raw_land.replace(" ", "_")
 
+    raw_pub_obs = rec.get("public_structure_obstruction")
+    is_pub_missing = 1 if (raw_pub_obs is None or pd.isna(raw_pub_obs) or str(raw_pub_obs).strip().lower() in ["nan", "none", ""]) else 0
+    clean_pub_obs = _clean_str(raw_pub_obs, "None_Recorded")
+
+    raw_env_prot = rec.get("active_environmental_protests")
+    is_env_missing = 1 if (raw_env_prot is None or pd.isna(raw_env_prot) or str(raw_env_prot).strip().lower() in ["nan", "none", ""]) else 0
+    clean_env_prot = _clean_str(raw_env_prot, "None_Active")
+
     row = {
-        "sector": rec.get("sector", "Transport"),
-        "jurisdiction": rec.get("jurisdiction", "Central"),
-        "state": rec.get("state", "Uttar Pradesh"),
-        "district_or_corridor": rec.get("district_or_corridor", rec.get("district", "Prayagraj")),
-        "project_status": rec.get("project_status", "Ongoing"),
-        "project_spatial_type": rec.get("project_spatial_type", "Linear"),
-        "governing_statute": rec.get("governing_statute", "NH_Act_1956"),
-        "infrastructure_type": rec.get("infrastructure_type", "Highway"),
+        "sector": _clean_str(rec.get("sector"), "Transport"),
+        "jurisdiction": _clean_str(rec.get("jurisdiction"), "Central"),
+        "state": _clean_str(rec.get("state"), "Uttar Pradesh"),
+        "district_or_corridor": _clean_str(rec.get("district_or_corridor", rec.get("district")), "Prayagraj"),
+        "project_status": _clean_str(rec.get("project_status"), "Ongoing"),
+        "project_spatial_type": _clean_str(rec.get("project_spatial_type"), "Linear"),
+        "governing_statute": _clean_str(rec.get("governing_statute"), "NH_Act_1956"),
+        "infrastructure_type": _clean_str(rec.get("infrastructure_type"), "Highway"),
         "statutory_stage": clean_stage,
         "days_in_current_stage": days_in_stage,
         "land_type": clean_land,
@@ -315,33 +344,33 @@ def encode_record_47(rec: Dict[str, Any]) -> pd.DataFrame:
         "affected_families_count": int(families),
         "pending_court_injunctions": injunctions,
         "missing_title_deeds_pct": missing_deeds,
-        "co_sharer_mutation_pending": int(bool(rec.get("co_sharer_mutation_pending", False))),
+        "co_sharer_mutation_pending": 1 if bool(rec.get("co_sharer_mutation_pending", False)) else 0,
         "compensation_disbursed_pct": disbursed,
         "sec_3h_escrow_deposited": sec_3h,
-        "competent_authority_fund_liquidity": float(rec.get("competent_authority_fund_liquidity", 85.0)),
-        "forest_clearance_stage": rec.get("forest_clearance_stage", "Not_Applicable"),
-        "utility_lines_to_relocate_count": int(rec.get("utility_lines_to_relocate_count", 15)),
-        "is_critical_path_asset": int(bool(rec.get("is_critical_path_asset", True))),
-        "structures_count_residential": int(rec.get("structures_count_residential", 20)),
-        "commercial_establishments_count": int(rec.get("commercial_establishments_count", 5)),
-        "public_structure_obstruction": rec.get("public_structure_obstruction") or "None_Recorded",
-        "active_environmental_protests": rec.get("active_environmental_protests") or "None_Active",
-        "labor_union_strike_days": int(rec.get("labor_union_strike_days", 0)),
-        "local_law_and_order_halts": int(bool(rec.get("local_law_and_order_halts", False))),
+        "competent_authority_fund_liquidity": _clean_float(rec.get("competent_authority_fund_liquidity"), 85.0),
+        "forest_clearance_stage": _clean_str(rec.get("forest_clearance_stage"), "Not_Applicable"),
+        "utility_lines_to_relocate_count": _clean_int(rec.get("utility_lines_to_relocate_count"), 15),
+        "is_critical_path_asset": 1 if bool(rec.get("is_critical_path_asset", True)) else 0,
+        "structures_count_residential": _clean_int(rec.get("structures_count_residential"), 20),
+        "commercial_establishments_count": _clean_int(rec.get("commercial_establishments_count"), 5),
+        "public_structure_obstruction": clean_pub_obs,
+        "active_environmental_protests": clean_env_prot,
+        "labor_union_strike_days": _clean_int(rec.get("labor_union_strike_days"), 0),
+        "local_law_and_order_halts": 1 if bool(rec.get("local_law_and_order_halts", False)) else 0,
         "contractor_past_delay_index": contractor_delay,
-        "subcontractor_tier_rating": rec.get("subcontractor_tier_rating", "Tier_1_National"),
+        "subcontractor_tier_rating": _clean_str(rec.get("subcontractor_tier_rating"), "Tier_1_National"),
         "equipment_telemetry_downtime": telemetry,
-        "labor_productivity_rate": float(rec.get("labor_productivity_rate", 0.95)),
-        "wpi_material_inflation": float(rec.get("wpi_material_inflation", 5.2)),
-        "regional_labor_availability": rec.get("regional_labor_availability", "Adequate"),
-        "material_lead_time_days": int(rec.get("material_lead_time_days", 25)),
-        "monsoon_disruption_probability": float(rec.get("monsoon_disruption_probability", 0.45)),
-        "soil_bearing_capacity_variance": float(rec.get("soil_bearing_capacity_variance", 0.12)),
-        "groundwater_table_depth": float(rec.get("groundwater_table_depth", 6.5)),
-        "treasury_invoice_clearance_lag": int(rec.get("treasury_invoice_clearance_lag", 20)),
-        "digital_record_fidelity_score": float(rec.get("digital_record_fidelity_score", 0.82)),
-        "public_structure_obstruction_missing": 1 if rec.get("public_structure_obstruction") is None else 0,
-        "active_environmental_protests_missing": 1 if rec.get("active_environmental_protests") is None else 0,
+        "labor_productivity_rate": _clean_float(rec.get("labor_productivity_rate"), 0.95),
+        "wpi_material_inflation": _clean_float(rec.get("wpi_material_inflation"), 5.2),
+        "regional_labor_availability": _clean_str(rec.get("regional_labor_availability"), "Adequate"),
+        "material_lead_time_days": _clean_int(rec.get("material_lead_time_days"), 25),
+        "monsoon_disruption_probability": _clean_float(rec.get("monsoon_disruption_probability"), 0.45),
+        "soil_bearing_capacity_variance": _clean_float(rec.get("soil_bearing_capacity_variance"), 0.12),
+        "groundwater_table_depth": _clean_float(rec.get("groundwater_table_depth"), 6.5),
+        "treasury_invoice_clearance_lag": _clean_int(rec.get("treasury_invoice_clearance_lag"), 20),
+        "digital_record_fidelity_score": _clean_float(rec.get("digital_record_fidelity_score"), 0.82),
+        "public_structure_obstruction_missing": is_pub_missing,
+        "active_environmental_protests_missing": is_env_missing,
         "litigation_severity_index": injunctions * (1 - sec_3h),
         "unclear_title_disbursement_deficit": (100.0 - disbursed) * (1.0 + missing_deeds / 100.0),
         "contractor_downtime_stress": contractor_delay * telemetry,
@@ -1415,7 +1444,24 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     }
 
     # 6. Card 4: Apache ECharts Comparative Package Delay Breakdown
-    pkg_count = int(proj.get("packages_count", 5))
+    raw_pkg = proj.get("packages_count")
+    try:
+        if raw_pkg is None or pd.isna(raw_pkg) or str(raw_pkg).strip().lower() in ["nan", "none", ""]:
+            pkg_count = 5
+        else:
+            pkg_count = max(1, min(8, int(float(raw_pkg))))
+    except Exception:
+        pkg_count = 5
+
+    raw_km = proj.get("total_km")
+    try:
+        if raw_km is None or pd.isna(raw_km) or str(raw_km).strip().lower() in ["nan", "none", ""]:
+            total_km = 45.0
+        else:
+            total_km = round(float(raw_km), 1)
+    except Exception:
+        total_km = 45.0
+
     package_breakdown = []
     base_delays = [predicted_delay + offset for offset in [-35, -15, 10, 28, 45, -5, 20, 38]][:pkg_count]
     for i in range(1, pkg_count + 1):
@@ -1513,7 +1559,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
             "government_type": str(proj.get("government_type", req.government_type or "Central Gov")),
             "state": str(proj.get("state", "Uttar Pradesh")),
             "corridor": str(proj.get("corridor", "National RoW Corridor")),
-            "total_km": float(proj.get("total_km", 120.0)),
+            "total_km": total_km,
             "packages_count": pkg_count
         },
         "lifecycle_stages": lifecycle_stages,
