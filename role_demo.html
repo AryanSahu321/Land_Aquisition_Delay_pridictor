@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      PM GatiShakti - Statutory Role-Based Access, Autonomous Alerts & e-Sign
+      Demo
+    </title>
+    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+      .pulse-badge {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen antialiased p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-6">
+      <!-- Top Government Header with Role Switcher & Notification Bell -->
+      <header
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center font-bold text-lg text-slate-950 shadow-md"
+          >
+            🏛️
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg font-bold tracking-tight text-white">
+                PM GatiShakti National Master Plan
+              </h1>
+              <span
+                class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono font-medium"
+                >RBAC + HITL Mode</span
+              >
+            </div>
+            <p class="text-xs text-slate-400">
+              Statutory Land Acquisition Intelligence • Points 8, 9 & 12
+              Interactive Prototype
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Action Controls: Role Switcher, Notification Bell, SSO Login -->
+        <div class="flex items-center gap-3 ml-auto">
+          <!-- Role Selector Dropdown -->
+          <div class="relative">
+            <label
+              class="text-[10px] uppercase font-bold text-slate-400 block mb-1"
+              >Select Active Official (Role)</label
+            >
+            <select
+              id="roleSelector"
+              onchange="switchRole(this.value)"
+              class="bg-slate-800 border border-slate-700 hover:border-indigo-500 text-white text-xs rounded-lg px-3 py-2 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition cursor-pointer"
+            >
+              <option value="FIELD_REVENUE">
+                🟢 Field Revenue Inspector (Lekhpal / Tehsildar)
+              </option>
+              <option value="CALA_TRIBUNAL" selected>
+                🔵 Competent Authority (CALA / ADM Land)
+              </option>
+              <option value="NHAI_PD">
+                🟣 NHAI Project Director (PD Varanasi)
+              </option>
+              <option value="MINISTRY_APEX">
+                🔴 Ministry Secretary / PM GatiShakti NPG
+              </option>
+            </select>
+          </div>
+
+          <!-- Notification Bell with Counter -->
+          <div class="relative pt-4">
+            <button
+              onclick="toggleAlertsModal()"
+              class="relative p-2 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-200 transition"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              <span
+                id="bellBadge"
+                class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full pulse-badge border-2 border-slate-900"
+                >2</span
+              >
+            </button>
+          </div>
+
+          <!-- Official Jan Parichay Login Button -->
+          <div class="pt-4">
+            <button
+              onclick="openLoginModal()"
+              class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+              </svg>
+              NIC SSO Login
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Active Official Profile Banner -->
+      <div
+        id="officerBanner"
+        class="bg-gradient-to-r from-blue-950/60 to-slate-900 border border-blue-500/30 rounded-2xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            id="officerAvatar"
+            class="w-14 h-14 rounded-2xl bg-blue-600/20 border-2 border-blue-500/50 flex items-center justify-center text-2xl font-bold text-blue-400 shadow-inner"
+          >
+            ⚖️
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span
+                id="officerBadge"
+                class="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                >Tier 2: Statutory Tribunal</span
+              >
+              <span id="officerId" class="text-xs font-mono text-slate-400"
+                >ID: CALA-UP-PRY-04</span
+              >
+            </div>
+            <h2
+              id="officerName"
+              class="text-xl font-extrabold text-white mt-0.5"
+            >
+              Dr. R. K. Sharma, IAS
+            </h2>
+            <p id="officerDesignation" class="text-xs text-slate-300">
+              Competent Authority for Land Acquisition (CALA) & ADM (Revenue),
+              Prayagraj
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs">
+          <div
+            class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5 min-w-[140px]"
+          >
+            <span
+              class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold"
+              >Statutory Authority</span
+            >
+            <span id="officerPowers" class="font-bold text-blue-400"
+              >NH Act Sec 3C, 3G, 3H</span
+            >
+          </div>
+          <div
+            class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5 min-w-[140px]"
+          >
+            <span
+              class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold"
+              >Jurisdiction Area</span
+            >
+            <span id="officerJurisdiction" class="font-bold text-slate-200"
+              >District Prayagraj & Mirzapur</span
+            >
+          </div>
+          <div
+            class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5 min-w-[140px]"
+          >
+            <span
+              class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold"
+              >Disbursement Limit</span
+            >
+            <span id="officerDisbLimit" class="font-bold text-emerald-400"
+              >Up to ₹50 Crore / Order</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid: Alerts (Point 8) + Recommendations (Point 9) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- LEFT COLUMN: Automated Alerts & Notifications (Point 8) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div
+            class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">🔔</span>
+                <h3 class="font-bold text-white text-sm">
+                  Automated Alerts & Notifications (Point 8)
+                </h3>
+              </div>
+              <span
+                id="alertsCountLabel"
+                class="text-[11px] font-semibold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/30"
+                >2 Actionable Alerts</span
+              >
+            </div>
+
+            <!-- Autonomous Background Engine Explanation Banner -->
+            <div
+              class="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3 text-[11px] text-indigo-300 flex items-start gap-2.5"
+            >
+              <span class="text-base">⚡</span>
+              <div>
+                <span class="font-bold text-white block"
+                  >100% Autonomous Server Watchdog</span
+                >
+                Evaluated autonomously by backend statutory daemons at midnight
+                without any human clicking a button. Dispatched instantly to
+                official NIC Sandes SMS & Gov Email registry.
+              </div>
+            </div>
+
+            <div id="alertsList" class="space-y-3">
+              <!-- Populated via JavaScript dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Predictive Recommendations & SOPs (Point 9) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div
+            class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">⚡</span>
+                <h3 class="font-bold text-white text-sm">
+                  Jurisdiction-Aware Prescriptive Actions (Point 9)
+                </h3>
+              </div>
+              <span
+                class="text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30"
+                >Authorized SOPs</span
+              >
+            </div>
+
+            <!-- Constitutional HITL Explanation Banner -->
+            <div
+              class="bg-amber-950/30 border border-amber-500/30 rounded-xl p-3 text-[11px] text-amber-300 flex items-start gap-2.5"
+            >
+              <span class="text-base">🏛️</span>
+              <div>
+                <span class="font-bold text-white block"
+                  >Constitutional Decision Support (Articles 77 & 166)</span
+                >
+                AI pre-populates official legal note-sheets ("Draft for Approval
+                / DFA"). Legally empowered human officers review facts and apply
+                their official Class-3 Digital Signature (DSC) before any order
+                is issued.
+              </div>
+            </div>
+
+            <div id="recommendationsList" class="space-y-3">
+              <!-- Populated via JavaScript dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM PANEL: Comprehensive Statutory Audit Trail (Point 12) -->
+      <div
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl space-y-4"
+      >
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📜</span>
+            <div>
+              <h3 class="font-bold text-white text-sm">
+                Comprehensive Statutory Audit Trail (Point 12)
+              </h3>
+              <p class="text-xs text-slate-400">
+                Cryptographically verifiable log of all statutory decisions,
+                orders, and fund movements.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              onclick="clearAuditTrail()"
+              class="text-xs text-slate-400 hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition"
+            >
+              Clear Log
+            </button>
+            <button
+              onclick="exportAuditTrail()"
+              class="text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 font-semibold px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1"
+            >
+              <span>📥</span> Export Statutory Ledger
+            </button>
+          </div>
+        </div>
+
+        <!-- Audit Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr
+                class="border-b border-slate-800 text-slate-400 uppercase text-[10px] tracking-wider font-semibold"
+              >
+                <th class="py-2.5 px-3">Timestamp</th>
+                <th class="py-2.5 px-3">Official / Designation</th>
+                <th class="py-2.5 px-3">Statutory Act & Section</th>
+                <th class="py-2.5 px-3">Action Executed</th>
+                <th class="py-2.5 px-3">Financial Impact</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3 text-right">Integrity Hash & DSC</th>
+              </tr>
+            </thead>
+            <tbody
+              id="auditTableBody"
+              class="divide-y divide-slate-800/60 font-mono text-[11px]"
+            >
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- NIC e-Office Draft Review & Digital Signature Modal (Point 9 & 12) -->
+    <div
+      id="orderReviewModal"
+      class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 text-slate-200"
+      >
+        <!-- Official Header -->
+        <div
+          class="border-b border-slate-800 pb-3 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">🇮🇳</div>
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                Government of India / State Revenue Authority
+              </h3>
+              <p class="text-[10px] text-slate-400 font-mono">
+                NIC e-Office Digital Note-Sheet • Draft for Approval (DFA)
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeOrderModal()"
+            class="text-slate-400 hover:text-white text-xl"
+          >
+            &times;
+          </button>
+        </div>
+
+        <!-- Draft Government Order Content -->
+        <div
+          class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3 font-serif text-xs leading-relaxed text-slate-300"
+        >
+          <div
+            class="text-center font-bold text-slate-100 uppercase tracking-wide border-b border-slate-800 pb-2"
+            id="modalOrderTitle"
+          >
+            Statutory Order Draft
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-400"
+          >
+            <div>
+              File No:
+              <span class="text-slate-200" id="modalFileNo"
+                >LA-2026/SEC3G/09</span
+              >
+            </div>
+            <div>
+              Statutory Section:
+              <span class="text-indigo-400 font-bold" id="modalStatute"
+                >NH Act 1956 Sec 3G</span
+              >
+            </div>
+            <div>
+              Competent Officer:
+              <span class="text-slate-200" id="modalOfficer"
+                >Dr. R. K. Sharma, IAS</span
+              >
+            </div>
+            <div>
+              Financial Outlay:
+              <span class="text-emerald-400 font-bold" id="modalFinancial"
+                >₹18,45,00,000</span
+              >
+            </div>
+          </div>
+          <div class="pt-2 text-slate-200" id="modalOrderBody">
+            <!-- Populated dynamically -->
+          </div>
+          <div class="pt-2 text-[11px] text-slate-400 italic">
+            "The Competent Authority has examined the cadastral survey records,
+            joint measurement reports, and Section 3C objection disposal
+            registers. In exercise of statutory powers, the undersigned hereby
+            orders the above action for formal gazetting and PFMS disbursement."
+          </div>
+        </div>
+
+        <!-- Officer Digital Signature Controls -->
+        <div class="pt-2 flex items-center justify-between">
+          <div
+            class="text-[11px] text-slate-400 flex items-center gap-1.5 font-mono"
+          >
+            <span
+              class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+            ></span>
+            Class-3 DSC Hardware Token Active
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              onclick="closeOrderModal()"
+              class="text-xs text-slate-400 hover:text-white px-3 py-2 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              onclick="confirmDigitalSignature()"
+              class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2"
+            >
+              <span>✍️</span> Apply Class-3 Digital Signature (e-Sign)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SSO Login Modal (Simulation) -->
+    <div
+      id="loginModal"
+      class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🏛️</span>
+            <h3 class="font-bold text-white text-base">
+              National Single Sign-On (Jan Parichay / NIC)
+            </h3>
+          </div>
+          <button
+            onclick="closeLoginModal()"
+            class="text-slate-400 hover:text-white text-lg"
+          >
+            &times;
+          </button>
+        </div>
+        <p class="text-xs text-slate-400">
+          Select any official demo account below to log in instantly with that
+          role's statutory permissions:
+        </p>
+
+        <div class="space-y-2 pt-2">
+          <button
+            onclick="quickLogin('FIELD_REVENUE')"
+            class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/50 transition flex items-center justify-between"
+          >
+            <div>
+              <div class="text-xs font-bold text-white">
+                S. K. Verma, Tehsildar
+              </div>
+              <div class="text-[10px] text-slate-400">
+                Field Revenue Inspector • UP Revenue Code
+              </div>
+            </div>
+            <span
+              class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded font-semibold"
+              >Sign In ➜</span
+            >
+          </button>
+
+          <button
+            onclick="quickLogin('CALA_TRIBUNAL')"
+            class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-blue-500/50 transition flex items-center justify-between"
+          >
+            <div>
+              <div class="text-xs font-bold text-white">
+                Dr. R. K. Sharma, IAS (CALA)
+              </div>
+              <div class="text-[10px] text-slate-400">
+                Competent Authority • NH Act Sec 3C/3G/3H
+              </div>
+            </div>
+            <span
+              class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded font-semibold"
+              >Sign In ➜</span
+            >
+          </button>
+
+          <button
+            onclick="quickLogin('NHAI_PD')"
+            class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-purple-500/50 transition flex items-center justify-between"
+          >
+            <div>
+              <div class="text-xs font-bold text-white">
+                Er. V. P. Singh, Project Director
+              </div>
+              <div class="text-[10px] text-slate-400">
+                NHAI PIU Varanasi • NHAI Act 1988
+              </div>
+            </div>
+            <span
+              class="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded font-semibold"
+              >Sign In ➜</span
+            >
+          </button>
+
+          <button
+            onclick="quickLogin('MINISTRY_APEX')"
+            class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-red-500/50 transition flex items-center justify-between"
+          >
+            <div>
+              <div class="text-xs font-bold text-white">
+                A. K. Malhotra, IAS, Secretary
+              </div>
+              <div class="text-[10px] text-slate-400">
+                MoRTH / PM GatiShakti Apex Authority
+              </div>
+            </div>
+            <span
+              class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded font-semibold"
+              >Sign In ➜</span
+            >
+          </button>
+        </div>
+
+        <div class="pt-2 text-center">
+          <button
+            onclick="closeLoginModal()"
+            class="text-xs text-slate-400 hover:text-white"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // DATA STORE: 4 Roles with distinct statutory profiles, alerts, and recommendations
+      const ROLES_DATA = {
+        FIELD_REVENUE: {
+          badge: "Tier 1: Cadastral Field Administration",
+          id: "REV-UP-TEH-104",
+          name: "Shri S. K. Verma",
+          designation: "Tehsildar & Sub-Divisional Revenue Officer, Handia",
+          powers: "State Revenue Code / NH Act Sec 3B",
+          jurisdiction: "Tehsil Handia (32 Villages)",
+          disbLimit: "Verification Authority Only",
+          themeColor: "emerald",
+          icon: "📍",
+          alerts: [
+            {
+              id: "ALT-FR-01",
+              level: "CRITICAL",
+              title: "Missing Khasra Mutation Deeds",
+              msg: "14 parcels in Package 2 have disputed succession claims blocking CALA award notice.",
+              time: "12m ago (Server Watchdog)",
+              action: "Dispatch Field Kanoongo",
+            },
+            {
+              id: "ALT-FR-02",
+              level: "WARNING",
+              title: "Joint Measurement Survey (JMS) Pending",
+              msg: "Chainage km 28+200 boundary pillars unverified due to canal embankment overlap.",
+              time: "2h ago (Server Watchdog)",
+              action: "Schedule On-Site Survey",
+            },
+          ],
+          recommendations: [
+            {
+              id: "REC-FR-01",
+              title: "Convene Village Mutation Camp (Khasra #214-#228)",
+              statute: "UP Revenue Code 2006, Sec 34",
+              delayImpact: "-22 Days Delay",
+              desc: "Conduct on-spot hearing for 8 co-sharer families to obtain amicable succession consent before Section 3D declaration.",
+              actionText: "Review Camp Order & e-Sign",
+              financialImpact: "₹0 (Administrative)",
+            },
+            {
+              id: "REC-FR-02",
+              title: "Issue Cadastral Boundary Certification for Package 02",
+              statute: "NH Act 1956, Section 3B",
+              delayImpact: "-15 Days Delay",
+              desc: "Certify unobstructed physical boundary demarcation for 8.4 km linear stretch to enable contractor earthworks.",
+              actionText: "Review Certificate & e-Sign",
+              financialImpact: "₹0 (Statutory Survey)",
+            },
+          ],
+        },
+
+        CALA_TRIBUNAL: {
+          badge: "Tier 2: Statutory Tribunal",
+          id: "CALA-UP-PRY-04",
+          name: "Dr. R. K. Sharma, IAS",
+          designation:
+            "Competent Authority for Land Acquisition (CALA) & ADM (Revenue), Prayagraj",
+          powers: "NH Act Sec 3C, 3D, 3G, 3H",
+          jurisdiction: "District Prayagraj & Mirzapur",
+          disbLimit: "Up to ₹50 Crore / Order",
+          themeColor: "blue",
+          icon: "⚖️",
+          alerts: [
+            {
+              id: "ALT-CALA-01",
+              level: "CRITICAL",
+              title: "Statutory Section 3D Lapse Warning",
+              msg: "Section 3A notification is at 310 days elapsed. 55 days remaining before statutory acquisition lapses under Section 3D(1)!",
+              time: "5m ago (Server Watchdog)",
+              action: "Review Draft Sec 3D Declaration",
+            },
+            {
+              id: "ALT-CALA-02",
+              level: "CRITICAL",
+              title: "Objection Hearing Window Closing",
+              msg: "23 statutory objections under Section 3C require final judicial disposal order within 7 days.",
+              time: "1h ago (Server Watchdog)",
+              action: "Summon CALA Hearing Bench",
+            },
+            {
+              id: "ALT-CALA-03",
+              level: "WARNING",
+              title: "Section 3H Court Escrow Deposit Pending",
+              msg: "₹18.4 Crore compensation contested in Reference Suit #84/2026 must be deposited into court escrow.",
+              time: "4h ago (Server Watchdog)",
+              action: "Issue PFMS Escrow Deposit Order",
+            },
+          ],
+          recommendations: [
+            {
+              id: "REC-CALA-01",
+              title: "Pass Final Section 3G Statutory Compensation Award",
+              statute: "NH Act 1956, Section 3G(1)",
+              delayImpact: "-38 Days Delay",
+              desc: "Authorize formal compensation award of ₹18.45 Crore for 35 undisputed titles in Package 03 to enable physical possession under Section 3E.",
+              actionText: "Review Award Order & e-Sign",
+              financialImpact: "₹18,45,00,000",
+            },
+            {
+              id: "REC-CALA-02",
+              title:
+                "Order Section 3H(4) Court Escrow Transfer for Contested Plots",
+              statute: "NH Act 1956, Section 3H(4)",
+              delayImpact: "-45 Days Delay",
+              desc: "Deposit contested compensation into District Principal Civil Court to legally extinguish landholder injunction and take immediate possession.",
+              actionText: "Review Court Deposit Order & e-Sign",
+              financialImpact: "₹4,20,00,000",
+            },
+          ],
+        },
+
+        NHAI_PD: {
+          badge: "Tier 3: Executive Infrastructure Director",
+          id: "NHAI-PIU-VNS-01",
+          name: "Er. V. P. Singh",
+          designation:
+            "Project Director, NHAI PIU Varanasi / Prayagraj Corridor",
+          powers: "NHAI Act 1988 / EPC Contract Rules",
+          jurisdiction: "NH-19 & Purvanchal Spur (340.8 km)",
+          disbLimit: "Commercial EPC Contracts & Legal Defenses",
+          themeColor: "purple",
+          icon: "🏗️",
+          alerts: [
+            {
+              id: "ALT-PD-01",
+              level: "CRITICAL",
+              title: "High Court Injunction Active on Chainage km 42",
+              msg: "Farmer cooperative secured interim stay on Package 04. Contractor idling claims accumulating at ₹4.5 Lakh/day.",
+              time: "18m ago (Server Watchdog)",
+              action: "Instruct Legal Counsel",
+            },
+            {
+              id: "ALT-PD-02",
+              level: "WARNING",
+              title: "Penal Interest Accrual Warning",
+              msg: "₹412 Crore sitting in court escrow for 1,226 days. Accumulating ₹4.1 Cr/month in 15% statutory penal interest under Sec 34.",
+              time: "3h ago (Server Watchdog)",
+              action: "Expedite Title Scrutiny",
+            },
+          ],
+          recommendations: [
+            {
+              id: "REC-PD-01",
+              title:
+                "File Urgent Counter-Affidavit in High Court (Stay Vacation)",
+              statute: "Article 226 / NH Act Section 3D(2)",
+              delayImpact: "-42 Days Delay",
+              desc: "Submit Section 3D(2) Gazette Notification proving absolute statutory vesting to vacate stay order on Package 04.",
+              actionText: "Review Counter-Affidavit & e-Sign",
+              financialImpact: "₹5,00,000 (Legal)",
+            },
+            {
+              id: "REC-PD-02",
+              title:
+                "Re-Sequence EPC Contractor Earthworks to Cleared Chainages",
+              statute: "FIDIC / EPC Agreement Schedule G",
+              delayImpact: "-28 Days Delay",
+              desc: "Direct contractor machinery to shift from disputed km 42 to 100% encumbrance-free km 48-65 to avoid contractor idling claims.",
+              actionText: "Review Engineer Variation Order & Sign",
+              financialImpact: "Zero Financial Penalty",
+            },
+          ],
+        },
+
+        MINISTRY_APEX: {
+          badge: "Tier 4: Apex Policy & Inter-Ministerial Authority",
+          id: "MORTH-SEC-DEL-01",
+          name: "Shri A. K. Malhotra, IAS",
+          designation:
+            "Secretary, Ministry of Road Transport & Highways (MoRTH)",
+          powers: "Cabinet Rules / PM GatiShakti NPG",
+          jurisdiction: "National Infrastructure Corridor Network",
+          disbLimit: "National Project Budget Allocations",
+          themeColor: "red",
+          icon: "🏛️",
+          alerts: [
+            {
+              id: "ALT-MIN-01",
+              level: "CRITICAL",
+              title: "Corridor Horizon Exceeds Critical Threshold",
+              msg: "Purvanchal Corridor projected delay +123 days exceeding FY milestone. Review required for Cabinet Committee on Infrastructure.",
+              time: "30m ago (Server Watchdog)",
+              action: "Schedule NPG Review",
+            },
+            {
+              id: "ALT-MIN-02",
+              level: "WARNING",
+              title: "Stage-II Forest Clearance Bottleneck",
+              msg: "MoEFCC regional office query pending on 42 hectares reserved forest for 140 days.",
+              time: "5h ago (Server Watchdog)",
+              action: "Escalate to MoEFCC Secretary",
+            },
+          ],
+          recommendations: [
+            {
+              id: "REC-MIN-01",
+              title:
+                "Convene PM GatiShakti Network Planning Group (NPG) Fast-Track",
+              statute: "PM GatiShakti Institutional Framework",
+              delayImpact: "-65 Days Delay",
+              desc: "Summon joint meeting of MoRTH, MoEFCC, and Ministry of Railways for synchronized single-window clearance of forest and rail crossings.",
+              actionText: "Review NPG Memo & Convene",
+              financialImpact: "Policy Coordination",
+            },
+            {
+              id: "REC-MIN-02",
+              title: "Sanction Central Utility-Shifting Emergency Fund",
+              statute: "GatiShakti Infrastructure Budget Allocation",
+              delayImpact: "-35 Days Delay",
+              desc: "Authorize advance release of ₹50 Crore to State Power Transmission Corporation to expedite shifting of 132kV transmission towers.",
+              actionText: "Review Grant Sanction & e-Sign",
+              financialImpact: "₹50,00,00,000",
+            },
+          ],
+        },
+      };
+
+      // Initial Audit Log History
+      let auditLog = [
+        {
+          timestamp: "2026-09-22 13:45:10",
+          officer: "Dr. R. K. Sharma, IAS (CALA)",
+          statute: "NH Act 1956 Sec 3G(1)",
+          action: "Section 3G Award Notice Published (Pkg 03)",
+          financial: "₹18,45,00,000",
+          status: "RECORDED",
+          hash: "DSC:NIC-CA-2026-7f8a9e",
+        },
+        {
+          timestamp: "2026-09-22 12:30:22",
+          officer: "Er. V. P. Singh (NHAI PD)",
+          statute: "NH Act 1956 Sec 3H(4)",
+          action: "Court Escrow Reference Filed (Case #84)",
+          financial: "₹4,20,00,000",
+          status: "FILED",
+          hash: "DSC:NIC-CA-2026-3b12c4",
+        },
+        {
+          timestamp: "2026-09-22 10:15:00",
+          officer: "S. K. Verma (Tehsildar)",
+          statute: "UP Revenue Code Sec 34",
+          action: "Mutation Verified for 24 Khasra Plots",
+          financial: "₹0 (Revenue)",
+          status: "VERIFIED",
+          hash: "DSC:NIC-CA-2026-9c01d2",
+        },
+      ];
+
+      let currentRole = "CALA_TRIBUNAL";
+      let pendingOrderToSign = null;
+
+      // Switch Role Logic
+      function switchRole(roleKey) {
+        currentRole = roleKey;
+        document.getElementById("roleSelector").value = roleKey;
+        renderActiveRole();
+      }
+
+      // Render active role details
+      function renderActiveRole() {
+        const data = ROLES_DATA[currentRole];
+
+        // Update Profile Banner
+        document.getElementById("officerBadge").textContent = data.badge;
+        document.getElementById("officerId").textContent = "ID: " + data.id;
+        document.getElementById("officerName").textContent = data.name;
+        document.getElementById("officerDesignation").textContent =
+          data.designation;
+        document.getElementById("officerPowers").textContent = data.powers;
+        document.getElementById("officerJurisdiction").textContent =
+          data.jurisdiction;
+        document.getElementById("officerDisbLimit").textContent =
+          data.disbLimit;
+        document.getElementById("officerAvatar").textContent = data.icon;
+
+        // Update Alerts (Point 8)
+        document.getElementById("bellBadge").textContent = data.alerts.length;
+        document.getElementById("alertsCountLabel").textContent =
+          data.alerts.length + " Actionable Alerts";
+
+        const alertsList = document.getElementById("alertsList");
+        alertsList.innerHTML = data.alerts
+          .map(
+            (a) => `
+        <div class="group relative p-3.5 rounded-xl bg-slate-800/80 border ${a.level === "CRITICAL" ? "border-red-500/40 bg-red-950/10" : "border-amber-500/40 bg-amber-950/10"} transition hover:border-slate-600 space-y-2 cursor-help" title="🤖 Autonomous Watchdog: Evaluated automatically by server at midnight and pushed via NIC SMS/Email without waiting for human trigger.">
+          
+          <!-- Hover Tooltip Indicator -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${a.level === "CRITICAL" ? "bg-red-500/20 text-red-400 border border-red-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"}">${a.level}</span>
+              <span class="text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">🟢 Auto-Pushed</span>
+            </div>
+            <span class="text-[10px] text-slate-500 font-mono">${a.time}</span>
+          </div>
+
+          <h4 class="text-xs font-bold text-white group-hover:text-indigo-300 transition">${a.title}</h4>
+          <p class="text-[11px] text-slate-300 leading-relaxed">${a.msg}</p>
+          
+          <div class="pt-1 flex items-center justify-between border-t border-slate-700/50">
+            <span class="text-[9px] text-slate-400 font-mono">ID: ${a.id}</span>
+            <button onclick="dispatchAlertMemo('${a.id}', '${a.title}')" class="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/30 transition flex items-center gap-1" title="Officer Escalation Response">
+              <span>📤 Officer Response:</span> ${a.action}
+            </button>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+
+        // Update Recommendations (Point 9)
+        const recsList = document.getElementById("recommendationsList");
+        recsList.innerHTML = data.recommendations
+          .map(
+            (r) => `
+        <div class="p-4 rounded-xl bg-slate-800/80 border border-slate-700/80 hover:border-indigo-500/50 transition space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${r.statute}</span>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">${r.delayImpact}</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">Financial: ${r.financialImpact}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${r.title}</h4>
+          <p class="text-xs text-slate-300 leading-relaxed">${r.desc}</p>
+          <div class="pt-2 flex items-center justify-between border-t border-slate-700/50">
+            <span class="text-[10px] text-slate-400 font-mono">AI Prescriptive Confidence: 94.2%</span>
+            <button onclick="openOrderModal('${r.id}', '${r.title}', '${r.statute}', '${r.financialImpact}', '${r.desc.replace(/'/g, "\\'")}')" class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-lg transition flex items-center gap-1.5">
+              <span>📝</span> ${r.actionText}
+            </button>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      // Open e-Office Order Review Modal (Point 9 & Constitutional Human-in-the-Loop)
+      function openOrderModal(id, title, statute, financial, desc) {
+        const active = ROLES_DATA[currentRole];
+        pendingOrderToSign = { id, title, statute, financial, desc };
+
+        document.getElementById("modalOrderTitle").textContent = title;
+        document.getElementById("modalFileNo").textContent =
+          `E-OFFICE/LA/${Date.now().toString().slice(-6)}`;
+        document.getElementById("modalStatute").textContent = statute;
+        document.getElementById("modalOfficer").textContent = active.name;
+        document.getElementById("modalFinancial").textContent = financial;
+        document.getElementById("modalOrderBody").textContent = desc;
+
+        document.getElementById("orderReviewModal").classList.remove("hidden");
+      }
+
+      function closeOrderModal() {
+        document.getElementById("orderReviewModal").classList.add("hidden");
+        pendingOrderToSign = null;
+      }
+
+      // Confirm Digital Signature (Commits to Audit Trail Point 12)
+      function confirmDigitalSignature() {
+        if (!pendingOrderToSign) return;
+        const active = ROLES_DATA[currentRole];
+        const now = new Date();
+        const timeStr = now.toISOString().replace("T", " ").substring(0, 19);
+        const tokenHash =
+          "DSC:NIC-CA-2026-" +
+          Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        const newEntry = {
+          timestamp: timeStr,
+          officer: `${active.name} (${active.badge.split(":")[1].trim()})`,
+          statute: pendingOrderToSign.statute,
+          action: pendingOrderToSign.title,
+          financial: pendingOrderToSign.financial,
+          status: "DIGITALLY_SIGNED",
+          hash: tokenHash,
+        };
+
+        auditLog.unshift(newEntry);
+        renderAuditTable();
+        closeOrderModal();
+
+        alert(
+          `✅ STATUTORY ORDER OFFICIALLY SIGNED & GAZETTED!\n\nOrder: ${newEntry.action}\nStatute: ${newEntry.statute}\nDigital Signature (DSC): ${tokenHash}\nOfficer: ${active.name}\n\nThe order has been transmitted to PFMS for banking disbursement and recorded into the immutable Statutory Audit Trail (Point 12).`,
+        );
+      }
+
+      // Dispatch Alert Memo
+      function dispatchAlertMemo(id, title) {
+        const active = ROLES_DATA[currentRole];
+        alert(
+          `📤 OFFICIAL ESCALATION TRANSMITTED (Point 8 Response)\n\nAlert ID: ${id}\nSubject: ${title}\nAction Taken By: ${active.name} (${active.designation})\n\nDispatched through NIC e-Office communication network.`,
+        );
+      }
+
+      // Render Audit Table
+      function renderAuditTable() {
+        const tbody = document.getElementById("auditTableBody");
+        tbody.innerHTML = auditLog
+          .map(
+            (row) => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${row.timestamp}</td>
+          <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap">${row.officer}</td>
+          <td class="py-2.5 px-3 text-indigo-300 whitespace-nowrap">${row.statute}</td>
+          <td class="py-2.5 px-3 text-slate-200">${row.action}</td>
+          <td class="py-2.5 px-3 text-emerald-400 whitespace-nowrap">${row.financial}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${row.status === "DIGITALLY_SIGNED" ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-blue-500/20 text-blue-300 border border-blue-500/30"}">${row.status}</span>
+          </td>
+          <td class="py-2.5 px-3 text-right text-slate-400 font-mono text-[10px]">${row.hash}</td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      function clearAuditTrail() {
+        if (
+          confirm(
+            "Clear local audit log view? (Statutory ledger remains in database)",
+          )
+        ) {
+          auditLog = [];
+          renderAuditTable();
+        }
+      }
+
+      function exportAuditTrail() {
+        const dataStr =
+          "data:text/json;charset=utf-8," +
+          encodeURIComponent(JSON.stringify(auditLog, null, 2));
+        const a = document.createElement("a");
+        a.setAttribute("href", dataStr);
+        a.setAttribute("download", `statutory_audit_ledger_${Date.now()}.json`);
+        a.click();
+      }
+
+      // SSO Modal Logic
+      function openLoginModal() {
+        document.getElementById("loginModal").classList.remove("hidden");
+      }
+      function closeLoginModal() {
+        document.getElementById("loginModal").classList.add("hidden");
+      }
+      function quickLogin(roleKey) {
+        switchRole(roleKey);
+        closeLoginModal();
+      }
+
+      function toggleAlertsModal() {
+        const data = ROLES_DATA[currentRole];
+        alert(
+          `🔔 AUTONOMOUS ALERTS FOR ${data.name.toUpperCase()}:\n\n` +
+            data.alerts
+              .map(
+                (a, i) =>
+                  `${i + 1}. [${a.level}] ${a.title}\n   ${a.msg}\n   Timestamp: ${a.time}\n`,
+              )
+              .join("\n"),
+        );
+      }
+
+      // Initialize on Load
+      renderActiveRole();
+      renderAuditTable();
+    </script>
+  </body>
+</html>

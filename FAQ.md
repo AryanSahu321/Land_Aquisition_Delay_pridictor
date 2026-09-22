@@ -166,7 +166,8 @@ Card 5 visualizes how fast court cases, title disputes, and environmental object
 ```
 
 #### 1. Why is it called a "Survival Curve" $S(t)$? (The Real-World Analogy):
-- In **medical science**, a survival curve tracks what fraction of patients are *still alive* after diagnosis.
+
+- In **medical science**, a survival curve tracks what fraction of patients are _still alive_ after diagnosis.
 - In **Infrastructure & Indian Law**:
   - The **"Subject"** is the **Court Case / Forest Clearance Objection**.
   - The **"Event" (Death of the problem)** = The dispute is **Settled, Cleared & Closed**.
@@ -174,26 +175,30 @@ Card 5 visualizes how fast court cases, title disputes, and environmental object
   - Therefore: **High Survival = Problems still pending. Low Survival = Disputes successfully cleared.**
 
 #### 2. How to Read the Axes:
+
 - **Horizontal Axis (Months Elapsed $t$)**: Time in months since the legal disputes or forest objections were formally lodged (from Month 0 to Month 36).
 - **Vertical Axis (Survival Probability $S(t)$)**: The percentage of disputes that remain **unresolved / pending** in court at that point in time.
 
 #### 3. What does Month 0 mean?
+
 - At **Month 0**: $S(0) = 100\%$.
 - When cases are first filed, **100% of disputes are still alive and unresolved**.
 
 #### 4. What does the Month 6 Tooltip mean?
+
 - **Month 6**: 6 months have elapsed since filings.
 - **Survival Probability $S(t) = 48.7\%$**: Only 48.7% of disputes are still lingering in court.
 - **Dispute Clearance = $51.3\%$**: More than half (**51.3%**) of the disputes have already been settled and cleared by the Competent Authority and District Court!
 
 #### 5. What does the Orange Dotted Line ("Median Clearance: 5.8 mos") mean?
+
 - The **Median** is the exact 50% milestone.
 - At **5.8 months**, exactly half (50%) of all legal disputes and environmental objections are resolved.
-- **In Plain English**: *"Within ~6 months, you can expect half of your legal disputes to be liquidated."*
+- **In Plain English**: _"Within ~6 months, you can expect half of your legal disputes to be liquidated."_
 - By Month 12: Only ~23% remain pending.
 - By Month 24–36: The curve approaches ~0% (the difficult 'long-tail' cases are fully resolved).
 
 #### 6. Why is this card invaluable for Project Directors & Engineers?
-- Instead of guessing in the dark *"When will the court cases finish?"*, our AI engine uses historical court disposal velocity (Kaplan-Meier survival statistics) across similar corridors.
-- It gives project authorities an **actuarial, mathematically verified timeline** of when land will be 100% clear of litigation, allowing them to time contractor mobilization, schedule blacktop paving, and prevent interest penalties.
 
+- Instead of guessing in the dark _"When will the court cases finish?"_, our AI engine uses historical court disposal velocity (Kaplan-Meier survival statistics) across similar corridors.
+- It gives project authorities an **actuarial, mathematically verified timeline** of when land will be 100% clear of litigation, allowing them to time contractor mobilization, schedule blacktop paving, and prevent interest penalties.
