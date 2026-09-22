@@ -38,15 +38,17 @@ function MapController({ center, zoom }) {
 
 export default function CorridorMap({
   corridorData,
+  corridorGeojson,
   selectedParcel,
   onSelectParcel,
   onOpenSimulation,
 }) {
+  const data = corridorData || corridorGeojson;
   const [mapCenter, setMapCenter] = useState([25.463, 81.922]);
   const [mapZoom, setMapZoom] = useState(13);
   const [filterRisk, setFilterRisk] = useState("ALL");
 
-  if (!corridorData || !corridorData.features) {
+  if (!data || !data.features || data.features.length === 0) {
     return (
       <div className="h-[520px] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-slate-400">
         <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-2"></div>
@@ -215,7 +217,7 @@ export default function CorridorMap({
             />
             <GeoJSON
               key={`corridor-${filterRisk}-${selectedParcel?.parcel_id || "none"}`}
-              data={corridorData}
+              data={data}
               style={geojsonStyle}
               onEachFeature={onEachFeature}
             />
