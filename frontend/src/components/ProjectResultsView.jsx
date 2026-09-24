@@ -21,11 +21,17 @@ import {
   Check,
   Info,
   Car,
+  Globe,
+  Server,
+  Zap,
+  Cpu,
 } from "lucide-react";
 import ReactECharts from "echarts-for-react";
 import CorridorMap from "./CorridorMap";
+import ApiGatewayModal from "./ApiGatewayModal";
 
 export default function ProjectResultsView({ projectData, onBackToSearch }) {
+  const [isApiModalOpen, setIsApiModalOpen] = useState(false);
   const [feedbackStage, setFeedbackStage] = useState(
     projectData?.lifecycle_stages?.find((s) => s.is_current)?.stage_id ||
       "Section_3D/19_Declaration",
@@ -965,6 +971,124 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
         </div>
 
         {/* ================================================================= */}
+        {/* CARD 8: Government Data Lake & System Integration (Point 11) */}
+        {/* ================================================================= */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-xs">
+                8
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm sm:text-base font-bold text-white">
+                    Government Data Lake &amp; System Integration Gateway
+                  </h2>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    Point 11 Standard
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  APIs for integration with existing land acquisition management
+                  systems (NHAI Data Lake, PM GatiShakti, BhoomiRashi).
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsApiModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            >
+              <Zap className="w-4 h-4 text-amber-300" />
+              <span>Provision Ministry API Key &amp; Swagger Docs</span>
+            </button>
+          </div>
+
+          {/* 4 Active Integration Badges Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0">
+                <Globe className="w-4 h-4 text-blue-400" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-white">
+                    MoRTH BhoomiRashi
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                </div>
+                <span className="text-[10px] text-emerald-400 font-mono block">
+                  CONNECTED (RFC 7946)
+                </span>
+                <p className="text-[10px] text-slate-400">
+                  Section 3A/3D Cadastral Ingestion Gateway
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center shrink-0">
+                <Server className="w-4 h-4 text-indigo-400" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-white">
+                    NHAI Central Data Lake
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                </div>
+                <span className="text-[10px] text-emerald-400 font-mono block">
+                  ACTIVE (Argon2id Key)
+                </span>
+                <p className="text-[10px] text-slate-400">
+                  Sub-second ML Delay Inference &amp; SHAP
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center shrink-0">
+                <Layers className="w-4 h-4 text-sky-400" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-white">
+                    PM GatiShakti NMP
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                </div>
+                <span className="text-[10px] text-emerald-400 font-mono block">
+                  SYNCED (BISAG-N)
+                </span>
+                <p className="text-[10px] text-slate-400">
+                  120m Corridor Right-of-Way GIS Buffers
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0">
+                <Cpu className="w-4 h-4 text-purple-400" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-white">
+                    PFMS Treasury DBT
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                </div>
+                <span className="text-[10px] text-emerald-400 font-mono block">
+                  SYNCED (Bank Mandate)
+                </span>
+                <p className="text-[10px] text-slate-400">
+                  Direct Farmer Compensation &amp; Escrow Tracking
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ================================================================= */}
         {/* Continuous Active Learning Feedback Widget */}
         {/* ================================================================= */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
@@ -1053,6 +1177,12 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
             </div>
           </form>
         </div>
+
+        {/* Point 11: Developer & Government API Gateway Modal */}
+        <ApiGatewayModal
+          isOpen={isApiModalOpen}
+          onClose={() => setIsApiModalOpen(false)}
+        />
       </div>
     </div>
   );

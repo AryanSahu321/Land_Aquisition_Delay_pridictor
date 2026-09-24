@@ -1,0 +1,113 @@
+[
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-CE2B6B27",
+    "key_prefix": "lpad_live_ce2b6b27",
+    "agency": "NHAI Central HQ",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790184751.326119,
+    "iso_time": "2026-09-23T17:32:31Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-33A52DCD",
+    "key_prefix": "lpad_live_33a52dcd",
+    "agency": "NHAI Central Data Lake",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790184751.5098546,
+    "iso_time": "2026-09-23T17:32:31Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-937DEC55",
+    "key_prefix": "lpad_live_937dec55",
+    "agency": "NHAI Central Data Lake",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790185188.2250803,
+    "iso_time": "2026-09-23T17:39:48Z"
+  },
+  {
+    "action": "DOMAIN_RESTRICTED",
+    "prefix": "lpad_live_937dec55",
+    "domain": "https://malicious-site.com",
+    "timestamp": 1790185188.8512318,
+    "iso_time": "2026-09-23T17:39:48Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-88265267",
+    "key_prefix": "lpad_live_88265267",
+    "agency": "NHAI",
+    "scopes": [
+      "predict"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790211083.2603502,
+    "iso_time": "2026-09-24T00:51:23Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-9482C6DE",
+    "key_prefix": "lpad_live_9482c6de",
+    "agency": "NHAI",
+    "scopes": [
+      "predict"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790211097.9093053,
+    "iso_time": "2026-09-24T00:51:37Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-DA329F18",
+    "key_prefix": "lpad_live_da329f18",
+    "agency": "NHAI",
+    "scopes": [
+      "predict"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790211119.1138508,
+    "iso_time": "2026-09-24T00:51:59Z"
+  },
+  {
+    "action": "DOMAIN_RESTRICTED",
+    "prefix": "lpad_live_da329f18",
+    "domain": "https://unauthorized-domain.com",
+    "timestamp": 1790211119.3219686,
+    "iso_time": "2026-09-24T00:51:59Z"
+  },
+  {
+    "action": "KEY_GENERATED",
+    "key_id": "KEY-08635CA7",
+    "key_prefix": "lpad_live_08635ca7",
+    "agency": "NHAI",
+    "scopes": [
+      "predict"
+    ],
+    "encryption": "Argon2id (RFC 9106)",
+    "timestamp": 1790211131.4690688,
+    "iso_time": "2026-09-24T00:52:11Z"
+  },
+  {
+    "action": "IP_RESTRICTED",
+    "prefix": "lpad_live_08635ca7",
+    "ip": "49.36.12.99",
+    "timestamp": 1790211131.7314737,
+    "iso_time": "2026-09-24T00:52:11Z"
+  }
+]

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import ProjectSearchLanding from "./components/ProjectSearchLanding";
 import ProjectResultsView from "./components/ProjectResultsView";
-import { Compass, ArrowLeft, Database, ShieldCheck } from "lucide-react";
+import ApiGatewayModal from "./components/ApiGatewayModal";
+import { Compass, ArrowLeft, Database, ShieldCheck, Zap } from "lucide-react";
 
 export default function App() {
   const [view, setView] = useState("search"); // 'search' | 'results'
   const [selectedProjectData, setSelectedProjectData] = useState(null);
+  const [isApiGatewayOpen, setIsApiGatewayOpen] = useState(false);
 
   const handleProjectSelected = (data) => {
     setSelectedProjectData(data);
@@ -44,8 +46,21 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Action: Back to Search if in Results view */}
-          <div className="flex items-center gap-3">
+          {/* Right Action: API Gateway Trigger + Back to Search / DB Status */}
+          <div className="flex items-center gap-2.5">
+            {/* Global Point 11 API Gateway Trigger */}
+            <button
+              onClick={() => setIsApiGatewayOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-indigo-500/50 cursor-pointer"
+              title="Point 11: Government & Developer API Integration Gateway"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>API Gateway</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Point 11
+              </span>
+            </button>
+
             {view === "results" ? (
               <button
                 onClick={handleBackToSearch}
@@ -55,7 +70,7 @@ export default function App() {
                 <span>Back to Search</span>
               </button>
             ) : (
-              <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 font-mono">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 font-mono">
                 <Database className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-slate-300">Central Database Ready</span>
               </div>
@@ -75,6 +90,12 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Point 11: Developer & Government API Gateway Modal */}
+      <ApiGatewayModal
+        isOpen={isApiGatewayOpen}
+        onClose={() => setIsApiGatewayOpen(false)}
+      />
     </div>
   );
 }

@@ -1,0 +1,170 @@
+{
+  "lpad_live_ce2b6b27": {
+    "key_id": "KEY-CE2B6B27",
+    "name": "NHAI PM GatiShakti Portal Gateway",
+    "agency": "NHAI Central HQ",
+    "environment": "live",
+    "key_prefix": "lpad_live_ce2b6b27",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$u0MpLVq/oTPc81NDOUT6eQ$BITHjUvtxdtyVal444vjdELdHMrKHArMZ5SEYVmbPLc",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "*.nhai.gov.in",
+      "*.morth.nic.in",
+      "localhost*",
+      "127.0.0.1*"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "morth_central",
+    "rate_limit_per_min": 1200,
+    "created_at": "2026-09-23T17:32:31Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_33a52dcd": {
+    "key_id": "KEY-33A52DCD",
+    "name": "Test Key",
+    "agency": "NHAI Central Data Lake",
+    "environment": "live",
+    "key_prefix": "lpad_live_33a52dcd",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$qLth91HiHZBvNm0+HOcszw$nWp2ErTp9vPTXzzPPobur8/3qehSgCsMSpiDNdCEjRE",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "*.nhai.gov.in",
+      "*.morth.nic.in"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "cala_district",
+    "rate_limit_per_min": 60,
+    "created_at": "2026-09-23T17:32:31Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_937dec55": {
+    "key_id": "KEY-937DEC55",
+    "name": "NHAI Automated Test",
+    "agency": "NHAI Central Data Lake",
+    "environment": "live",
+    "key_prefix": "lpad_live_937dec55",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$sFiWYfaJowtb9UMRd20jPw$XHXr94lyO72QFw1UywS7mygJnKL60HwCr4e6PBf8e6Q",
+    "scopes": [
+      "predict:delay",
+      "gis:corridor",
+      "cadastral:read"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "*.nhai.gov.in",
+      "localhost*"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "cala_district",
+    "rate_limit_per_min": 60,
+    "created_at": "2026-09-23T17:39:48Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_88265267": {
+    "key_id": "KEY-88265267",
+    "name": "NHAI Portal",
+    "agency": "NHAI",
+    "environment": "live",
+    "key_prefix": "lpad_live_88265267",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$xwXQt3+qGG90WcNnCwBPrg$YzHaY9ER+/gCpIC6gXNGo6H8ZaxPSLYjPVImHub7JDA",
+    "scopes": [
+      "predict"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "https://*.nhai.gov.in/*"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "morth_central",
+    "rate_limit_per_min": 1200,
+    "created_at": "2026-09-24T00:51:23Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_9482c6de": {
+    "key_id": "KEY-9482C6DE",
+    "name": "NHAI Portal",
+    "agency": "NHAI",
+    "environment": "live",
+    "key_prefix": "lpad_live_9482c6de",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$nhoFUajs2ZFtKYmGsJLLyg$/mD+4gjmtcQ/OSqVKuOnoT29e7D3qAbjx5L+7Ew/osc",
+    "scopes": [
+      "predict"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "https://*.nhai.gov.in/*"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "morth_central",
+    "rate_limit_per_min": 1200,
+    "created_at": "2026-09-24T00:51:37Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_da329f18": {
+    "key_id": "KEY-DA329F18",
+    "name": "NHAI Portal",
+    "agency": "NHAI",
+    "environment": "live",
+    "key_prefix": "lpad_live_da329f18",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$3MAxfmoRN5pdhLvC7iRSbQ$mqtb6777KmbPBi8VUcUKvjY7s0RencXSsDjx1w2KqDk",
+    "scopes": [
+      "predict"
+    ],
+    "restriction_type": "referrer",
+    "allowed_referrers": [
+      "https://*.nhai.gov.in/*"
+    ],
+    "allowed_ips": [],
+    "rate_tier": "morth_central",
+    "rate_limit_per_min": 1200,
+    "created_at": "2026-09-24T00:51:59Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  },
+  "lpad_live_08635ca7": {
+    "key_id": "KEY-08635CA7",
+    "name": "NIC Server",
+    "agency": "NHAI",
+    "environment": "live",
+    "key_prefix": "lpad_live_08635ca7",
+    "hashed_secret": "$argon2id$v=19$m=65536,t=2,p=2$wzLtI0bknzQ+mx7MLUoAEA$oqR231/v2XNDABd0X8HK4zhRIddChjJjIzFVnjO1Tss",
+    "scopes": [
+      "predict"
+    ],
+    "restriction_type": "ip",
+    "allowed_referrers": [
+      "*.nhai.gov.in",
+      "*.morth.nic.in"
+    ],
+    "allowed_ips": [
+      "164.100.24.0/24"
+    ],
+    "rate_tier": "morth_central",
+    "rate_limit_per_min": 1200,
+    "created_at": "2026-09-24T00:52:11Z",
+    "last_used_at": null,
+    "total_requests": 0,
+    "is_active": true
+  }
+}
