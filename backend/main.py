@@ -1296,13 +1296,12 @@ def get_project_search_options():
 
 
 @app.post("/api/v1/projects/parse-and-predict")
-def project_parse_and_predict(req: ProjectQueryRequest, compact: Optional[bool] = False):
+def project_parse_and_predict(req: ProjectQueryRequest):
     """
     Decoupled Model Inference Gateway:
     Connects DIRECTLY to Central Database (searched_projects.csv) — zero PDF parsing latency.
-    Runs XGBoost + LightGBM ensemble, TreeSHAP factor attribution.
-    - Set ?compact=true for clean 20-line integration payload.
-    - Defaults to comprehensive data for all 7 cards in the All-in-One view.
+    Runs XGBoost + LightGBM ensemble, TreeSHAP factor attribution,
+    and returns comprehensive data for all 7 cards in the All-in-One view.
     """
     start_t = time.perf_counter()
     repo = DATA_STORE.get("repo")
@@ -1551,28 +1550,6 @@ def project_parse_and_predict(req: ProjectQueryRequest, compact: Optional[bool] 
         "ocr_parser_invoked": False,
         "storage_mode": "PostgreSQL-Ready Storage Engine"
     }
-
-    # Lightweight / Compact Mode for Developer Gateways
-    if compact:
-        return {
-            "status": "SUCCESS",
-            "project": {
-                "project_name": str(proj.get("project_name", req.project_name)),
-                "total_km": total_km,
-                "packages_count": pkg_count
-            },
-            "risk_stratification": {
-                "overall_delay_probability": risk_stratification["delay_probability"],
-                "risk_category": risk_stratification["risk_category"]
-            },
-            "statutory_liquidation": {
-                "predicted_clearance_days": predicted_delay,
-                "predicted_clearance_window": f"+{max(30, predicted_delay - 25)} to +{predicted_delay + 35} Days"
-            },
-            "statutory_milestones": [
-                {"stage_id": s["stage_id"], "status": s["status"]} for s in lifecycle_stages[:4]
-            ]
-        }
 
     return {
         "project": {

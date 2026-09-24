@@ -261,14 +261,9 @@ Everything can be demonstrated either:
 
 ### Test 2.2: Live AI Model Inference (`POST /api/v1/projects/parse-and-predict`)
 
-> **Note on Output Length:**  
-> - By default, this endpoint powers the entire web application and returns data for **all 7 dashboard cards** (including 25 GeoJSON map polygon coordinates, 8 package breakdowns, and TreeSHAP trees).  
-> - To get the **clean, compact 20-line integration payload**, set the `compact` query parameter to **`true`**!
-
 1. Click on **`POST /api/v1/projects/parse-and-predict`**.
 2. Click **`Try it out`**.
-3. Under Parameters $\rightarrow$ **`compact`**, select or type: **`true`**.
-4. In the **Request body** text area, paste this pre-tested example:
+3. In the **Request body** text area, paste this exact pre-tested example:
 
 ```json
 {
@@ -278,8 +273,10 @@ Everything can be demonstrated either:
 }
 ```
 
-5. Click **`Execute`**.
-6. **Desired Compact Output (`Code: 200`):**
+4. Click **`Execute`**.
+5. **Desired Output:**
+   - **Code:** `200`
+   - **Response Body:**
 
 ```json
 {
@@ -290,23 +287,21 @@ Everything can be demonstrated either:
     "packages_count": 8
   },
   "risk_stratification": {
-    "overall_delay_probability": 0.591,
-    "risk_category": "Medium"
+    "overall_delay_probability": 0.824,
+    "risk_category": "HIGH RISK"
   },
   "statutory_liquidation": {
-    "predicted_clearance_days": 123,
-    "predicted_clearance_window": "+98 to +158 Days"
+    "predicted_clearance_days": 68,
+    "predicted_clearance_window": "+43 to +103 Days"
   },
   "statutory_milestones": [
     { "stage_id": "Section_3A_Notification", "status": "COMPLETED" },
-    { "stage_id": "Section_3B_Survey", "status": "COMPLETED" },
     { "stage_id": "Section_3C_Objections", "status": "COMPLETED" },
-    { "stage_id": "Section_3D/19_Declaration", "status": "COMPLETED" }
+    { "stage_id": "Section_3D/19_Declaration", "status": "COMPLETED" },
+    { "stage_id": "Section_3G/23_Award", "status": "IN_PROGRESS" }
   ]
 }
 ```
-
-*(If you leave `compact` as `false`, it returns the full 800-line dataset with all 25 map parcel polygons for the Leaflet satellite map!)*
 
 ---
 
