@@ -114,7 +114,8 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
         setTestLatency(Math.round(performance.now() - startT) || 34);
         setTestStatus(401);
         setTestResponse({
-          detail: "Unauthorized: Invalid or revoked API Key Token (Argon2id Check Failed)",
+          detail:
+            "Unauthorized: Invalid or revoked API Key Token (Argon2id Check Failed)",
           status_code: 401,
           hint: "Tampered key 'lpad_live_fake_tampered_key_999' rejected by Gateway shield.",
           cryptographic_engine: "Argon2id (RFC 9106) Memory-Hard Verification",
@@ -175,52 +176,72 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
           key_granted_scopes: provisionedScopes,
           required_scope_for_endpoint: currentEp.scope,
           attempted_endpoint: currentEp.path,
-          statutory_authority: "MoRTH Data Governance Framework 2024 & RFCTLARR Act 2013",
+          statutory_authority:
+            "MoRTH Data Governance Framework 2024 & RFCTLARR Act 2013",
           resolution: `To use '${currentEp.name}', navigate to the 'Key Provisioning & Shield' tab, enable the '${currentEp.scope}' checkbox, and click 'Generate New Key'.`,
           security_shield: "Active RBAC Scope Enforcement",
         });
         return;
       }
 
-      // User HAS permission: Perform the real live call
+      // User HAS permission: Perform the real live call with fast timeout
       let res;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+
       try {
         if (currentEp.id === "cadastral") {
           res = await fetch(
             "https://land-delay-api.onrender.com/api/v1/gateway/cadastral-records?project_name=Purvanchal+Expressway",
-            { headers: { "X-API-Key": generatedKey } }
+            { headers: { "X-API-Key": generatedKey }, signal: controller.signal },
           );
         } else if (currentEp.id === "gis") {
           res = await fetch(
             "https://land-delay-api.onrender.com/api/v1/gateway/gis-corridor?project_name=Purvanchal+Expressway&buffer_meters=120",
-            { headers: { "X-API-Key": generatedKey } }
+            { headers: { "X-API-Key": generatedKey }, signal: controller.signal },
           );
         } else if (currentEp.id === "survey") {
           res = await fetch(
             "https://land-delay-api.onrender.com/api/v1/gateway/ingest-survey",
             {
               method: "POST",
-              headers: { "Content-Type": "application/json", "X-API-Key": generatedKey },
-              body: JSON.stringify({ flight_id: "UAV-NHAI-UP-2026-9941", dgps_points_count: 18450 }),
-            }
+              headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": generatedKey,
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                flight_id: "UAV-NHAI-UP-2026-9941",
+                dgps_points_count: 18450,
+              }),
+            },
           );
         } else {
           // 'predict' endpoint
-          res = await fetch("https://land-delay-api.onrender.com/api/v1/gateway/predict", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-API-Key": generatedKey },
-            body: JSON.stringify({
-              project_name: "Purvanchal Expressway",
-              state: "Uttar Pradesh",
-              total_km: 340.8,
-              packages_count: 8,
-              disbursed_pct: 72.0,
-              court_cases_count: 6,
-              forest_clearance_stage: "STAGE_1_APPROVED",
-            }),
-          });
+          res = await fetch(
+            "https://land-delay-api.onrender.com/api/v1/gateway/predict",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": generatedKey,
+              },
+              signal: controller.signal,
+              body: JSON.stringify({
+                project_name: "Purvanchal Expressway",
+                state: "Uttar Pradesh",
+                total_km: 340.8,
+                packages_count: 8,
+                disbursed_pct: 72.0,
+                court_cases_count: 6,
+                forest_clearance_stage: "STAGE_1_APPROVED",
+              }),
+            },
+          );
         }
+        clearTimeout(timeoutId);
       } catch {
+        clearTimeout(timeoutId);
         res = null;
       }
 
@@ -275,7 +296,7 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
               village: "Barabanki Dehat",
               tehsil: "Nawabganj",
               district: "Barabanki",
-              area_hectares: 2.10,
+              area_hectares: 2.1,
               land_type: "Gram Sabha / Community Pasture",
               solatium_multiplier: "N/A (Inter-Govt Transfer)",
               compensation_status: "EXEMPTED_NO_OBJECTION_ISSUED",
@@ -296,7 +317,8 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
           audit_receipt: {
             encryption: "Argon2id (RFC 9106) Verified",
             timestamp: new Date().toISOString(),
-            statutory_compliance: "RFCTLARR Act 2013 & NH Act 1956 Section 3G/3H",
+            statutory_compliance:
+              "RFCTLARR Act 2013 & NH Act 1956 Section 3G/3H",
           },
         });
       } else if (currentEp.id === "gis") {
@@ -306,7 +328,8 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
           scope_verified: "gis:corridor",
           caller_agency: agency,
           key_prefix: generatedKey.split("_").slice(0, 3).join("_"),
-          corridor_alignment: "Purvanchal Expressway RoW Corridor (Ch. 0+000 to Ch. 340+800)",
+          corridor_alignment:
+            "Purvanchal Expressway RoW Corridor (Ch. 0+000 to Ch. 340+800)",
           row_width_meters: 120.0,
           geojson_standard: "RFC 7946 Polygon & MultiLineString",
           spatial_features_count: 18,
@@ -366,7 +389,10 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
             survival_clearance_window: "+43 to +103 Days",
             top_shap_factors: [
               { feature: "sec_3h_escrow_deposited", impact_days: "+24.5 Days" },
-              { feature: "compensation_disbursed_pct", impact_days: "+18.2 Days" },
+              {
+                feature: "compensation_disbursed_pct",
+                impact_days: "+18.2 Days",
+              },
               { feature: "forest_clearance_stage", impact_days: "+14.0 Days" },
             ],
             prescriptive_action: {
@@ -399,12 +425,45 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
 
   const handleGenerateKey = async () => {
     setIsGenerating(true);
+    const activeScopes = Object.keys(scopes).filter((k) => scopes[k]);
+
+    // 1. Instant Cryptographic Key Generation via Web Crypto API (RFC 9106)
+    const prefixBytes = new Uint8Array(4);
+    window.crypto.getRandomValues(prefixBytes);
+    const prefixHex = Array.from(prefixBytes, (b) =>
+      b.toString(16).padStart(2, "0"),
+    ).join("");
+
+    const secretBytes = new Uint8Array(32);
+    window.crypto.getRandomValues(secretBytes);
+    const secretStr = Array.from(secretBytes, (b) =>
+      b.toString(36).padStart(2, "0"),
+    )
+      .join("")
+      .substring(0, 48);
+
+    const envStr = environment.toLowerCase() === "live" ? "live" : "test";
+    const instantKey = `lpad_${envStr}_${prefixHex}_${secretStr}`;
+
+    // Update state IMMEDIATELY (Zero Waiting Time!)
+    setGeneratedKey(instantKey);
+    setProvisionedScopes(activeScopes);
+
+    // Keep brief 250ms pleasant visual feedback so user sees the refresh icon react
+    setTimeout(() => {
+      setIsGenerating(false);
+    }, 250);
+
+    // 2. Non-blocking background sync to Render server (with 2.5s timeout)
     try {
-      const activeScopes = Object.keys(scopes).filter((k) => scopes[k]);
-      const res = await fetch(
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      fetch(
         "https://land-delay-api.onrender.com/api/v1/gateway/keys/generate",
         {
           method: "POST",
+          signal: controller.signal,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: keyName,
@@ -423,29 +482,21 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
             rate_tier: rateTier,
           }),
         },
-      );
-
-      if (res.ok) {
-        const data = await res.json();
-        setGeneratedKey(data.raw_api_key_shown_once);
-      } else {
-        // Fallback local key generation if backend is offline
-        const randPrefix = Math.random().toString(16).substring(2, 10);
-        const randSecret = Array.from(
-          { length: 48 },
-          () => Math.random().toString(36)[2] || "x",
-        ).join("");
-        setGeneratedKey(`lpad_${environment}_${randPrefix}_${randSecret}`);
-      }
+      )
+        .then((res) => {
+          clearTimeout(timeoutId);
+          if (res && res.ok) return res.json();
+        })
+        .then((data) => {
+          if (data?.raw_api_key_shown_once) {
+            setGeneratedKey(data.raw_api_key_shown_once);
+          }
+        })
+        .catch(() => {
+          // Handled gracefully in background without blocking UI
+        });
     } catch {
-      const randPrefix = Math.random().toString(16).substring(2, 10);
-      const randSecret = Array.from(
-        { length: 48 },
-        () => Math.random().toString(36)[2] || "x",
-      ).join("");
-      setGeneratedKey(`lpad_${environment}_${randPrefix}_${randSecret}`);
-    } finally {
-      setIsGenerating(false);
+      // Non-blocking catch
     }
   };
 
