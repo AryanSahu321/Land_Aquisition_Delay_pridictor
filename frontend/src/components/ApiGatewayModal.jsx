@@ -193,12 +193,18 @@ export default function ApiGatewayModal({ isOpen, onClose }) {
         if (currentEp.id === "cadastral") {
           res = await fetch(
             "https://land-delay-api.onrender.com/api/v1/gateway/cadastral-records?project_name=Purvanchal+Expressway",
-            { headers: { "X-API-Key": generatedKey }, signal: controller.signal },
+            {
+              headers: { "X-API-Key": generatedKey },
+              signal: controller.signal,
+            },
           );
         } else if (currentEp.id === "gis") {
           res = await fetch(
             "https://land-delay-api.onrender.com/api/v1/gateway/gis-corridor?project_name=Purvanchal+Expressway&buffer_meters=120",
-            { headers: { "X-API-Key": generatedKey }, signal: controller.signal },
+            {
+              headers: { "X-API-Key": generatedKey },
+              signal: controller.signal,
+            },
           );
         } else if (currentEp.id === "survey") {
           res = await fetch(
