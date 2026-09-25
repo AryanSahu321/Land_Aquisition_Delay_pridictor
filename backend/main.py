@@ -810,7 +810,7 @@ def predict_parcel_risk(input_data: ParcelInput):
     pred = compute_prediction(rec_dict)
     delay = pred["predicted_delay_days"]
 
-    if delay > 30:
+    if delay > 10:
         try:
             project_name = getattr(input_data, "parcel_id", None) or "Parcel Evaluation"
             send_delay_alert(project_name, delay)
@@ -1363,7 +1363,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     confidence_score = pred["confidence_score"]
 
     delay = predicted_delay
-    if delay > 30:
+    if delay > 10:
         try:
             project_name = proj.get("project_name", req.project_name)
             send_delay_alert(project_name, delay)
