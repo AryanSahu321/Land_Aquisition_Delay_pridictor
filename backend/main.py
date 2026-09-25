@@ -44,6 +44,11 @@ from mock_data import (
 )
 from etl_pipeline import etl_pipeline
 from document_engine.storage import ProjectDatabaseRepository
+try:
+    from sendmail import send_delay_alert
+except ImportError:
+    from backend.sendmail import send_delay_alert
+
 
 class ProjectQueryRequest(BaseModel):
     project_name: str
@@ -803,9 +808,18 @@ def predict_parcel_risk(input_data: ParcelInput):
     """
     rec_dict = input_data.dict()
     pred = compute_prediction(rec_dict)
+    delay = pred["predicted_delay_days"]
+
+    if delay > 30:
+        try:
+            project_name = getattr(input_data, "parcel_id", None) or "Parcel Evaluation"
+            send_delay_alert(project_name, delay)
+        except Exception as e:
+            logger.warning(f"Failed to send delay alert email: {e}")
+
     return PredictionResponse(
         parcel_id=input_data.parcel_id or "EVAL-001",
-        predicted_delay_days=pred["predicted_delay_days"],
+        predicted_delay_days=delay,
         delay_probability=pred["delay_probability"],
         risk_category=pred["risk_category"],
         inference_time_ms=pred["inference_time_ms"],
@@ -1347,6 +1361,15 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     predicted_delay = int(round(pred["predicted_delay_days"]))
     risk_category = pred["risk_category"]
     confidence_score = pred["confidence_score"]
+
+    delay = predicted_delay
+    if delay > 30:
+        try:
+            project_name = proj.get("project_name", req.project_name)
+            send_delay_alert(project_name, delay)
+        except Exception as e:
+            logger.warning(f"Failed to send delay alert email: {e}")
+
 
     # 3. Card 1: NH Act 1956 Statutory Lifecycle Progression
     current_stage = str(proj.get("statutory_stage", "Section_3D/19_Declaration"))
