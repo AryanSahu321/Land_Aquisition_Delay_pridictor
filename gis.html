@@ -2,353 +2,1878 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Land Acquisition Delay Predictor - GIS</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land Acquisition AI - GIS Intelligence</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,Arial,sans-serif;background:#050b16;color:#eaf3ff;min-height:100vh}
-button,input{font:inherit}
-.header{margin:16px;border:1px solid #1d3149;border-radius:18px;background:linear-gradient(135deg,#0b1728,#102943);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 15px 45px #0007}
-.brand{display:flex;align-items:center;gap:14px}
-.logo{width:48px;height:48px;border-radius:13px;background:linear-gradient(135deg,#00c9ff,#2563eb);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 0 25px #00bfff55}
-h1{font-size:20px}
-.sub{font-size:11px;color:#8da4bd;margin-top:4px}
-.badge{padding:9px 13px;border:1px solid #2b4662;border-radius:10px;background:#081525;color:#b9cbe0;font-size:12px}
-.wrap{padding:0 16px 20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
-.card,.panel{border:1px solid #1d3149;background:linear-gradient(145deg,#0b1829,#07121f);border-radius:15px;box-shadow:0 12px 35px #0005}
-.card{padding:16px;position:relative;overflow:hidden}
-.card:after{content:"";position:absolute;right:-25px;top:-25px;width:80px;height:80px;border-radius:50%;background:#1aa8ff0b}
-.label{font-size:10px;color:#7990a9;text-transform:uppercase;letter-spacing:1px}
-.value{font-size:28px;font-weight:800;margin-top:7px}
-.note{font-size:10px;color:#607991;margin-top:4px}
-.cyan .value{color:#42caff}.red .value{color:#ff5268}.amber .value{color:#ffbd45}.green .value{color:#31df99}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-radius:14px;border:1px solid #1d3149;background:#081523;margin-bottom:12px}
-button{border:1px solid #29435e;background:#0d2033;color:#c8d8e7;padding:9px 12px;border-radius:9px;font-size:11px;cursor:pointer;transition:.18s}
-button:hover{border-color:#37bfff;background:#12304a}
-button.active{background:#087fb5;border-color:#1ac6ff;color:#fff}
-.search{margin-left:auto}
-.search input{width:220px;background:#050e19;border:1px solid #29435e;color:#fff;padding:9px 11px;border-radius:9px;outline:none}
-.search input:focus{border-color:#18bfff}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px}
-.mapPanel{padding:10px;min-height:680px}
-.mapHead{height:45px;display:flex;align-items:center;justify-content:space-between;padding:0 7px;border-bottom:1px solid #1d3149}
-.mapHead strong{font-size:12px}.mapHead span{font-size:10px;color:#7189a2}
-#map{height:610px;width:100%;border-radius:10px;overflow:hidden;background:#0b1828}
-.inspect{min-height:680px;overflow:hidden}
-.inspectHead{padding:15px;border-bottom:1px solid #1d3149;background:#0b192a}
-.inspectHead h2{font-size:14px}.inspectHead p{font-size:10px;color:#7189a2;margin-top:4px}
-.inspectBody{padding:14px}
-.empty{height:570px;display:grid;place-items:center;text-align:center;color:#627b94;font-size:11px;line-height:1.7}
-.id{font-size:19px;font-weight:800;color:#45caff;margin-bottom:9px}
-.risk{display:inline-block;border-radius:20px;padding:5px 9px;font-size:9px;font-weight:800;margin-bottom:13px}
-.risk.CRITICAL{color:#ff7180;background:#ff405515;border:1px solid #ff405544}
-.risk.MODERATE{color:#ffc04e;background:#ffb52e15;border:1px solid #ffb52e44}
-.risk.LOW{color:#3de39b;background:#24d98a15;border:1px solid #24d98a44}
-.info{display:grid;gap:8px}
-.row{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid #172a3d;font-size:11px}
-.row b{color:#7891aa;font-weight:500}.row span{text-align:right;color:#dce8f2}
-.box{margin-top:12px;padding:12px;border:1px solid #203951;border-radius:10px;background:#091828}
-.boxTitle{font-size:9px;color:#7891aa;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
-.progress{height:7px;background:#142b40;border-radius:8px;overflow:hidden}.bar{height:100%;border-radius:8px}
-.legend{display:flex;flex-wrap:wrap;gap:14px;padding:9px 5px 3px;font-size:10px;color:#9ab0c4}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
-.fallback{height:100%;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#123456,#07111f 65%);position:relative;overflow:hidden}
-.fallback svg{width:100%;height:100%}
-.fallback text{fill:#8fa8c0;font-size:10px}
-.leaflet-container{background:#0b1725}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0a1727;color:#eaf3ff;border:1px solid #28415b}
-.popupTitle{font-weight:800;color:#45caff;font-size:13px;margin-bottom:5px}
-.popupLine{font-size:11px;margin:2px 0}
-@media(max-width:950px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.search{margin-left:0;width:100%}.search input{width:100%}.inspect{min-height:450px}#map{height:520px}}
-@media(max-width:600px){.header{margin:8px;padding:14px}.badge{display:none}.wrap{padding:0 8px 12px}.stats{gap:7px}.card{padding:12px}.value{font-size:22px}.mapPanel{min-height:560px}#map{height:500px}}
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#07111f;
+    color:#e8eef7;
+    overflow:hidden
+}
+
+#app{
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column
+}
+
+header{
+    height:70px;
+    background:#0b1728;
+    border-bottom:1px solid #20324a;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    z-index:1000
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px
+}
+
+.brand-icon{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    background:#17385e;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px
+}
+
+.brand h1{
+    margin:0;
+    font-size:18px;
+    font-weight:700
+}
+
+.brand p{
+    margin:3px 0 0;
+    color:#8fa4be;
+    font-size:11px
+}
+
+.backend-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:#a9bbd0
+}
+
+.status-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#888
+}
+
+.status-dot.online{
+    background:#21d07a;
+    box-shadow:0 0 10px #21d07a
+}
+
+.status-dot.offline{
+    background:#ff4d4d
+}
+
+.main{
+    flex:1;
+    display:flex;
+    min-height:0
+}
+
+.sidebar{
+    width:330px;
+    background:#091525;
+    border-right:1px solid #20324a;
+    padding:14px;
+    overflow-y:auto;
+    z-index:900
+}
+
+.section{
+    margin-bottom:16px
+}
+
+.section-title{
+    color:#7f96b0;
+    font-size:10px;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin-bottom:8px
+}
+
+.search-box{
+    width:100%;
+    padding:11px 12px;
+    border-radius:8px;
+    border:1px solid #263c56;
+    background:#0d1d31;
+    color:white;
+    outline:none
+}
+
+.search-box:focus{
+    border-color:#4388d8
+}
+
+.filter-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px
+}
+
+button{
+    border:1px solid #29415d;
+    background:#0e2035;
+    color:#cbd8e7;
+    border-radius:7px;
+    padding:9px 8px;
+    cursor:pointer;
+    font-size:11px
+}
+
+button:hover{
+    background:#17314e
+}
+
+button.active{
+    background:#1b4c7c;
+    border-color:#4b9ae9;
+    color:white
+}
+
+.risk-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px
+}
+
+.risk-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%
+}
+
+.critical{background:#ff4b4b}
+.moderate{background:#ffc247}
+.low{background:#27d17f}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px
+}
+
+.stat-card{
+    background:#0d1d31;
+    border:1px solid #203750;
+    border-radius:8px;
+    padding:10px
+}
+
+.stat-label{
+    color:#8298b2;
+    font-size:10px
+}
+
+.stat-value{
+    margin-top:5px;
+    font-size:20px;
+    font-weight:bold
+}
+
+.stat-value.red{color:#ff6262}
+.stat-value.yellow{color:#ffc247}
+.stat-value.green{color:#27d17f}
+
+.action-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px
+}
+
+.wide-button{
+    grid-column:span 2
+}
+
+.api-note{
+    font-size:10px;
+    line-height:1.5;
+    color:#7289a5;
+    background:#0b1a2d;
+    border:1px solid #1d3148;
+    border-radius:7px;
+    padding:9px;
+    word-break:break-word
+}
+
+.map-area{
+    position:relative;
+    flex:1;
+    min-width:0
+}
+
+#map{
+    width:100%;
+    height:100%;
+    background:#d9e2ea
+}
+
+.map-topbar{
+    position:absolute;
+    top:14px;
+    left:14px;
+    right:14px;
+    z-index:800;
+    display:flex;
+    justify-content:space-between;
+    pointer-events:none
+}
+
+.map-badge{
+    pointer-events:auto;
+    background:rgba(7,17,31,.92);
+    border:1px solid #2a425d;
+    border-radius:8px;
+    padding:9px 12px;
+    font-size:11px;
+    color:#cbd8e7;
+    backdrop-filter:blur(8px)
+}
+
+.map-controls{
+    pointer-events:auto;
+    display:flex;
+    gap:5px
+}
+
+.map-control-btn{
+    background:rgba(7,17,31,.94);
+    border:1px solid #2a425d;
+    color:white;
+    padding:8px 10px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:11px
+}
+
+.map-control-btn.active{
+    background:#1c568d
+}
+
+.inspector{
+    position:absolute;
+    right:14px;
+    top:74px;
+    width:360px;
+    max-height:calc(100% - 90px);
+    overflow-y:auto;
+    background:rgba(7,17,31,.96);
+    border:1px solid #2b425d;
+    border-radius:10px;
+    z-index:850;
+    backdrop-filter:blur(12px);
+    display:none
+}
+
+.inspector.visible{
+    display:block
+}
+
+.inspector-header{
+    padding:14px;
+    border-bottom:1px solid #253a52;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start
+}
+
+.inspector-header h2{
+    margin:0;
+    font-size:16px
+}
+
+.inspector-header p{
+    margin:4px 0 0;
+    color:#7f96b0;
+    font-size:10px
+}
+
+.close-btn{
+    border:none;
+    background:transparent;
+    color:#9db1c7;
+    font-size:20px;
+    padding:0
+}
+
+.inspector-body{
+    padding:14px
+}
+
+.risk-banner{
+    border-radius:8px;
+    padding:12px;
+    margin-bottom:12px;
+    border:1px solid
+}
+
+.risk-banner.high{
+    background:rgba(255,70,70,.12);
+    border-color:#a93232
+}
+
+.risk-banner.medium{
+    background:rgba(255,194,71,.12);
+    border-color:#8d6b20
+}
+
+.risk-banner.low{
+    background:rgba(39,209,127,.12);
+    border-color:#207b52
+}
+
+.risk-title{
+    font-size:17px;
+    font-weight:bold
+}
+
+.risk-number{
+    font-size:28px;
+    font-weight:bold;
+    margin-top:4px
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px
+}
+
+.info-card{
+    background:#0d1d31;
+    border:1px solid #203750;
+    border-radius:7px;
+    padding:8px
+}
+
+.info-label{
+    color:#748ba5;
+    font-size:9px;
+    text-transform:uppercase
+}
+
+.info-value{
+    color:#e6edf6;
+    font-size:11px;
+    margin-top:3px;
+    word-break:break-word
+}
+
+.inspector-section{
+    margin-top:15px
+}
+
+.inspector-section h3{
+    font-size:11px;
+    color:#a9bdd3;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    border-bottom:1px solid #203750;
+    padding-bottom:6px
+}
+
+.sop-card{
+    background:#0d1d31;
+    border:1px solid #263c56;
+    border-radius:7px;
+    padding:9px;
+    margin-bottom:7px
+}
+
+.sop-priority{
+    display:inline-block;
+    font-size:9px;
+    padding:3px 6px;
+    border-radius:4px;
+    background:#49351a;
+    color:#ffc247;
+    margin-bottom:5px
+}
+
+.sop-title{
+    font-size:11px;
+    font-weight:bold;
+    color:#e8eef7
+}
+
+.sop-meta{
+    color:#7e94ad;
+    font-size:9px;
+    margin-top:4px
+}
+
+.sop-instruction{
+    color:#aebed0;
+    font-size:10px;
+    line-height:1.45;
+    margin-top:6px
+}
+
+.loading{
+    padding:25px;
+    text-align:center;
+    color:#8fa4be;
+    font-size:12px
+}
+
+.legend{
+    position:absolute;
+    bottom:18px;
+    left:18px;
+    background:rgba(7,17,31,.94);
+    border:1px solid #2a425d;
+    border-radius:8px;
+    padding:10px;
+    z-index:800;
+    font-size:10px
+}
+
+.legend-row{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin:5px 0
+}
+
+.mobile-menu{
+    display:none
+}
+
+@media(max-width:900px){
+    .sidebar{width:270px}
+    .inspector{width:320px}
+}
+
+@media(max-width:700px){
+    .sidebar{
+        position:absolute;
+        left:0;
+        top:70px;
+        bottom:0;
+        width:290px;
+        transform:translateX(-100%);
+        transition:transform .25s;
+        z-index:1200
+    }
+
+    .sidebar.open{
+        transform:translateX(0)
+    }
+
+    .mobile-menu{
+        display:block
+    }
+
+    .inspector{
+        left:10px;
+        right:10px;
+        width:auto;
+        max-height:60%;
+        top:auto;
+        bottom:10px
+    }
+}
 </style>
 </head>
+
 <body>
-<header class="header">
-<div class="brand"><div class="logo">GIS</div><div><h1>Land Acquisition Delay Predictor</h1><div class="sub">GIS-Based High-Risk Infrastructure Corridor & Cadastral Mapping</div></div></div>
-<div class="badge">🛣️ Purvanchal Expressway · 340.8 km · 120m RoW</div>
+
+<div id="app">
+
+<header>
+<div class="brand">
+
+<button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+
+<div class="brand-icon">🗺️</div>
+
+<div>
+<h1>Land Acquisition AI — GIS Intelligence</h1>
+<p>PM GatiShakti • Statutory RoW • ML Risk Intelligence</p>
+</div>
+
+</div>
+
+<div class="backend-status">
+<span id="statusDot" class="status-dot"></span>
+<span id="statusText">Checking backend...</span>
+</div>
+
 </header>
 
-<main class="wrap">
-<section class="stats">
-<div class="card cyan"><div class="label">RoW Parcels</div><div class="value" id="total">18</div><div class="note">Cadastral strips in demo corridor</div></div>
-<div class="card red"><div class="label">Critical</div><div class="value" id="critical">0</div><div class="note">High delay probability</div></div>
-<div class="card amber"><div class="label">Moderate</div><div class="value" id="moderate">0</div><div class="note">Medium delay probability</div></div>
-<div class="card green"><div class="label">Cleared</div><div class="value" id="low">0</div><div class="note">Low delay probability</div></div>
-</section>
+<div class="main">
 
-<section class="toolbar">
-<button class="filter active" data-risk="ALL">All Parcels</button>
-<button class="filter" data-risk="CRITICAL">🔴 Critical</button>
-<button class="filter" data-risk="MODERATE">🟡 Moderate</button>
-<button class="filter" data-risk="LOW">🟢 Cleared</button>
-<button id="street">🗺️ Clean Map</button>
-<button id="satellite">🛰️ Satellite</button>
-<button id="fit">🔍 Fit 340 km</button>
-<button id="reset">↻ Reset</button>
-<div class="search"><input id="search" placeholder="Search Khasra / village / parcel..."></div>
-</section>
+<aside class="sidebar" id="sidebar">
 
-<section class="grid">
-<div class="panel mapPanel">
-<div class="mapHead"><strong>GIS Risk Map — Purvanchal Expressway Corridor</strong><span>Macro → Package → Cadastral</span></div>
-<div id="map"></div>
-<div class="legend">
-<span><i class="dot" style="background:#ef4444"></i>Critical</span>
-<span><i class="dot" style="background:#f59e0b"></i>Moderate</span>
-<span><i class="dot" style="background:#10b981"></i>Cleared</span>
-<span>▰ 120m Right-of-Way</span>
-</div>
+<div class="section">
+
+<div class="section-title">Search Parcel</div>
+
+<input
+id="searchInput"
+class="search-box"
+type="text"
+placeholder="Parcel / Khasra / Village / District..."
+oninput="applyFilters()"
+>
+
 </div>
 
-<aside class="panel inspect">
-<div class="inspectHead"><h2>Statutory Parcel Inspector</h2><p>Click a hotspot or cadastral RoW strip</p></div>
-<div class="inspectBody" id="inspector"><div class="empty">Select a parcel on the map<br>to inspect title, court stay,<br>compensation, statutory stage<br>and ML delay prediction.</div></div>
+<div class="section">
+
+<div class="section-title">Risk Filter</div>
+
+<div class="filter-grid">
+
+<button id="filterAll" class="active" onclick="setRiskFilter('ALL')">
+All
+</button>
+
+<button id="filterHigh" class="risk-btn" onclick="setRiskFilter('High')">
+<span class="risk-dot critical"></span>
+Critical
+</button>
+
+<button id="filterMedium" class="risk-btn" onclick="setRiskFilter('Medium')">
+<span class="risk-dot moderate"></span>
+Moderate
+</button>
+
+<button id="filterLow" class="risk-btn" onclick="setRiskFilter('Low')">
+<span class="risk-dot low"></span>
+Cleared / Low
+</button>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">Live Statistics</div>
+
+<div class="stats">
+
+<div class="stat-card">
+<div class="stat-label">Total Parcels</div>
+<div class="stat-value" id="totalParcels">—</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-label">Critical</div>
+<div class="stat-value red" id="highCount">—</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-label">Moderate</div>
+<div class="stat-value yellow" id="mediumCount">—</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-label">Low</div>
+<div class="stat-value green" id="lowCount">—</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">Map Actions</div>
+
+<div class="action-buttons">
+
+<button onclick="fitFullCorridor()">Fit Corridor</button>
+
+<button onclick="reloadGIS()">Refresh Data</button>
+
+<button onclick="zoomToRisk('High')">Critical View</button>
+
+<button onclick="resetGIS()">Reset</button>
+
+<button class="wide-button" onclick="loadBackendStats()">
+Load Executive Statistics
+</button>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">Backend API</div>
+
+<div class="api-note">
+<b>API:</b>
+<span id="apiText"></span>
+<br><br>
+GIS data is loaded from the FastAPI
+<b>/corridor/geojson</b> endpoint.
+</div>
+
+</div>
+
+<div id="executiveStats" class="section" style="display:none">
+
+<div class="section-title">Executive KPIs</div>
+
+<div id="statsContent" class="api-note"></div>
+
+</div>
+
 </aside>
+
+<section class="map-area">
+
+<div class="map-topbar">
+
+<div class="map-badge">
+<b>GIS RIGHT-OF-WAY</b>
+<span style="color:#7790aa"> • Live Backend Data</span>
+</div>
+
+<div class="map-controls">
+
+<button
+id="streetBtn"
+class="map-control-btn active"
+onclick="switchBasemap('street')"
+>
+Street
+</button>
+
+<button
+id="satelliteBtn"
+class="map-control-btn"
+onclick="switchBasemap('satellite')"
+>
+Satellite
+</button>
+
+</div>
+
+</div>
+
+<div id="map"></div>
+
+<div class="legend">
+
+<b>Risk Level</b>
+
+<div class="legend-row">
+<span class="risk-dot critical"></span>
+Critical / High
+</div>
+
+<div class="legend-row">
+<span class="risk-dot moderate"></span>
+Moderate / Medium
+</div>
+
+<div class="legend-row">
+<span class="risk-dot low"></span>
+Cleared / Low
+</div>
+
+</div>
+
+<div id="inspector" class="inspector">
+
+<div class="inspector-header">
+
+<div>
+<h2 id="inspectorTitle">Parcel Inspector</h2>
+<p id="inspectorSubtitle">Select a parcel from the map</p>
+</div>
+
+<button class="close-btn" onclick="closeInspector()">×</button>
+
+</div>
+
+<div id="inspectorBody" class="inspector-body">
+<div class="loading">Select a GIS parcel.</div>
+</div>
+
+</div>
+
 </section>
-</main>
+
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-const alignment=[
-[26.755,81.065],[26.702,81.22],[26.635,81.425],[26.54,81.65],[26.475,81.82],
-[26.38,82.02],[26.315,82.19],[26.26,82.38],[26.195,82.56],[26.12,82.78],
-[26.08,82.98],[26.025,83.16],[25.96,83.33],[25.88,83.45],[25.79,83.52],
-[25.68,83.555],[25.585,83.585]
-];
 
-const places=[
-["Chand Saray","Lucknow","0"],["Gosainganj","Lucknow","15"],["Mohanlalganj","Barabanki","28"],
-["Haidargarh","Barabanki","48"],["Bhikharpur","Amethi","64"],["Inhauna","Amethi","77"],
-["Kurebhar","Sultanpur","96"],["Dhanpatganj","Sultanpur","114"],["Kuwar","Sultanpur","134"],
-["Dostpur","Ambedkar Nagar","157"],["Akhand Nagar","Ambedkar Nagar","178"],["Pawai Border","Azamgarh","205"],
-["Phoolpur Pawai","Azamgarh","227"],["Rani Ki Sarai","Azamgarh","248"],["Jahanaganj","Azamgarh/Mau","273"],
-["Muhammadabad Gohna","Mau","294"],["Mardah","Ghazipur","326"],["Haidaria","Ghazipur","340.8"]
-];
+const API_BASE =
+window.GIS_API_BASE ||
+"http://localhost:8000/api/v1";
 
-const riskSet=["CRITICAL","MODERATE","MODERATE","CRITICAL","LOW","MODERATE","LOW","CRITICAL","MODERATE","CRITICAL","MODERATE","LOW","CRITICAL","LOW","MODERATE","MODERATE","CRITICAL","LOW"];
-const probs=[.82,.40,.48,.89,.12,.55,.05,.79,.42,.91,.52,.14,.94,.08,.50,.40,.86,.05];
+document.getElementById("apiText").textContent = API_BASE;
 
-function makeParcel(i){
-const a=alignment[Math.min(i,alignment.length-1)];
-return{
-id:"PKG-"+String(Math.floor(i/3)+1).padStart(2,"0")+"-PAR-"+(100+i+1),
-khasra:"Khasra #"+(214+i*37)+(i%3===0?"/1A":""),
-village:places[i][0],district:places[i][1],chainage:"km "+places[i][2],
-pkg:"Package "+(Math.floor(i/3)+1),center:a,risk:riskSet[i],delayProb:probs[i],
-delayDays:Math.round(probs[i]*100),area:(1.1+(i%7)*.37).toFixed(2)+" Hectares",
-landType:i%4===0?"Private Agricultural":i%4===1?"Commercial Fringe":"Private Agricultural",
-khatedar:"Demonstration Khatedar / Co-sharers",
-disbursedPct:riskSet[i]==="LOW"?95:35+(i*7)%45,
-amountLocked:riskSet[i]==="LOW"?"₹0":(12+i*3)+" Lakh",
-courtStay:riskSet[i]==="CRITICAL"?"Court / compensation or injunction review":"None / routine verification",
-statute:riskSet[i]==="CRITICAL"?"Section 3H Escrow / Review":riskSet[i]==="MODERATE"?"Section 3G Verification":"Section 3E Handover"
-};
+let map = null;
+let streetLayer = null;
+let satelliteLayer = null;
+let parcelLayer = null;
+let allFeatures = [];
+let allParcels = [];
+let currentRiskFilter = "ALL";
+let selectedParcelId = null;
+
+function initMap(){
+
+map=L.map("map",{
+zoomControl:true,
+preferCanvas:true
+}).setView([26.3,82.2],7);
+
+streetLayer=L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+maxZoom:19,
+attribution:"&copy; OpenStreetMap contributors"
 }
-const parcels=Array.from({length:18},(_,i)=>makeParcel(i));
+);
 
-const colors={CRITICAL:"#ef4444",MODERATE:"#f59e0b",LOW:"#10b981"};
-let map=null,streetLayer=null,satelliteLayer=null,corridor=null,parcelLayers=[],selected=null,filter="ALL",fallback=false,macroLayer=null,packageLayer=null,packageLabelLayer=null,interchangeLayer=null,selectedParcelLayer=null;
+satelliteLayer=L.tileLayer(
+"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+{
+maxZoom:19,
+attribution:"Tiles &copy; Esri"
+}
+);
 
-function row(label,value){return '<div class="row"><b>'+label+'</b><span>'+value+'</span></div>'}
+streetLayer.addTo(map);
 
-function showParcel(p){
-selected=p.id;
-const c=colors[p.risk];
-document.getElementById("inspector").innerHTML=
-'<div class="id">'+p.khasra+'</div>'+
-'<div class="risk '+p.risk+'">'+p.risk+' RISK · +'+p.delayDays+' DAYS</div>'+
-'<div class="info">'+
-row("Parcel ID",p.id)+row("Village",p.village)+row("District",p.district)+
-row("Package",p.pkg)+row("Chainage",p.chainage)+row("Area",p.area)+
-row("Land Type",p.landType)+row("Khatedar",p.khatedar)+
-row("Court / Dispute",p.courtStay)+row("Statutory Stage",p.statute)+
-row("Compensation",p.disbursedPct+"% disbursed")+row("Escrow",p.amountLocked)+
-'</div><div class="box"><div class="boxTitle">ML Delay Prediction</div>'+
-row("Delay Probability",Math.round(p.delayProb*100)+"%")+row("Predicted Delay","+"+p.delayDays+" days")+
-'<div class="progress"><div class="bar" style="width:'+(p.delayProb*100)+'%;background:'+c+'"></div></div></div>';
+map.on("zoomend",updateZoomTier);
+
 }
 
-function updateCounts(){
-document.getElementById("total").textContent=parcels.length;
-document.getElementById("critical").textContent=parcels.filter(p=>p.risk==="CRITICAL").length;
-document.getElementById("moderate").textContent=parcels.filter(p=>p.risk==="MODERATE").length;
-document.getElementById("low").textContent=parcels.filter(p=>p.risk==="LOW").length;
+async function checkBackend(){
+
+const dot=document.getElementById("statusDot");
+const text=document.getElementById("statusText");
+
+try{
+
+const response=await fetch(`${API_BASE}/health`);
+
+if(!response.ok){
+throw new Error("Backend unavailable");
 }
 
-function stripCoords(p){
-const lat=p.center[0],lon=p.center[1];
-const width=60;
-const len=85;
-const metersLat=111132;
-const metersLon=111320*Math.cos(lat*Math.PI/180);
-let idx=parcels.indexOf(p);
-let prev=alignment[Math.max(0,idx)];
-let next=alignment[Math.min(alignment.length-1,idx+1)];
-if(idx>0&&idx<alignment.length-1){prev=alignment[idx-1];next=alignment[idx+1]}
-const dy=(next[0]-prev[0])*metersLat;
-const dx=(next[1]-prev[1])*metersLon;
-const mag=Math.hypot(dx,dy)||1;
-const ux=dx/mag,uy=dy/mag;
-const px=-uy,py=ux;
-const aLat=lat+(uy*len+py*width)/metersLat;
-const aLon=lon+(ux*len+px*width)/metersLon;
-const bLat=lat+(uy*len-py*width)/metersLat;
-const bLon=lon+(ux*len-px*width)/metersLon;
-const cLat=lat+(-uy*len-py*width)/metersLat;
-const cLon=lon+(-ux*len-px*width)/metersLon;
-const dLat=lat+(-uy*len+py*width)/metersLat;
-const dLon=lon+(-ux*len+px*width)/metersLon;
-return [[aLat,aLon],[bLat,bLon],[cLat,cLon],[dLat,dLon]];
+const data=await response.json();
+
+dot.className="status-dot online";
+
+text.textContent=
+`Backend Online • ${data.total_records ?? data.total_parcels ?? 0} records`;
+
+return true;
+
+}catch(error){
+
+dot.className="status-dot offline";
+text.textContent="Backend Offline";
+
+console.error(error);
+
+return false;
+
 }
 
-function makePackageLayers(){
-if(!map)return;
-if(packageLayer)map.removeLayer(packageLayer);
-if(packageLabelLayer)map.removeLayer(packageLabelLayer);
-if(interchangeLayer)map.removeLayer(interchangeLayer);
-packageLayer=L.layerGroup();
-packageLabelLayer=L.layerGroup();
-interchangeLayer=L.layerGroup();
-const ranges=[
-[0,2,"Package 1"],[2,4,"Package 2"],[4,6,"Package 3"],[6,8,"Package 4"],
-[8,10,"Package 5"],[10,12,"Package 6"],[12,14,"Package 7"],[14,16,"Package 8"]
-];
-ranges.forEach((r,i)=>{
-const seg=alignment.slice(r[0],r[1]+1);
-L.polyline(seg,{color:"#38bdf8",weight:2,dashArray:"5 7",opacity:.75}).addTo(packageLayer);
-const mid=seg[Math.floor(seg.length/2)];
-L.marker(mid,{icon:L.divIcon({className:"pkg-label",html:'<span style="display:block;padding:4px 7px;border:1px solid #38bdf8;background:#071525e8;color:#bfeaff;border-radius:6px;font-size:10px;font-weight:800;white-space:nowrap;box-shadow:0 4px 12px #0008">'+r[2]+'</span>',iconSize:[80,24],iconAnchor:[40,12]})}).addTo(packageLabelLayer);
+}
+
+async function loadGIS(){
+
+try{
+
+showMapLoading();
+
+const response=
+await fetch(`${API_BASE}/corridor/geojson`);
+
+if(!response.ok){
+throw new Error(`GeoJSON API returned ${response.status}`);
+}
+
+const geojson=await response.json();
+
+if(!geojson || !Array.isArray(geojson.features)){
+throw new Error("Invalid GeoJSON received from backend");
+}
+
+allFeatures=geojson.features;
+
+allParcels=
+allFeatures.map(
+feature=>feature.properties||{}
+);
+
+updateStatistics();
+
+renderGIS();
+
+hideMapLoading();
+
+if(allFeatures.length>0){
+fitFullCorridor();
+}
+
+}catch(error){
+
+console.error(error);
+
+hideMapLoading();
+
+showMapError(
+"Backend se GIS data load nahi ho raha."
+);
+
+}
+
+}
+
+function renderGIS(){
+
+if(parcelLayer){
+map.removeLayer(parcelLayer);
+parcelLayer=null;
+}
+
+const filteredFeatures=getFilteredFeatures();
+
+parcelLayer=L.geoJSON(
+{
+type:"FeatureCollection",
+features:filteredFeatures
+},
+{
+style:feature=>{
+const p=feature.properties||{};
+return getFeatureStyle(p);
+},
+
+pointToLayer:(feature,latlng)=>{
+const p=feature.properties||{};
+return createRiskMarker(p,latlng);
+},
+
+onEachFeature:(feature,layer)=>{
+bindFeatureEvents(feature,layer);
+}
+}
+);
+
+parcelLayer.addTo(map);
+
+updateZoomTier();
+
+}
+
+function getFilteredFeatures(){
+
+const query=
+document.getElementById("searchInput")
+.value
+.trim()
+.toLowerCase();
+
+return allFeatures.filter(feature=>{
+
+const p=feature.properties||{};
+
+if(currentRiskFilter!=="ALL"){
+
+const risk=normalizeRisk(p.risk_category);
+
+if(risk!==currentRiskFilter){
+return false;
+}
+
+}
+
+if(query){
+
+const searchable=[
+p.parcel_id,
+p.id,
+p.khasra_no,
+p.khasra,
+p.village_name,
+p.village,
+p.district,
+p.tehsil,
+p.package,
+p.package_id,
+p.chainage_km,
+p.chainage
+]
+.filter(Boolean)
+.join(" ")
+.toLowerCase();
+
+if(!searchable.includes(query)){
+return false;
+}
+
+}
+
+return true;
+
 });
-const interchanges=[
-[26.755,81.065,"km 0 · Chand Saray"],[26.635,81.425,"km 48 · Haidargarh"],[26.38,82.02,"km 114 · Kurebhar"],
-[26.195,82.56,"km 178 · Emergency Landing Strip"],[26.025,83.16,"km 248 · Rani Ki Sarai"],[25.88,83.45,"km 294 · Muhammadabad"],[25.585,83.585,"km 340.8 · Haidaria Terminal"]
-];
-interchanges.forEach((m,i)=>{L.circleMarker([m[0],m[1]],{radius:i===0||i===6?8:5,color:i===3?"#f59e0b":"#94a3b8",fillColor:i===3?"#f59e0b":"#1e293b",fillOpacity:.95,weight:2}).bindPopup('<b>'+m[2]+'</b><br>Purvanchal Expressway milestone').addTo(interchangeLayer)});
+
+}
+
+function normalizeRisk(risk){
+
+const value=
+String(risk||"")
+.trim()
+.toLowerCase();
+
+if(value==="high"||value==="critical"){
+return "High";
+}
+
+if(value==="medium"||value==="moderate"){
+return "Medium";
+}
+
+return "Low";
+
+}
+
+function getFeatureStyle(properties){
+
+const risk=normalizeRisk(properties.risk_category);
+
+if(risk==="High"){
+
+return{
+color:"#ff4b4b",
+weight:3,
+fillColor:"#ff4b4b",
+fillOpacity:.38
+};
+
+}
+
+if(risk==="Medium"){
+
+return{
+color:"#ffc247",
+weight:2,
+fillColor:"#ffc247",
+fillOpacity:.34
+};
+
+}
+
+return{
+color:"#27d17f",
+weight:2,
+fillColor:"#27d17f",
+fillOpacity:.30
+};
+
+}
+
+function createRiskMarker(properties,latlng){
+
+const risk=normalizeRisk(properties.risk_category);
+
+let color="#27d17f";
+
+if(risk==="High"){
+color="#ff4b4b";
+}else if(risk==="Medium"){
+color="#ffc247";
+}
+
+return L.circleMarker(
+latlng,
+{
+radius:risk==="High"?9:risk==="Medium"?8:6,
+fillColor:color,
+color:"#ffffff",
+weight:1,
+opacity:1,
+fillOpacity:.85
+}
+);
+
+}
+
+function bindFeatureEvents(feature,layer){
+
+const p=feature.properties||{};
+
+const parcelId=
+p.parcel_id||
+p.id||
+"Unknown";
+
+const risk=normalizeRisk(p.risk_category);
+
+const probability=getNumber(p.delay_probability);
+
+const popup=`
+<div style="min-width:210px;font-family:Arial">
+
+<b style="font-size:14px">
+${escapeHtml(parcelId)}
+</b>
+
+<hr>
+
+<b>Risk:</b>
+${escapeHtml(risk)}
+<br>
+
+<b>Delay Probability:</b>
+${probability!==null?(probability*100).toFixed(1)+"%":"-"}
+
+<br>
+
+<b>Predicted Delay:</b>
+${p.predicted_delay_days??"-"} days
+
+<br><br>
+
+<button
+onclick="openParcelFromMap('${escapeJs(parcelId)}')"
+style="
+width:100%;
+background:#15558c;
+color:white;
+border:0;
+padding:7px;
+border-radius:5px;
+cursor:pointer;
+">
+Open Inspector
+</button>
+
+</div>
+`;
+
+layer.bindPopup(popup);
+
+layer.on("click",()=>{
+selectedParcelId=parcelId;
+loadParcelInspector(parcelId);
+});
+
+}
+
+function openParcelFromMap(parcelId){
+loadParcelInspector(parcelId);
+}
+
+async function loadParcelInspector(parcelId){
+
+const inspector=document.getElementById("inspector");
+const body=document.getElementById("inspectorBody");
+const title=document.getElementById("inspectorTitle");
+const subtitle=document.getElementById("inspectorSubtitle");
+
+inspector.classList.add("visible");
+
+title.textContent=parcelId;
+subtitle.textContent="Loading live backend data...";
+
+body.innerHTML=
+`<div class="loading">Loading parcel details...</div>`;
+
+try{
+
+const response=
+await fetch(
+`${API_BASE}/parcels/${encodeURIComponent(parcelId)}`
+);
+
+if(!response.ok){
+throw new Error(`Parcel API returned ${response.status}`);
+}
+
+const data=await response.json();
+
+renderInspector(data);
+
+}catch(error){
+
+console.error(error);
+
+body.innerHTML=
+`<div class="loading">
+Parcel details load nahi ho paye.
+<br><br>
+${escapeHtml(error.message)}
+</div>`;
+
+}
+
+}
+
+function renderInspector(data){
+
+const p=data.parcel||{};
+const prediction=data.prediction||{};
+const prescriptions=data.prescriptions||[];
+
+const risk=
+normalizeRisk(prediction.risk_category);
+
+const probability=
+getNumber(prediction.delay_probability);
+
+document.getElementById("inspectorTitle").textContent=
+p.parcel_id||"Parcel";
+
+document.getElementById("inspectorSubtitle").textContent=
+`${p.village_name||p.village||"-"} • ${p.district||"-"}`;
+
+document.getElementById("inspectorBody").innerHTML=`
+
+<div class="risk-banner ${risk.toLowerCase()}">
+
+<div class="risk-title">
+${risk} Risk
+</div>
+
+<div class="risk-number">
+${probability!==null?(probability*100).toFixed(1)+"%":"-"}
+</div>
+
+<div style="color:#9db1c7;font-size:10px;margin-top:3px">
+Estimated delay probability
+</div>
+
+</div>
+
+<div class="inspector-section">
+
+<h3>ML Prediction</h3>
+
+<div class="info-grid">
+
+${infoCard(
+"Predicted Delay",
+`${prediction.predicted_delay_days??"-"} days`
+)}
+
+${infoCard(
+"Confidence",
+formatPercent(prediction.confidence_score)
+)}
+
+${infoCard(
+"Inference",
+`${prediction.inference_time_ms??"-"} ms`
+)}
+
+${infoCard(
+"Risk Category",
+risk
+)}
+
+</div>
+
+</div>
+
+<div class="inspector-section">
+
+<h3>Parcel & Revenue</h3>
+
+<div class="info-grid">
+
+${infoCard("Parcel ID",p.parcel_id)}
+${infoCard("Khasra",p.khasra_no||p.khasra)}
+${infoCard("Village",p.village_name||p.village)}
+${infoCard("Tehsil",p.tehsil)}
+${infoCard("District",p.district)}
+${infoCard("Chainage",p.chainage_km||p.chainage)}
+${infoCard("Package",p.package||p.package_id)}
+${infoCard("Khatedar",p.khatedar||p.landowner||p.owner_name)}
+${infoCard("Area",p.total_area_hectares!=null?`${p.total_area_hectares} ha`:p.area_hectares!=null?`${p.area_hectares} ha`:"-")}
+${infoCard("Land Type",p.land_type)}
+${infoCard("Compensation",p.compensation_disbursed_pct!=null?`${p.compensation_disbursed_pct}%`:"-")}
+${infoCard("Court Injunctions",p.pending_court_injunctions??0)}
+
+</div>
+
+</div>
+
+<div class="inspector-section">
+
+<h3>Statutory Status</h3>
+
+<div class="info-grid">
+
+${infoCard("Stage",p.statutory_stage)}
+${infoCard("Days in Stage",p.days_in_current_stage)}
+${infoCard("3H Escrow",p.sec_3h_escrow_deposited?"Deposited":"Pending")}
+${infoCard("JMS",p.joint_measurement_survey_done??p.jms_completed?"Completed":"Pending")}
+${infoCard("Missing Titles",p.missing_title_deeds_pct!=null?`${p.missing_title_deeds_pct}%`:"-")}
+${infoCard("Mutation",p.co_sharer_mutation_pending?"Pending":"Clear")}
+
+</div>
+
+</div>
+
+<div class="inspector-section">
+
+<h3>Primary Bottleneck</h3>
+
+<div class="info-card">
+
+<div class="info-value" style="font-size:13px">
+${escapeHtml(
+p.primary_bottleneck||
+prediction.primary_bottleneck||
+"Model-derived analysis"
+)}
+</div>
+
+</div>
+
+</div>
+
+<div class="inspector-section">
+
+<h3>Prescriptive Statutory SOP</h3>
+
+${
+prescriptions.length
+?prescriptions.map(renderSOP).join("")
+:`<div class="info-card">No prescription returned.</div>`
+}
+
+</div>
+`;
+
+focusFeatureByParcelId(p.parcel_id);
+
+}
+
+function renderSOP(action){
+
+return`
+
+<div class="sop-card">
+
+<span class="sop-priority">
+${escapeHtml(action.priority||"ACTION")}
+</span>
+
+<div class="sop-title">
+${escapeHtml(action.action_title||"-")}
+</div>
+
+<div class="sop-meta">
+${escapeHtml(action.statutory_authority||"-")}
+<br>
+${escapeHtml(action.legal_section||"-")}
+<br>
+Target:
+${action.target_timeline_days??"-"} days
+</div>
+
+<div class="sop-instruction">
+${escapeHtml(action.instruction||"-")}
+</div>
+
+</div>
+`;
+
+}
+
+function infoCard(label,value){
+
+return`
+
+<div class="info-card">
+
+<div class="info-label">
+${escapeHtml(label||"-")}
+</div>
+
+<div class="info-value">
+${escapeHtml(value??"-")}
+</div>
+
+</div>
+`;
+
+}
+
+function setRiskFilter(filter){
+
+currentRiskFilter=filter;
+
+document
+.querySelectorAll(".filter-grid button")
+.forEach(btn=>btn.classList.remove("active"));
+
+if(filter==="ALL"){
+document.getElementById("filterAll").classList.add("active");
+}
+
+if(filter==="High"){
+document.getElementById("filterHigh").classList.add("active");
+}
+
+if(filter==="Medium"){
+document.getElementById("filterMedium").classList.add("active");
+}
+
+if(filter==="Low"){
+document.getElementById("filterLow").classList.add("active");
+}
+
+renderGIS();
+
+}
+
+function applyFilters(){
+renderGIS();
+}
+
+function updateStatistics(){
+
+let high=0;
+let medium=0;
+let low=0;
+
+allParcels.forEach(p=>{
+
+const risk=normalizeRisk(p.risk_category);
+
+if(risk==="High"){
+high++;
+}else if(risk==="Medium"){
+medium++;
+}else{
+low++;
+}
+
+});
+
+document.getElementById("totalParcels").textContent=
+allParcels.length;
+
+document.getElementById("highCount").textContent=
+high;
+
+document.getElementById("mediumCount").textContent=
+medium;
+
+document.getElementById("lowCount").textContent=
+low;
+
+}
+
+function fitFullCorridor(){
+
+if(
+!parcelLayer||
+!parcelLayer.getBounds().isValid()
+){
+
+if(allFeatures.length){
+
+const tempLayer=
+L.geoJSON({
+type:"FeatureCollection",
+features:allFeatures
+});
+
+const bounds=tempLayer.getBounds();
+
+if(bounds.isValid()){
+
+map.fitBounds(
+bounds,
+{
+padding:[30,30],
+maxZoom:10
+}
+);
+
+}
+
+}
+
+return;
+
+}
+
+map.fitBounds(
+parcelLayer.getBounds(),
+{
+padding:[30,30],
+maxZoom:10
+}
+);
+
+}
+
+function zoomToRisk(risk){
+
+const features=
+allFeatures.filter(
+f=>
+normalizeRisk(
+f.properties?.risk_category
+)===risk
+);
+
+if(!features.length){
+
+alert(`No ${risk} risk parcels found.`);
+
+return;
+
+}
+
+const layer=
+L.geoJSON({
+type:"FeatureCollection",
+features
+});
+
+const bounds=layer.getBounds();
+
+if(bounds.isValid()){
+
+map.fitBounds(
+bounds,
+{
+padding:[40,40]
+}
+);
+
+}
+
+}
+
+function focusFeatureByParcelId(parcelId){
+
+if(!parcelLayer){
+return;
+}
+
+parcelLayer.eachLayer(layer=>{
+
+const p=layer.feature?.properties;
+
+if(
+p&&
+p.parcel_id===parcelId
+){
+
+if(layer.getBounds){
+
+map.fitBounds(
+layer.getBounds(),
+{
+padding:[100,100],
+maxZoom:16
+}
+);
+
+}else if(layer.getLatLng){
+
+map.flyTo(
+layer.getLatLng(),
+16,
+{
+duration:.7
+}
+);
+
+}
+
+if(layer.openPopup){
+layer.openPopup();
+}
+
+}
+
+});
+
 }
 
 function updateZoomTier(){
-if(!map||fallback)return;
-const z=map.getZoom();
-if(macroLayer)map.removeLayer(macroLayer);
-if(packageLayer)map.removeLayer(packageLayer);
-if(packageLabelLayer)map.removeLayer(packageLabelLayer);
-if(interchangeLayer)map.removeLayer(interchangeLayer);
-if(z<=10){
-macroLayer=L.layerGroup();
-parcels.forEach(p=>{const color=colors[p.risk];const radius=p.risk==="CRITICAL"?10:p.risk==="MODERATE"?8:7;L.circleMarker(p.center,{radius:radius,color:color,weight:2,fillColor:color,fillOpacity:filter==="ALL"||filter===p.risk?.9:.12,opacity:filter==="ALL"||filter===p.risk?1:.2}).on("click",()=>select(p.id)).bindTooltip(p.khasra+" · "+p.risk).addTo(macroLayer)});
-macroLayer.addTo(map);
-}else if(z<=13){
-packageLayer&&packageLayer.addTo(map); packageLabelLayer&&packageLabelLayer.addTo(map); interchangeLayer&&interchangeLayer.addTo(map);
+
+if(!map||!parcelLayer){
+return;
+}
+
+const zoom=map.getZoom();
+
+parcelLayer.eachLayer(layer=>{
+
+const p=layer.feature?.properties;
+
+if(!p||!layer.setStyle){
+return;
+}
+
+const base=getFeatureStyle(p);
+
+if(zoom<=10){
+
+layer.setStyle({
+...base,
+weight:1,
+fillOpacity:.18
+});
+
+}else if(zoom<=13){
+
+layer.setStyle({
+...base,
+weight:2,
+fillOpacity:.27
+});
+
 }else{
-interchangeLayer&&interchangeLayer.addTo(map);
-}
-renderLeaflet(z>13);
-}
 
-function popup(p){
-return '<div class="popupTitle">'+p.id+'</div><div class="popupLine">'+p.khasra+' · '+p.village+'</div><div class="popupLine">'+p.risk+' · '+Math.round(p.delayProb*100)+'% delay probability</div>';
-}
-
-function renderLeaflet(showCadastral){
-parcelLayers.forEach(x=>map.removeLayer(x));parcelLayers=[];
-if(!showCadastral){return}
-parcels.forEach(p=>{
-const match=filter==="ALL"||p.risk===filter;
-const color=colors[p.risk];
-const poly=L.polygon(stripCoords(p),{color:selected===p.id?"#fff":color,weight:selected===p.id?4:2,fillColor:color,fillOpacity:match?.62:.05,opacity:match?1:.12});
-const dot=L.circleMarker(p.center,{radius:selected===p.id?11:p.risk==="CRITICAL"?9:7,color:selected===p.id?"#fff":color,weight:2,fillColor:color,fillOpacity:match?.9:.08,opacity:match?1:.12});
-poly.bindPopup(popup(p));dot.bindPopup(popup(p));
-poly.on("click",()=>select(p.id));dot.on("click",()=>select(p.id));
-poly.addTo(map);dot.addTo(map);parcelLayers.push(poly,dot);
+layer.setStyle({
+...base,
+weight:2.5,
+fillOpacity:.42
 });
+
 }
 
-function renderFallback(){
-const el=document.getElementById("map");
-fallback=true;
-const minLat=25.5,maxLat=26.85,minLon=80.9,maxLon=83.7;
-const x=lon=>(lon-minLon)/(maxLon-minLon)*1000;
-const y=lat=>(maxLat-lat)/(maxLat-minLat)*560;
-const points=alignment.map(a=>x(a[1])+","+y(a[0])).join(" ");
-let shapes="";
-parcels.forEach(p=>{
-const px=x(p.center[1]),py=y(p.center[0]),match=filter==="ALL"||p.risk===filter,c=colors[p.risk];
-shapes+='<g data-id="'+p.id+'" style="cursor:pointer;opacity:'+(match?1:.2)+'"><rect x="'+(px-18)+'" y="'+(py-10)+'" width="36" height="20" rx="4" fill="'+c+'" fill-opacity=".35" stroke="'+c+'" stroke-width="2"/><circle cx="'+px+'" cy="'+py+'" r="'+(selected===p.id?10:7)+'" fill="'+c+'" stroke="#fff" stroke-width="'+(selected===p.id?2:1)+'"/><title>'+p.id+" · "+p.risk+'</title></g>';
 });
-el.innerHTML='<div class="fallback"><svg viewBox="0 0 1000 560" preserveAspectRatio="none"><defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#17304a" stroke-width="1"/></pattern></defs><rect width="1000" height="560" fill="url(#g)"/><polyline points="'+points+'" fill="none" stroke="#4f46e5" stroke-width="8" opacity=".3"/><polyline points="'+points+'" fill="none" stroke="#60a5fa" stroke-width="3" stroke-dasharray="10 8"/>'+shapes+'<text x="25" y="35">PURVANCHAL EXPRESSWAY · 340.8 KM</text><text x="25" y="52">120m RIGHT-OF-WAY CORRIDOR</text></svg></div>';
-el.querySelectorAll("g[data-id]").forEach(g=>g.onclick=()=>select(g.dataset.id));
+
 }
 
-function render(){
-updateCounts();
-if(fallback)renderFallback();else if(map)renderLeaflet();
-}
+function switchBasemap(type){
 
-function select(id){
-const p=parcels.find(x=>x.id===id);if(!p)return;
-showParcel(p);
-if(fallback){renderFallback();return}
-renderLeaflet(true);
-map.fitBounds(L.latLngBounds(stripCoords(p)),{maxZoom:15,padding:[50,50]});
-updateZoomTier();
-}
-
-function fit(){
-if(fallback){renderFallback();return}
-if(corridor)map.fitBounds(corridor.getBounds(),{padding:[30,30]});
-}
-
-function switchLayer(type){
-if(fallback)return;
 if(type==="satellite"){
-if(map.hasLayer(streetLayer))map.removeLayer(streetLayer);
+
+if(map.hasLayer(streetLayer)){
+map.removeLayer(streetLayer);
+}
+
 satelliteLayer.addTo(map);
+
+document
+.getElementById("satelliteBtn")
+.classList.add("active");
+
+document
+.getElementById("streetBtn")
+.classList.remove("active");
+
 }else{
-if(map.hasLayer(satelliteLayer))map.removeLayer(satelliteLayer);
+
+if(map.hasLayer(satelliteLayer)){
+map.removeLayer(satelliteLayer);
+}
+
 streetLayer.addTo(map);
-}
-}
 
-function initLeaflet(){
-if(typeof L==="undefined"){renderFallback();return}
-map=L.map("map",{zoomControl:true,scrollWheelZoom:true,preferCanvas:true,maxZoom:19,minZoom:6});
-streetLayer=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"});
-satelliteLayer=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:18,attribution:"© Esri"});
-streetLayer.addTo(map);
-corridor=L.polyline(alignment,{color:"#4f46e5",weight:7,opacity:.9,dashArray:"10 8"}).addTo(map);
-makePackageLayers();
-places.forEach((p,i)=>{if(i%2===0)L.circleMarker(alignment[i],{radius:i===0||i===17?9:5,color:"#94a3b8",fillColor:"#1e293b",fillOpacity:.9,weight:2}).addTo(map).bindPopup("<b>"+p[0]+"</b><br>km "+p[2]+" · "+p[1])});
-map.on("zoomend",updateZoomTier);
-renderLeaflet(false);
-fit();
-select(parcels[0].id);
+document
+.getElementById("streetBtn")
+.classList.add("active");
+
+document
+.getElementById("satelliteBtn")
+.classList.remove("active");
+
 }
 
-document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{
-document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
-b.classList.add("active");filter=b.dataset.risk;render();if(!fallback)updateZoomTier();
-});
-document.getElementById("search").oninput=e=>{
-const q=e.target.value.toLowerCase().trim();
-if(!q){render();return}
-const p=parcels.find(x=>(x.id+" "+x.khasra+" "+x.village+" "+x.district).toLowerCase().includes(q));
-if(p)select(p.id);
-};
-document.getElementById("street").onclick=()=>switchLayer("street");
-document.getElementById("satellite").onclick=()=>switchLayer("satellite");
-document.getElementById("fit").onclick=fit;
-document.getElementById("reset").onclick=()=>{
-filter="ALL";selected=null;document.getElementById("search").value="";
-document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
-document.querySelector('[data-risk="ALL"]').classList.add("active");
-document.getElementById("inspector").innerHTML='<div class="empty">Select a parcel on the map<br>to inspect title, court stay,<br>compensation, statutory stage<br>and ML delay prediction.</div>';
-if(fallback)renderFallback();else{renderLeaflet(false);fit();updateZoomTier()}
-};
+}
 
-updateCounts();
+async function reloadGIS(){
+
+await checkBackend();
+await loadGIS();
+
+}
+
+function resetGIS(){
+
+currentRiskFilter="ALL";
+
+document.getElementById("searchInput").value="";
+
+setRiskFilter("ALL");
+
+closeInspector();
+
+fitFullCorridor();
+
+}
+
+function closeInspector(){
+
+document
+.getElementById("inspector")
+.classList.remove("visible");
+
+}
+
+async function loadBackendStats(){
+
+const container=
+document.getElementById("executiveStats");
+
+const content=
+document.getElementById("statsContent");
+
+container.style.display="block";
+
+content.innerHTML="Loading...";
+
+try{
+
+const response=
+await fetch(`${API_BASE}/stats`);
+
+if(!response.ok){
+throw new Error(`Stats API returned ${response.status}`);
+}
+
+const data=await response.json();
+
+const summary=data.summary||{};
+const risk=summary.risk_distribution||{};
+
+content.innerHTML=`
+
+<b>
+${escapeHtml(
+data.project_name||
+data.project_id||
+"Project"
+)}
+</b>
+
+<br><br>
+
+Parcels:
+<b>${summary.total_parcels??"-"}</b>
+
+<br>
+
+Area:
+<b>${summary.total_area_hectares??"-"} ha</b>
+
+<br>
+
+Families:
+<b>${summary.affected_families_count??"-"}</b>
+
+<br>
+
+Compensation:
+<b>${summary.compensation_disbursed_pct??"-"}%</b>
+
+<br>
+
+Court Stays:
+<b>${summary.pending_court_injunctions??"-"}</b>
+
+<br>
+
+Avg Delay:
+<b>${summary.avg_predicted_delay_days??"-"} days</b>
+
+<br><br>
+
+<b>Risk Distribution</b>
+
+<br>
+
+High:
+${risk.High??0}
+
+<br>
+
+Medium:
+${risk.Medium??0}
+
+<br>
+
+Low:
+${risk.Low??0}
+`;
+
+}catch(error){
+
+content.innerHTML=
+`Stats load failed: ${escapeHtml(error.message)}`;
+
+}
+
+}
+
+function showMapLoading(){
+
+const badge=
+document.querySelector(".map-badge");
+
+if(badge){
+badge.innerHTML="🗺️ Loading GIS data...";
+}
+
+}
+
+function hideMapLoading(){
+
+const badge=
+document.querySelector(".map-badge");
+
+if(badge){
+
+badge.innerHTML=`
+<b>GIS RIGHT-OF-WAY</b>
+<span style="color:#7790aa"> • Live Backend Data</span>
+`;
+
+}
+
+}
+
+function showMapError(message){
+
+const badge=
+document.querySelector(".map-badge");
+
+if(badge){
+
+badge.innerHTML=`
+<b style="color:#ff6262">⚠ GIS Error</b>
+<span style="color:#a9bbd0">
+• ${escapeHtml(message)}
+</span>
+`;
+
+}
+
+}
+
+function toggleSidebar(){
+
+document
+.getElementById("sidebar")
+.classList.toggle("open");
+
+}
+
+function getNumber(value){
+
+if(
+value===null||
+value===undefined||
+value===""
+){
+return null;
+}
+
+const number=Number(value);
+
+return Number.isFinite(number)
+?number
+:null;
+
+}
+
+function formatPercent(value){
+
+const n=getNumber(value);
+
+if(n===null){
+return "-";
+}
+
+return (n*100).toFixed(0)+"%";
+
+}
+
+function escapeHtml(value){
+
+if(
+value===null||
+value===undefined
+){
+return "-";
+}
+
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+function escapeJs(value){
+
+return String(value||"")
+.replaceAll("\\","\\\\")
+.replaceAll("'","\\'")
+.replaceAll("\n","\\n")
+.replaceAll("\r","\\r");
+
+}
+
+async function startGIS(){
+
+initMap();
+
+await checkBackend();
+
+await loadGIS();
+
+}
+
+document.addEventListener(
+"DOMContentLoaded",
+startGIS
+);
+
 </script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" onload="initLeaflet()" onerror="renderFallback()"></script>
+
 </body>
 </html>
