@@ -4,7 +4,15 @@ import ProjectResultsView from "./components/ProjectResultsView";
 import ApiGatewayModal from "./components/ApiGatewayModal";
 import GisCorridorModal from "./components/GisCorridorModal";
 import RoleRbacModal from "./components/RoleRbacModal";
-import { Compass, ArrowLeft, Database, ShieldCheck, Zap, Layers, Scale } from "lucide-react";
+import {
+  Compass,
+  ArrowLeft,
+  Database,
+  ShieldCheck,
+  Zap,
+  Layers,
+  Scale,
+} from "lucide-react";
 
 export default function App() {
   const [view, setView] = useState("search"); // 'search' | 'results'
@@ -141,4 +149,3 @@ export default function App() {
     </div>
   );
 }
-

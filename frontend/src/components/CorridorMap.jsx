@@ -264,9 +264,11 @@ export default function CorridorMap({
                   </span>
                   <span
                     className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
-                      activeParcel.risk_category === "High" || activeParcel.risk_category === "Critical"
+                      activeParcel.risk_category === "High" ||
+                      activeParcel.risk_category === "Critical"
                         ? "bg-red-500/20 text-red-300 border-red-500/40"
-                        : activeParcel.risk_category === "Medium" || activeParcel.risk_category === "Moderate"
+                        : activeParcel.risk_category === "Medium" ||
+                            activeParcel.risk_category === "Moderate"
                           ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
                           : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                     }`}
@@ -277,11 +279,11 @@ export default function CorridorMap({
                   </span>
                 </div>
                 <h3 className="text-xl font-extrabold text-white mt-1">
-                  Khasra No:{" "}
-                  {activeParcel.khasra_no || activeParcel.parcel_id}
+                  Khasra No: {activeParcel.khasra_no || activeParcel.parcel_id}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  {activeParcel.village_name || "Village"}, Tehsil {activeParcel.tehsil || "Sadar"},{" "}
+                  {activeParcel.village_name || "Village"}, Tehsil{" "}
+                  {activeParcel.tehsil || "Sadar"},{" "}
                   {activeParcel.district || "District"}
                 </p>
                 <div className="text-[11px] font-mono text-slate-500 mt-0.5">
@@ -382,7 +384,9 @@ export default function CorridorMap({
               {/* Action Button: Launch Simulation Sandbox */}
               <div className="pt-2">
                 <button
-                  onClick={() => onOpenSimulation && onOpenSimulation(activeParcel)}
+                  onClick={() =>
+                    onOpenSimulation && onOpenSimulation(activeParcel)
+                  }
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-blue-200" />

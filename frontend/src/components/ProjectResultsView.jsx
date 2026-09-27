@@ -47,17 +47,26 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
   if (!projectData) return null;
 
   const safeNumber = (val, fallback = 0) => {
-    if (val === null || val === undefined || isNaN(Number(val))) return fallback;
+    if (val === null || val === undefined || isNaN(Number(val)))
+      return fallback;
     return Number(val);
   };
 
   const safeFixed = (val, digits = 1, fallback = "0.0") => {
-    if (val === null || val === undefined || isNaN(Number(val))) return fallback;
+    if (val === null || val === undefined || isNaN(Number(val)))
+      return fallback;
     return Number(val).toFixed(digits);
   };
 
   const safeText = (val, fallback = "N/A") => {
-    if (val === null || val === undefined || val === "" || String(val).toLowerCase() === "nan" || String(val).toLowerCase() === "none" || String(val).toLowerCase() === "null") {
+    if (
+      val === null ||
+      val === undefined ||
+      val === "" ||
+      String(val).toLowerCase() === "nan" ||
+      String(val).toLowerCase() === "none" ||
+      String(val).toLowerCase() === "null"
+    ) {
       return fallback;
     }
     return String(val);
@@ -604,7 +613,8 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
                 </div>
               </div>
               <p className="text-[10px] text-slate-500 mt-2">
-                {safeFixed(kpis?.compensation_disbursed_pct, 1, "75.0")}% Disbursed
+                {safeFixed(kpis?.compensation_disbursed_pct, 1, "75.0")}%
+                Disbursed
               </p>
             </div>
 
@@ -674,13 +684,21 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
                   Critical Delay Probability
                 </span>
                 <div className="text-3xl font-black text-white mt-1">
-                  {(safeNumber(risk_stratification?.delay_probability, 0.45) * 100).toFixed(1)}%
+                  {(
+                    safeNumber(risk_stratification?.delay_probability, 0.45) *
+                    100
+                  ).toFixed(1)}
+                  %
                 </div>
               </div>
               <div className="text-[11px] text-slate-400 mt-3">
                 Model Confidence:{" "}
                 <span className="text-blue-300 font-mono">
-                  {(safeNumber(risk_stratification?.confidence_score, 0.88) * 100).toFixed(0)}%
+                  {(
+                    safeNumber(risk_stratification?.confidence_score, 0.88) *
+                    100
+                  ).toFixed(0)}
+                  %
                 </span>
               </div>
             </div>

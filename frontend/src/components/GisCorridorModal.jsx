@@ -88,8 +88,8 @@ const RISK_SET = [
 ];
 
 const PROBS = [
-  0.82, 0.4, 0.48, 0.89, 0.12, 0.55, 0.05, 0.79, 0.42, 0.91, 0.52, 0.14,
-  0.94, 0.08, 0.5, 0.4, 0.86, 0.05,
+  0.82, 0.4, 0.48, 0.89, 0.12, 0.55, 0.05, 0.79, 0.42, 0.91, 0.52, 0.14, 0.94,
+  0.08, 0.5, 0.4, 0.86, 0.05,
 ];
 
 // 18 Cadastral Parcels along the RoW
@@ -120,7 +120,8 @@ const PARCELS = Array.from({ length: 18 }, (_, i) => {
     khatedar: `Khatedar Group #${10 + i} (Succession Review)`,
     affectedFamilies: 8 + (i % 9) * 4,
     disbursedPct: risk === "LOW" ? 95 : 35 + ((i * 7) % 45),
-    amountLocked: risk === "LOW" ? "₹0 Cr" : `₹${(1.2 + i * 0.45).toFixed(2)} Cr`,
+    amountLocked:
+      risk === "LOW" ? "₹0 Cr" : `₹${(1.2 + i * 0.45).toFixed(2)} Cr`,
     courtStay:
       risk === "CRITICAL"
         ? "Active Section 3H Court Injunction"
@@ -171,10 +172,8 @@ export default function GisCorridorModal({ isOpen, onClose }) {
 
   // Filter parcels
   const filteredParcels = PARCELS.filter((p) => {
-    const matchRisk =
-      filterRisk === "ALL" ? true : p.risk === filterRisk;
-    const matchPkg =
-      selectedPkg === "ALL" ? true : p.pkg === selectedPkg;
+    const matchRisk = filterRisk === "ALL" ? true : p.risk === filterRisk;
+    const matchPkg = selectedPkg === "ALL" ? true : p.pkg === selectedPkg;
     return matchRisk && matchPkg;
   });
 
@@ -226,7 +225,8 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Purvanchal Expressway Corridor &bull; Multi-tier Zoom: Macro Alignment &rarr; Package Bounds &rarr; Khasra Strips
+                Purvanchal Expressway Corridor &bull; Multi-tier Zoom: Macro
+                Alignment &rarr; Package Bounds &rarr; Khasra Strips
               </p>
             </div>
           </div>
@@ -368,9 +368,16 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                   >
                     <Tooltip direction="top" offset={[0, -8]} opacity={0.95}>
                       <div className="text-xs p-1">
-                        <strong className="text-sky-300 block">{p.khasra}</strong>
-                        <span>{p.village}, {p.district} ({p.chainage})</span>
-                        <div className="mt-1 font-bold" style={{ color: markerColor }}>
+                        <strong className="text-sky-300 block">
+                          {p.khasra}
+                        </strong>
+                        <span>
+                          {p.village}, {p.district} ({p.chainage})
+                        </span>
+                        <div
+                          className="mt-1 font-bold"
+                          style={{ color: markerColor }}
+                        >
                           {p.risk} Risk &bull; +{p.delayDays} Days
                         </div>
                       </div>
@@ -420,7 +427,8 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                             : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                       }`}
                     >
-                      {selectedParcel.risk} RISK &bull; +{selectedParcel.delayDays} DAYS
+                      {selectedParcel.risk} RISK &bull; +
+                      {selectedParcel.delayDays} DAYS
                     </span>
                   </div>
                   <h3 className="text-xl font-black text-white mt-1">
@@ -477,25 +485,34 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                    <span className="text-slate-400">Acquisition Footprint:</span>
+                    <span className="text-slate-400">
+                      Acquisition Footprint:
+                    </span>
                     <span className="font-mono text-slate-200">
-                      {selectedParcel.area} ({selectedParcel.affectedFamilies} families)
+                      {selectedParcel.area} ({selectedParcel.affectedFamilies}{" "}
+                      families)
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                    <span className="text-slate-400">Compensation Disbursed:</span>
+                    <span className="text-slate-400">
+                      Compensation Disbursed:
+                    </span>
                     <span className="font-mono font-bold text-sky-400">
                       {selectedParcel.disbursedPct}%
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                    <span className="text-slate-400">Funds in Court Escrow:</span>
+                    <span className="text-slate-400">
+                      Funds in Court Escrow:
+                    </span>
                     <span className="font-mono font-bold text-amber-400">
                       {selectedParcel.amountLocked}
                     </span>
                   </div>
                   <div className="flex justify-between py-1.5 text-slate-300">
-                    <span className="text-slate-400">Judicial Stay Status:</span>
+                    <span className="text-slate-400">
+                      Judicial Stay Status:
+                    </span>
                     <span
                       className={`font-semibold ${
                         selectedParcel.risk === "CRITICAL"
@@ -513,7 +530,10 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                   <div className="p-3 rounded-lg bg-sky-950/40 border border-sky-800/40 text-[11px] text-sky-300 flex items-start gap-2">
                     <Sparkles className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                     <span>
-                      Statutory vesting under <strong>NH Act Section 3D(2)</strong> is legally complete. Escrow deposits under Section 3H(4) allow immediate physical carriageway civil works.
+                      Statutory vesting under{" "}
+                      <strong>NH Act Section 3D(2)</strong> is legally complete.
+                      Escrow deposits under Section 3H(4) allow immediate
+                      physical carriageway civil works.
                     </span>
                   </div>
                 </div>
@@ -525,13 +545,16 @@ export default function GisCorridorModal({ isOpen, onClose }) {
                   Select Any RoW Parcel
                 </h4>
                 <p className="text-xs text-slate-500">
-                  Click on any parcel along the 340.8 km corridor to inspect cadastral Khasra attributes, statutory milestone status, and ML delay horizon.
+                  Click on any parcel along the 340.8 km corridor to inspect
+                  cadastral Khasra attributes, statutory milestone status, and
+                  ML delay horizon.
                 </p>
               </div>
             )}
 
             <div className="pt-3 border-t border-slate-800 text-center text-[10px] text-slate-500 font-mono">
-              Purvanchal Alignment Datum &bull; WGS84 EPSG:4326 &bull; MoRTH GIS Node
+              Purvanchal Alignment Datum &bull; WGS84 EPSG:4326 &bull; MoRTH GIS
+              Node
             </div>
           </div>
         </div>

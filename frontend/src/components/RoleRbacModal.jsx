@@ -222,7 +222,8 @@ const ROLES = {
     recommendations: [
       {
         id: "REC-MIN-01",
-        title: "Convene PM GatiShakti National Planning Group (NPG) Special Session",
+        title:
+          "Convene PM GatiShakti National Planning Group (NPG) Special Session",
         statute: "PM GatiShakti Framework 2021",
         delayImpact: "-55 Days Delay",
         desc: "Summon joint meeting with Ministry of Environment, Forest & Climate Change and Railway Board to grant unified clearance.",
@@ -252,7 +253,8 @@ const INITIAL_AUDIT_LOGS = [
     officer: "Dr. R. K. Sharma, IAS (CALA)",
     role: "CALA_TRIBUNAL",
     section: "Section 3G(1)",
-    action: "Approved Section 3G compensation award for ₹18.45 Cr across 35 undisputed khasra parcels in Package 03.",
+    action:
+      "Approved Section 3G compensation award for ₹18.45 Cr across 35 undisputed khasra parcels in Package 03.",
     hash: "a8f9c1b72e50d8329f648d1c8e9b4077f2409f87428e3b1c67d3e09a47ef012a",
     status: "IMMUTABLE_COMMITTED",
   },
@@ -262,7 +264,8 @@ const INITIAL_AUDIT_LOGS = [
     officer: "Er. V. P. Singh (NHAI PD)",
     role: "NHAI_PD",
     section: "Section 3D(2)",
-    action: "Dispatched High Court counter-affidavit pleading absolute vesting under NH Act Section 3D(2) for km 42.",
+    action:
+      "Dispatched High Court counter-affidavit pleading absolute vesting under NH Act Section 3D(2) for km 42.",
     hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     status: "IMMUTABLE_COMMITTED",
   },
@@ -272,7 +275,8 @@ const INITIAL_AUDIT_LOGS = [
     officer: "S. K. Verma (Tehsildar)",
     role: "FIELD_REVENUE",
     section: "UP Rev Code Sec 34",
-    action: "Executed 14 co-sharer mutation endorsements at Handia Tehsil Camp; updated Jamabandi registry.",
+    action:
+      "Executed 14 co-sharer mutation endorsements at Handia Tehsil Camp; updated Jamabandi registry.",
     hash: "7d4a13b689a712fbc45e22981048bca61201994821a8cd39fe81023847291a82",
     status: "IMMUTABLE_COMMITTED",
   },
@@ -322,7 +326,9 @@ export default function RoleRbacModal({ isOpen, onClose }) {
       };
 
       setAuditLogs((prev) => [newLog, ...prev]);
-      setSignedActionIds((prev) => new Set([...prev, selectedActionForSign.id]));
+      setSignedActionIds(
+        (prev) => new Set([...prev, selectedActionForSign.id]),
+      );
       setIsSigning(false);
       setSelectedActionForSign(null);
     }, 1200);
@@ -340,14 +346,16 @@ export default function RoleRbacModal({ isOpen, onClose }) {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-white tracking-tight">
-                  Statutory Role-Based Access Control, Autonomous Alerts &amp; e-Sign
+                  Statutory Role-Based Access Control, Autonomous Alerts &amp;
+                  e-Sign
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">
                   Points 8, 9 &amp; 12
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Statutory Separation of Powers &bull; NH Act 1956 &bull; RFCTLARR Act 2013 &bull; Human-in-the-Loop Architecture
+                Statutory Separation of Powers &bull; NH Act 1956 &bull;
+                RFCTLARR Act 2013 &bull; Human-in-the-Loop Architecture
               </p>
             </div>
           </div>
@@ -381,7 +389,15 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                 <span>{r.icon}</span>
                 <span>{r.name}</span>
                 <span className="text-[10px] opacity-75 font-mono">
-                  ({r.key === "FIELD_REVENUE" ? "Lekhpal" : r.key === "CALA_TRIBUNAL" ? "CALA" : r.key === "NHAI_PD" ? "NHAI PD" : "Ministry"})
+                  (
+                  {r.key === "FIELD_REVENUE"
+                    ? "Lekhpal"
+                    : r.key === "CALA_TRIBUNAL"
+                      ? "CALA"
+                      : r.key === "NHAI_PD"
+                        ? "NHAI PD"
+                        : "Ministry"}
+                  )
                 </span>
               </button>
             ))}
@@ -460,7 +476,9 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                     <strong className="text-white block font-semibold">
                       100% Autonomous Server Watchdog Engine
                     </strong>
-                    Evaluated autonomously by backend statutory daemons without human intervention. Automatically pushes notifications to registered official NIC Sandes &amp; Gov Email registry.
+                    Evaluated autonomously by backend statutory daemons without
+                    human intervention. Automatically pushes notifications to
+                    registered official NIC Sandes &amp; Gov Email registry.
                   </div>
                 </div>
 
@@ -544,7 +562,11 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                     <strong className="text-white block">
                       Constitutional Human-in-the-Loop Safeguard:
                     </strong>
-                    Under Articles 77 and 166 of the Constitution of India, an algorithm cannot unilaterally issue a Government Order. The AI generates pre-drafted Draft for Approval (DFA) note-sheets; the empowered nodal officer scrutinizes and affixes their official Digital Signature.
+                    Under Articles 77 and 166 of the Constitution of India, an
+                    algorithm cannot unilaterally issue a Government Order. The
+                    AI generates pre-drafted Draft for Approval (DFA)
+                    note-sheets; the empowered nodal officer scrutinizes and
+                    affixes their official Digital Signature.
                   </div>
                 </div>
 
@@ -616,7 +638,8 @@ export default function RoleRbacModal({ isOpen, onClose }) {
               <div className="flex items-center gap-2">
                 <Database className="w-4 h-4 text-emerald-400" />
                 <h3 className="font-bold text-white text-sm">
-                  Point 12: Immutable Statutory Audit Trail &amp; Cryptographic Ledger
+                  Point 12: Immutable Statutory Audit Trail &amp; Cryptographic
+                  Ledger
                 </h3>
               </div>
               <span className="text-[11px] font-mono text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-full">
@@ -625,7 +648,10 @@ export default function RoleRbacModal({ isOpen, onClose }) {
             </div>
 
             <p className="text-xs text-slate-400">
-              Every statutory decision, compensation award, and e-signed order is hashed with SHA-256 and permanently stored with officer credentials to satisfy Central Vigilance Commission (CVC) &amp; CAG audit mandates.
+              Every statutory decision, compensation award, and e-signed order
+              is hashed with SHA-256 and permanently stored with officer
+              credentials to satisfy Central Vigilance Commission (CVC) &amp;
+              CAG audit mandates.
             </p>
 
             <div className="overflow-x-auto rounded-xl border border-slate-800">
@@ -642,10 +668,15 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                 </thead>
                 <tbody className="divide-y divide-slate-800/80 font-mono">
                   {auditLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-900/50 transition">
+                    <tr
+                      key={log.id}
+                      className="hover:bg-slate-900/50 transition"
+                    >
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="font-bold text-white">{log.id}</div>
-                        <div className="text-[10px] text-slate-400">{log.time}</div>
+                        <div className="text-[10px] text-slate-400">
+                          {log.time}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-slate-200">
                         {log.officer}
@@ -728,15 +759,21 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                 <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-xs space-y-1">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Signing Authority:</span>
-                    <span className="font-bold text-white">{currentRole.name}</span>
+                    <span className="font-bold text-white">
+                      {currentRole.name}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Designation:</span>
-                    <span className="text-slate-300">{currentRole.designation}</span>
+                    <span className="text-slate-300">
+                      {currentRole.designation}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Certificate Datum:</span>
-                    <span className="font-mono text-indigo-400">CCA India Class-3 DSC (Exp 2028)</span>
+                    <span className="font-mono text-indigo-400">
+                      CCA India Class-3 DSC (Exp 2028)
+                    </span>
                   </div>
                 </div>
 
@@ -753,7 +790,8 @@ export default function RoleRbacModal({ isOpen, onClose }) {
                     maxLength={6}
                   />
                   <span className="text-[10px] text-slate-400 block text-center">
-                    Demo pre-filled with official token. Click below to execute statutory order.
+                    Demo pre-filled with official token. Click below to execute
+                    statutory order.
                   </span>
                 </div>
 
