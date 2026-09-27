@@ -24,6 +24,7 @@ CURRENT_DIR = Path(__file__).resolve().parent
 if str(CURRENT_DIR) not in sys.path:
     sys.path.insert(0, str(CURRENT_DIR))
 from typing import List, Dict, Any, Optional
+import math
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Header, Request
@@ -34,6 +35,49 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import OneHotEncoder
 import shap
 import joblib
+
+def _safe_float(val, default=0.0):
+    if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", ""]:
+        return float(default)
+    try:
+        v = float(val)
+        return float(default) if (math.isnan(v) or math.isinf(v)) else v
+    except Exception:
+        return float(default)
+
+def _safe_int(val, default=0):
+    if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", ""]:
+        return int(default)
+    try:
+        v = float(val)
+        return int(default) if (math.isnan(v) or math.isinf(v)) else int(round(v))
+    except Exception:
+        return int(default)
+
+def _safe_str(val, default=""):
+    if val is None or pd.isna(val) or str(val).strip().lower() in ["nan", "none", "null", ""]:
+        return default
+    return str(val).strip()
+
+def sanitize_data_recursively(obj):
+    if obj is None:
+        return None
+    if isinstance(obj, float):
+        if math.isnan(obj) or math.isinf(obj):
+            return 0.0
+        return obj
+    elif isinstance(obj, (int, bool)):
+        return obj
+    elif isinstance(obj, dict):
+        return {k: sanitize_data_recursively(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [sanitize_data_recursively(v) for v in obj]
+    elif isinstance(obj, str):
+        if obj.strip().lower() in ["nan", "none", "null"]:
+            return ""
+        return obj
+    return obj
+
 
 from mock_data import (
     generate_synthetic_dataset,
@@ -1416,7 +1460,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         })
 
     # 3.1 Physical Commissioning vs Statutory Legal Liquidation
-    civil_progress = float(proj.get("civil_work_progress_pct", 100.0 if ("expressway" in str(proj.get("project_name", "")).lower() or "metro" in str(proj.get("project_name", "")).lower()) else 82.5))
+    civil_progress = _safe_float(proj.get("civil_work_progress_pct"), 100.0 if ("expressway" in str(proj.get("project_name", "")).lower() or "metro" in str(proj.get("project_name", "")).lower()) else 82.5)
     is_physically_operational = civil_progress >= 95.0
     physical_status = "100% Commissioned & Open to Traffic" if is_physically_operational else f"Under Active Civil Construction ({civil_progress:.1f}% Built)"
     physical_note = (
@@ -1424,22 +1468,23 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         if is_physically_operational else
         "Physical civil infrastructure is actively being constructed by EPC concessionaires."
     )
-    pending_stays = int(proj.get("pending_court_injunctions", 14 if is_physically_operational else 3))
-    escrow_amount_locked_cr = float(proj.get("escrow_amount_locked_cr", 412.5 if is_physically_operational else 74.0))
+    pending_stays = _safe_int(proj.get("pending_court_injunctions"), 14 if is_physically_operational else 3)
+    escrow_amount_locked_cr = _safe_float(proj.get("escrow_amount_locked_cr"), 412.5 if is_physically_operational else 74.0)
     historical_escrow_delay_days = 1226 if is_physically_operational else max(0, days_in_stage - 60)
     total_case_free_horizon_days = historical_escrow_delay_days + predicted_delay
 
     # 4. Card 2: Executive Overview KPIs
+    actual_delay = _safe_int(proj.get("actual_delay_days"), predicted_delay)
     kpis = {
         "predicted_delay_days": predicted_delay,
-        "actual_delay_days": int(proj.get("actual_delay_days", predicted_delay)),
-        "delay_delta_benchmark": int(predicted_delay - int(proj.get("actual_delay_days", predicted_delay))),
-        "compensation_disbursed_pct": float(proj.get("compensation_disbursed_pct", 75.0)),
+        "actual_delay_days": actual_delay,
+        "delay_delta_benchmark": int(predicted_delay - actual_delay),
+        "compensation_disbursed_pct": _safe_float(proj.get("compensation_disbursed_pct"), 75.0),
         "pending_court_injunctions": pending_stays,
         "jms_survey_done": bool(proj.get("joint_measurement_survey_done", True)),
-        "affected_families_count": int(proj.get("affected_families_count", 120)),
-        "total_area_hectares": float(proj.get("total_area_hectares", 150.0)),
-        "missing_title_deeds_pct": float(proj.get("missing_title_deeds_pct", 8.5)),
+        "affected_families_count": _safe_int(proj.get("affected_families_count"), 120),
+        "total_area_hectares": _safe_float(proj.get("total_area_hectares"), 150.0),
+        "missing_title_deeds_pct": _safe_float(proj.get("missing_title_deeds_pct"), 8.5),
         "sec_3h_escrow_deposited": bool(proj.get("sec_3h_escrow_deposited", True)),
         "is_physically_operational": is_physically_operational,
         "civil_work_progress_pct": civil_progress,
@@ -1451,7 +1496,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     }
 
     # 5. Card 3: Predictive Risk Stratification across Corridor
-    high_prob = float(pred.get("delay_probability", 0.45))
+    high_prob = _safe_float(pred.get("delay_probability"), 0.45)
     med_prob = max(0.05, min(0.60, 1.0 - high_prob - 0.20))
     low_prob = max(0.05, round(1.0 - high_prob - med_prob, 3))
     
@@ -1469,21 +1514,14 @@ def project_parse_and_predict(req: ProjectQueryRequest):
 
     # 6. Card 4: Apache ECharts Comparative Package Delay Breakdown
     raw_pkg = proj.get("packages_count")
-    try:
-        if raw_pkg is None or pd.isna(raw_pkg) or str(raw_pkg).strip().lower() in ["nan", "none", ""]:
-            pkg_count = 5
-        else:
-            pkg_count = max(1, min(8, int(float(raw_pkg))))
-    except Exception:
+    pkg_count = _safe_int(raw_pkg, 5)
+    if pkg_count <= 0:
         pkg_count = 5
+    pkg_count = max(1, min(8, pkg_count))
 
     raw_km = proj.get("total_km")
-    try:
-        if raw_km is None or pd.isna(raw_km) or str(raw_km).strip().lower() in ["nan", "none", ""]:
-            total_km = 45.0
-        else:
-            total_km = round(float(raw_km), 1)
-    except Exception:
+    total_km = _safe_float(raw_km, 45.0)
+    if total_km <= 0:
         total_km = 45.0
 
     package_breakdown = []
@@ -1527,7 +1565,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     # 9. Card 7: TreeSHAP Factor Attribution & Statutory Prescriptive SOP Actions
     explainer = DATA_STORE.get("explainer")
     shap_factors = []
-    base_val = DATA_STORE.get("expected_value", 70.0)
+    base_val = _safe_float(DATA_STORE.get("expected_value"), 70.0)
 
     if explainer is not None and DATA_STORE.get("is_production_model"):
         try:
@@ -1539,13 +1577,23 @@ def project_parse_and_predict(req: ProjectQueryRequest):
                 val = float(sv[idx])
                 if abs(val) > 0.4:
                     friendly_title, desc = FRIENDLY_NAMES_47.get(col, (col.replace('_', ' ').title(), ""))
+                    raw_val = proj.get(col)
+                    if raw_val is None or pd.isna(raw_val) or str(raw_val).strip().lower() in ["nan", "none", "null", ""]:
+                        clean_raw = "None Recorded"
+                    elif isinstance(raw_val, float):
+                        clean_raw = f"{raw_val:.1f}" if abs(raw_val) < 1000 else f"{raw_val:.0f}"
+                    elif isinstance(raw_val, bool):
+                        clean_raw = "Yes" if raw_val else "No"
+                    else:
+                        clean_raw = str(raw_val).replace("_", " ").title()
+
                     shap_factors.append({
                         "feature": col,
                         "feature_name": friendly_title,
                         "description": desc,
                         "shap_value": round(val, 2),
                         "impact_type": "delay_driver" if val > 0 else "delay_mitigator",
-                        "raw_value": str(proj.get(col, ""))
+                        "raw_value": clean_raw
                     })
             shap_factors.sort(key=lambda x: abs(x["shap_value"]), reverse=True)
             shap_factors = shap_factors[:8]
@@ -1555,10 +1603,10 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     if not shap_factors:
         # Fallback informative factors
         shap_factors = [
-            {"feature": "pending_court_injunctions", "feature_name": "Civil Court Injunctions", "shap_value": 34.5, "impact_type": "delay_driver", "description": "Active stay orders halting possession"},
-            {"feature": "sec_3h_escrow_deposited", "feature_name": "Section 3H Escrow Protection", "shap_value": -22.1, "impact_type": "delay_mitigator", "description": "Escrow deposited in court mitigates stay impact"},
-            {"feature": "compensation_disbursed_pct", "feature_name": "Compensation Disbursed (%)", "shap_value": -18.4, "impact_type": "delay_mitigator", "description": "High disbursement facilitates voluntary possession surrender"},
-            {"feature": "monsoon_disruption_probability", "feature_name": "Monsoon Disruption Probability", "shap_value": 15.2, "impact_type": "delay_driver", "description": "Precipitation risks halting earthworks"}
+            {"feature": "pending_court_injunctions", "feature_name": "Civil Court Injunctions", "shap_value": 34.5, "impact_type": "delay_driver", "description": "Active stay orders halting possession", "raw_value": "14 Active Stays"},
+            {"feature": "sec_3h_escrow_deposited", "feature_name": "Section 3H Escrow Protection", "shap_value": -22.1, "impact_type": "delay_mitigator", "description": "Escrow deposited in court mitigates stay impact", "raw_value": "Protected"},
+            {"feature": "compensation_disbursed_pct", "feature_name": "Compensation Disbursed (%)", "shap_value": -18.4, "impact_type": "delay_mitigator", "description": "High disbursement facilitates voluntary possession surrender", "raw_value": "75.0%"},
+            {"feature": "monsoon_disruption_probability", "feature_name": "Monsoon Disruption Probability", "shap_value": 15.2, "impact_type": "delay_driver", "description": "Precipitation risks halting earthworks", "raw_value": "Moderate"}
         ]
 
     sop_actions = generate_statutory_prescriptions(proj)
@@ -1568,21 +1616,21 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     audit_meta = {
         "source": "Central Database (searched_projects.csv)",
         "query_latency_ms": round(query_latency, 2),
-        "doc_inventory_hash": str(proj.get("doc_inventory_hash", "synced_v1")),
-        "last_synced": str(proj.get("last_parsed_timestamp", datetime.utcnow().isoformat())),
+        "doc_inventory_hash": _safe_str(proj.get("doc_inventory_hash"), "synced_v1"),
+        "last_synced": _safe_str(proj.get("last_parsed_timestamp"), datetime.utcnow().isoformat()),
         "ocr_parser_invoked": False,
         "storage_mode": "PostgreSQL-Ready Storage Engine"
     }
 
-    return {
+    result_payload = {
         "project": {
-            "project_id": str(proj.get("project_id", "PRJ-001")),
-            "project_name": str(proj.get("project_name", req.project_name)),
-            "agency": str(proj.get("agency", req.agency or "NHAI")),
-            "ministry": str(proj.get("ministry", req.ministry or "MoRTH")),
-            "government_type": str(proj.get("government_type", req.government_type or "Central Gov")),
-            "state": str(proj.get("state", "Uttar Pradesh")),
-            "corridor": str(proj.get("corridor", "National RoW Corridor")),
+            "project_id": _safe_str(proj.get("project_id"), "PRJ-001"),
+            "project_name": _safe_str(proj.get("project_name"), req.project_name),
+            "agency": _safe_str(proj.get("agency"), req.agency or "NHAI"),
+            "ministry": _safe_str(proj.get("ministry"), req.ministry or "MoRTH"),
+            "government_type": _safe_str(proj.get("government_type"), req.government_type or "Central Gov"),
+            "state": _safe_str(proj.get("state"), "Uttar Pradesh"),
+            "corridor": _safe_str(proj.get("corridor"), f"{_safe_str(proj.get('project_name'), req.project_name)} RoW Corridor"),
             "total_km": total_km,
             "packages_count": pkg_count
         },
@@ -1613,6 +1661,8 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         },
         "database_audit": audit_meta
     }
+
+    return sanitize_data_recursively(result_payload)
 
 
 @app.post("/api/v1/ml/feedback")

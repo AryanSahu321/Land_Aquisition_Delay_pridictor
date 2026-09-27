@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import ProjectSearchLanding from "./components/ProjectSearchLanding";
 import ProjectResultsView from "./components/ProjectResultsView";
 import ApiGatewayModal from "./components/ApiGatewayModal";
-import { Compass, ArrowLeft, Database, ShieldCheck, Zap } from "lucide-react";
+import GisCorridorModal from "./components/GisCorridorModal";
+import RoleRbacModal from "./components/RoleRbacModal";
+import { Compass, ArrowLeft, Database, ShieldCheck, Zap, Layers, Scale } from "lucide-react";
 
 export default function App() {
   const [view, setView] = useState("search"); // 'search' | 'results'
   const [selectedProjectData, setSelectedProjectData] = useState(null);
   const [isApiGatewayOpen, setIsApiGatewayOpen] = useState(false);
+  const [isGisModalOpen, setIsGisModalOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
   const handleProjectSelected = (data) => {
     setSelectedProjectData(data);
@@ -46,16 +50,42 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Action: API Gateway Trigger + Back to Search / DB Status */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Action: Interactive Prototypes + API Gateway Trigger */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Point 7: Interactive GIS Corridor Prototype Trigger */}
+            <button
+              onClick={() => setIsGisModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-sky-500/50 cursor-pointer"
+              title="Point 7: GIS Corridor & Cadastral Mapping Prototype"
+            >
+              <Layers className="w-3.5 h-3.5 text-sky-400" />
+              <span className="hidden sm:inline">GIS Corridor</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                Point 7
+              </span>
+            </button>
+
+            {/* Points 8, 9, 12: Statutory Role RBAC & e-Sign Prototype Trigger */}
+            <button
+              onClick={() => setIsRoleModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-emerald-500/50 cursor-pointer"
+              title="Points 8, 9, 12: Statutory Role-Based Access, Alerts & e-Sign Prototype"
+            >
+              <Scale className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">Role RBAC</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                8, 9, 12
+              </span>
+            </button>
+
             {/* Global Point 11 API Gateway Trigger */}
             <button
               onClick={() => setIsApiGatewayOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-indigo-500/50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-indigo-500/50 cursor-pointer"
               title="Point 11: Government & Developer API Integration Gateway"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>API Gateway</span>
+              <span className="hidden sm:inline">API Gateway</span>
               <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 Point 11
               </span>
@@ -67,12 +97,12 @@ export default function App() {
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/30 transition-all cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Back to Search</span>
+                <span className="hidden sm:inline">Back to Search</span>
               </button>
             ) : (
-              <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 font-mono">
+              <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 font-mono">
                 <Database className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-slate-300">Central Database Ready</span>
+                <span className="text-slate-300">Central DB Ready</span>
               </div>
             )}
           </div>
@@ -91,6 +121,18 @@ export default function App() {
         )}
       </main>
 
+      {/* Point 7: Interactive GIS Corridor & Cadastral Mapping Modal */}
+      <GisCorridorModal
+        isOpen={isGisModalOpen}
+        onClose={() => setIsGisModalOpen(false)}
+      />
+
+      {/* Points 8, 9, 12: Statutory Role RBAC, Autonomous Alerts & e-Sign Modal */}
+      <RoleRbacModal
+        isOpen={isRoleModalOpen}
+        onClose={() => setIsRoleModalOpen(false)}
+      />
+
       {/* Point 11: Developer & Government API Gateway Modal */}
       <ApiGatewayModal
         isOpen={isApiGatewayOpen}
@@ -99,3 +141,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -47,6 +47,12 @@ export default function CorridorMap({
   const [mapCenter, setMapCenter] = useState([25.463, 81.922]);
   const [mapZoom, setMapZoom] = useState(13);
   const [filterRisk, setFilterRisk] = useState("ALL");
+  const [internalSelectedParcel, setInternalSelectedParcel] = useState(null);
+
+  const activeParcel =
+    selectedParcel !== undefined && selectedParcel !== null
+      ? selectedParcel
+      : internalSelectedParcel;
 
   if (!data || !data.features || data.features.length === 0) {
     return (
@@ -61,7 +67,10 @@ export default function CorridorMap({
 
   const handleFeatureClick = (feature) => {
     const props = feature.properties;
-    onSelectParcel(props);
+    if (onSelectParcel) {
+      onSelectParcel(props);
+    }
+    setInternalSelectedParcel(props);
     if (props.center_lat && props.center_lon) {
       setMapCenter([props.center_lat, props.center_lon]);
       setMapZoom(15);
@@ -73,7 +82,7 @@ export default function CorridorMap({
     const props = feature.properties;
     const prob = props.delay_probability || 0;
     const isSelected =
-      selectedParcel && selectedParcel.parcel_id === props.parcel_id;
+      activeParcel && activeParcel.parcel_id === props.parcel_id;
     const color = getRiskColor(prob);
 
     // Apply risk filter opacity
@@ -216,7 +225,7 @@ export default function CorridorMap({
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
             <GeoJSON
-              key={`corridor-${filterRisk}-${selectedParcel?.parcel_id || "none"}`}
+              key={`corridor-${filterRisk}-${activeParcel?.parcel_id || "none"}`}
               data={data}
               style={geojsonStyle}
               onEachFeature={onEachFeature}
@@ -245,39 +254,39 @@ export default function CorridorMap({
 
         {/* Interactive Inspect Side-Sheet */}
         <div className="lg:col-span-4 h-[520px] bg-slate-900/90 rounded-xl border border-slate-800 p-5 flex flex-col justify-between overflow-y-auto shadow-2xl">
-          {selectedParcel ? (
+          {activeParcel ? (
             <div className="space-y-4">
               {/* Header */}
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
-                    Stationing: {selectedParcel.chainage_km}
+                    Stationing: {activeParcel.chainage_km || "km 42+000"}
                   </span>
                   <span
                     className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
-                      selectedParcel.risk_category === "High"
+                      activeParcel.risk_category === "High" || activeParcel.risk_category === "Critical"
                         ? "bg-red-500/20 text-red-300 border-red-500/40"
-                        : selectedParcel.risk_category === "Medium"
+                        : activeParcel.risk_category === "Medium" || activeParcel.risk_category === "Moderate"
                           ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
                           : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
                     }`}
                   >
-                    {selectedParcel.risk_category} Risk (
-                    {Math.round((selectedParcel.delay_probability || 0) * 100)}
+                    {activeParcel.risk_category || "Low"} Risk (
+                    {Math.round((activeParcel.delay_probability || 0) * 100)}
                     %)
                   </span>
                 </div>
                 <h3 className="text-xl font-extrabold text-white mt-1">
                   Khasra No:{" "}
-                  {selectedParcel.khasra_no || selectedParcel.parcel_id}
+                  {activeParcel.khasra_no || activeParcel.parcel_id}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  {selectedParcel.village_name}, Tehsil {selectedParcel.tehsil},{" "}
-                  {selectedParcel.district}
+                  {activeParcel.village_name || "Village"}, Tehsil {activeParcel.tehsil || "Sadar"},{" "}
+                  {activeParcel.district || "District"}
                 </p>
                 <div className="text-[11px] font-mono text-slate-500 mt-0.5">
-                  Khatauni: {selectedParcel.khatauni_no || "KH-3912"} &bull; ID:{" "}
-                  {selectedParcel.parcel_id}
+                  Khatauni: {activeParcel.khatauni_no || "KH-3912"} &bull; ID:{" "}
+                  {activeParcel.parcel_id}
                 </div>
               </div>
 
@@ -289,7 +298,7 @@ export default function CorridorMap({
                   </span>
                   <div className="text-right">
                     <span className="text-2xl font-black text-amber-400">
-                      +{selectedParcel.predicted_delay_days}
+                      +{activeParcel.predicted_delay_days || 0}
                     </span>
                     <span className="text-xs text-slate-400 font-mono ml-1">
                       Days
@@ -304,7 +313,7 @@ export default function CorridorMap({
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-950/50 text-red-300 border border-red-800/40">
                     <AlertTriangle className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                    {selectedParcel.primary_bottleneck ||
+                    {activeParcel.primary_bottleneck ||
                       "Pending Section Verification"}
                   </span>
                 </div>
@@ -315,26 +324,26 @@ export default function CorridorMap({
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
                   <span className="text-slate-400">Statutory Milestone:</span>
                   <span className="font-semibold text-white">
-                    {selectedParcel.statutory_stage}
+                    {activeParcel.statutory_stage || "Section 3D Declaration"}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
                   <span className="text-slate-400">Elapsed in Stage:</span>
                   <span className="font-mono text-slate-200">
-                    {selectedParcel.days_in_current_stage || 45} days
+                    {activeParcel.days_in_current_stage || 45} days
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
                   <span className="text-slate-400">Land Classification:</span>
                   <span className="font-semibold text-slate-200">
-                    {selectedParcel.land_type}
+                    {activeParcel.land_type || "Agricultural"}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
                   <span className="text-slate-400">Acquisition Footprint:</span>
                   <span className="font-mono text-slate-200">
-                    {selectedParcel.total_area_hectares} ha (
-                    {selectedParcel.affected_families_count} families)
+                    {activeParcel.total_area_hectares || 1.5} ha (
+                    {activeParcel.affected_families_count || 12} families)
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
@@ -342,16 +351,16 @@ export default function CorridorMap({
                     Compensation Disbursed:
                   </span>
                   <span className="font-mono font-bold text-blue-400">
-                    {selectedParcel.compensation_disbursed_pct}%
+                    {activeParcel.compensation_disbursed_pct || 0}%
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
                   <span className="text-slate-400">Civil Court Stays:</span>
                   <span
-                    className={`font-mono font-bold ${selectedParcel.pending_court_injunctions > 0 ? "text-red-400" : "text-emerald-400"}`}
+                    className={`font-mono font-bold ${activeParcel.pending_court_injunctions > 0 ? "text-red-400" : "text-emerald-400"}`}
                   >
-                    {selectedParcel.pending_court_injunctions} active
-                    {selectedParcel.sec_3h_escrow_deposited
+                    {activeParcel.pending_court_injunctions || 0} active
+                    {activeParcel.sec_3h_escrow_deposited
                       ? " (Sec 3H Escrowed)"
                       : ""}
                   </span>
@@ -361,9 +370,9 @@ export default function CorridorMap({
                     Joint Measurement Survey:
                   </span>
                   <span
-                    className={`font-semibold ${selectedParcel.jms_completed !== false ? "text-emerald-400" : "text-red-400"}`}
+                    className={`font-semibold ${activeParcel.jms_completed !== false ? "text-emerald-400" : "text-red-400"}`}
                   >
-                    {selectedParcel.jms_completed !== false
+                    {activeParcel.jms_completed !== false
                       ? "Demarcation Complete"
                       : "Survey Stalled"}
                   </span>
@@ -373,8 +382,8 @@ export default function CorridorMap({
               {/* Action Button: Launch Simulation Sandbox */}
               <div className="pt-2">
                 <button
-                  onClick={() => onOpenSimulation(selectedParcel)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-0.5"
+                  onClick={() => onOpenSimulation && onOpenSimulation(activeParcel)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-0.5 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-blue-200" />
                   <span>Launch "What-If" Simulation & XAI</span>
