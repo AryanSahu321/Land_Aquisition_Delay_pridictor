@@ -1,38 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import {
-  MapPin,
-  AlertOctagon,
-  CheckCircle,
-  AlertTriangle,
+  MapContainer,
+  TileLayer,
+  GeoJSON,
+  Polyline,
+  CircleMarker,
+  Tooltip,
+  useMap,
+} from "react-leaflet";
+import {
   Layers,
-  ArrowUpRight,
-  Sparkles,
-  Scale,
-  Calendar,
-  Building,
+  MapPin,
+  Compass,
+  AlertTriangle,
+  CheckCircle,
+  AlertOctagon,
   Maximize2,
+  FileText,
+  ShieldAlert,
+  Scale,
+  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 
-// Color choropleth mapping based on delay probability
-function getRiskColor(delayProb) {
-  if (delayProb < 0.3) {
-    return "#10b981"; // Emerald 500 (Green)
-  } else if (delayProb <= 0.65) {
-    return "#f59e0b"; // Amber 500 (Yellow)
-  } else {
-    return "#ef4444"; // Red 500 (Critical)
-  }
+// Risk color mapping
+function getRiskColor(prob) {
+  if (prob >= 0.65) return "#ef4444"; // Red (Critical)
+  if (prob >= 0.3) return "#f59e0b"; // Amber (Moderate)
+  return "#10b981"; // Emerald (Low / Cleared)
 }
 
-// Map center controller
-function MapController({ center, zoom }) {
+// Controller to handle fitBounds and flyTo
+function MapViewController({ bounds, center, zoom }) {
   const map = useMap();
+
   useEffect(() => {
-    if (center) {
-      map.flyTo(center, zoom || 14, { duration: 1.2 });
+    if (bounds && bounds.length === 2) {
+      try {
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      } catch {
+        if (center) map.flyTo(center, zoom || 10, { duration: 1.2 });
+      }
+    } else if (center) {
+      map.flyTo(center, zoom || 10, { duration: 1.2 });
     }
-  }, [center, zoom, map]);
+  }, [bounds, center, zoom, map]);
+
   return null;
 }
 
@@ -41,94 +54,79 @@ export default function CorridorMap({
   corridorGeojson,
   selectedParcel,
   onSelectParcel,
-  onOpenSimulation,
 }) {
-  const data = corridorData || corridorGeojson;
-  const [mapCenter, setMapCenter] = useState([25.463, 81.922]);
-  const [mapZoom, setMapZoom] = useState(13);
-  const [filterRisk, setFilterRisk] = useState("ALL");
+  const data = corridorData || corridorGeojson || {};
+  const features = data.features || [];
+
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [baseLayer, setBaseLayer] = useState("street"); // 'street' | 'satellite'
   const [internalSelectedParcel, setInternalSelectedParcel] = useState(null);
 
+  // Auto-select first parcel if none selected
   useEffect(() => {
-    if (data && data.center && Array.isArray(data.center)) {
-      setMapCenter(data.center);
-      setMapZoom(data.zoom || 12);
-    } else if (data && data.features && data.features.length > 0) {
-      const firstProps = data.features[0].properties;
-      if (firstProps && firstProps.center_lat && firstProps.center_lon) {
-        setMapCenter([firstProps.center_lat, firstProps.center_lon]);
-        setMapZoom(data.zoom || 12);
-      }
+    if (!selectedParcel && !internalSelectedParcel && features.length > 0) {
+      const defaultParcel = features[0].properties;
+      setInternalSelectedParcel(defaultParcel);
+      if (onSelectParcel) onSelectParcel(defaultParcel);
     }
-  }, [data]);
+  }, [features, selectedParcel, internalSelectedParcel, onSelectParcel]);
 
-  const activeParcel =
-    selectedParcel !== undefined && selectedParcel !== null
-      ? selectedParcel
-      : internalSelectedParcel;
+  const activeParcel = selectedParcel || internalSelectedParcel;
 
-  if (!data || !data.features || data.features.length === 0) {
-    return (
-      <div className="h-[520px] bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center text-slate-400">
-        <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-2"></div>
-        <span className="ml-3 text-sm">
-          Rendering Right-of-Way GIS Corridor...
-        </span>
-      </div>
-    );
-  }
+  // Filter features based on active risk filter
+  const filteredFeatures = features.filter((feat) => {
+    const prob = feat.properties?.delay_probability || 0;
+    if (activeFilter === "CRITICAL") return prob >= 0.65;
+    if (activeFilter === "MODERATE") return prob >= 0.3 && prob < 0.65;
+    if (activeFilter === "LOW") return prob < 0.3;
+    return true;
+  });
 
-  const handleFeatureClick = (feature) => {
-    const props = feature.properties;
-    if (onSelectParcel) {
-      onSelectParcel(props);
-    }
-    setInternalSelectedParcel(props);
-    if (props.center_lat && props.center_lon) {
-      setMapCenter([props.center_lat, props.center_lon]);
-      setMapZoom(15);
-    }
+  const filteredGeojson = {
+    type: "FeatureCollection",
+    features: filteredFeatures,
   };
 
-  // Style each parcel polygon
-  const geojsonStyle = (feature) => {
-    const props = feature.properties;
-    const prob = props.delay_probability || 0;
-    const isSelected =
-      activeParcel && activeParcel.parcel_id === props.parcel_id;
-    const color = getRiskColor(prob);
+  // Highway spine alignment line
+  const alignmentLine = data.alignment_line || [];
+  const milestones = data.milestones || [];
+  const mapCenter = data.center || [26.25, 82.35];
+  const mapZoom = data.zoom || 9;
+  const mapBounds = data.bounds || null;
 
-    // Apply risk filter opacity
-    let opacity = 0.85;
-    let fillOpacity = 0.55;
-    if (filterRisk !== "ALL") {
-      if (filterRisk === "HIGH" && prob <= 0.65) fillOpacity = 0.08;
-      if (filterRisk === "MEDIUM" && (prob < 0.3 || prob > 0.65))
-        fillOpacity = 0.08;
-      if (filterRisk === "LOW" && prob >= 0.3) fillOpacity = 0.08;
-    }
+  const handleParcelClick = (feature) => {
+    const props = feature.properties;
+    setInternalSelectedParcel(props);
+    if (onSelectParcel) onSelectParcel(props);
+  };
+
+  // Polygon styling for cadastral strips
+  const geojsonStyle = (feature) => {
+    const props = feature.properties || {};
+    const prob = props.delay_probability || 0;
+    const isSelected = activeParcel && activeParcel.parcel_id === props.parcel_id;
+    const color = getRiskColor(prob);
 
     return {
       fillColor: color,
       weight: isSelected ? 4 : 2,
-      opacity: isSelected ? 1.0 : opacity,
+      opacity: isSelected ? 1.0 : 0.85,
       color: isSelected ? "#ffffff" : color,
-      dashArray: isSelected ? "" : "",
-      fillOpacity: isSelected ? 0.85 : fillOpacity,
+      fillOpacity: isSelected ? 0.85 : 0.6,
     };
   };
 
   const onEachFeature = (feature, layer) => {
-    const props = feature.properties;
+    const props = feature.properties || {};
     const prob = Math.round((props.delay_probability || 0) * 100);
     const delay = props.predicted_delay_days || 0;
     const risk = props.risk_category || "Low";
 
     layer.on({
-      click: () => handleFeatureClick(feature),
+      click: () => handleParcelClick(feature),
       mouseover: (e) => {
         const l = e.target;
-        l.setStyle({ weight: 4, color: "#60a5fa", fillOpacity: 0.8 });
+        l.setStyle({ weight: 4, color: "#60a5fa", fillOpacity: 0.9 });
       },
       mouseout: (e) => {
         const l = e.target;
@@ -136,293 +134,368 @@ export default function CorridorMap({
       },
     });
 
-    const tooltipContent = `
-      <div style="font-family: Inter, sans-serif; font-size: 12px; color: #f8fafc;">
-        <div style="font-weight: bold; color: #93c5fd; margin-bottom: 2px;">
-          ${props.khasra_no ? `Khasra ${props.khasra_no}` : props.parcel_id}
+    const tooltipHtml = `
+      <div style="font-family: inherit; font-size: 11px; color: #f8fafc;">
+        <div style="font-weight: 800; color: #38bdf8; margin-bottom: 2px;">
+          ${props.khasra_no || props.parcel_id} (${props.chainage_km || "RoW Strip"})
         </div>
-        <div>${props.village_name || ""}, ${props.tehsil || ""}</div>
+        <div>${props.village_name || ""}, ${props.district || ""}</div>
         <div style="margin-top: 4px; display: flex; gap: 8px;">
-          <span style="color: ${prob > 65 ? "#f87171" : prob >= 30 ? "#fbbf24" : "#34d399"}; font-weight: 700;">
+          <span style="color: ${prob >= 65 ? "#f87171" : prob >= 30 ? "#fbbf24" : "#34d399"}; font-weight: 700;">
             ${risk} Risk (${prob}%)
           </span>
-          <span style="color: #cbd5e1;">+${delay} days</span>
+          <span style="color: #cbd5e1;">+${delay} Days</span>
         </div>
       </div>
     `;
-    layer.bindTooltip(tooltipContent, {
-      sticky: true,
-      className: "custom-map-tooltip",
-    });
+    layer.bindTooltip(tooltipHtml, { sticky: true, className: "custom-map-tooltip" });
   };
+
+  const criticalCount = features.filter((f) => (f.properties?.delay_probability || 0) >= 0.65).length;
+  const moderateCount = features.filter((f) => (f.properties?.delay_probability || 0) >= 0.3 && (f.properties?.delay_probability || 0) < 0.65).length;
+  const lowCount = features.filter((f) => (f.properties?.delay_probability || 0) < 0.3).length;
 
   return (
     <div className="space-y-4">
-      {/* Map Header & Filter Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
-        <div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-blue-400" />
-            <span>
-              Interactive Right-of-Way Corridor (25 Contiguous Parcels)
-            </span>
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            NH-19 Expressway Alignment &bull; Prayagraj-Varanasi Stretch &bull;
-            Live ML Choropleth
-          </p>
+      {/* Top Controls & Metrics Bar */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
+            <Compass className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-extrabold text-white">
+                {data.project_name || "Expressway Right-of-Way Corridor"}
+              </h3>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono font-semibold">
+                Exact 120m RoW Buffer
+              </span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Authentic Cadastral Khasra Strips Hugging the Alignment &bull; Zoom-Resilient Geometry
+            </p>
+          </div>
         </div>
 
-        {/* Risk Filter Buttons */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">Filter:</span>
-          <button
-            onClick={() => setFilterRisk("ALL")}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-md border transition ${
-              filterRisk === "ALL"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750"
-            }`}
-          >
-            All (25)
-          </button>
-          <button
-            onClick={() => setFilterRisk("HIGH")}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-md border flex items-center gap-1.5 transition ${
-              filterRisk === "HIGH"
-                ? "bg-red-600 text-white border-red-500"
-                : "bg-slate-800 text-red-300 border-red-900/50 hover:bg-slate-750"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-red-400"></span>
-            Critical (&gt;65%)
-          </button>
-          <button
-            onClick={() => setFilterRisk("MEDIUM")}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-md border flex items-center gap-1.5 transition ${
-              filterRisk === "MEDIUM"
-                ? "bg-amber-600 text-white border-amber-500"
-                : "bg-slate-800 text-amber-300 border-amber-900/50 hover:bg-slate-750"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-            Moderate (30-65%)
-          </button>
-          <button
-            onClick={() => setFilterRisk("LOW")}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-md border flex items-center gap-1.5 transition ${
-              filterRisk === "LOW"
-                ? "bg-emerald-600 text-white border-emerald-500"
-                : "bg-slate-800 text-emerald-300 border-emerald-900/50 hover:bg-slate-750"
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            Low (&lt;30%)
-          </button>
+        {/* Quick Stat Badges */}
+        <div className="flex items-center gap-2 text-xs">
+          <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">Length</span>
+            <span className="font-bold text-white">{data.total_km || 340.8} km</span>
+          </div>
+          <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">RoW Width</span>
+            <span className="font-bold text-sky-400">120 Metres</span>
+          </div>
+          <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">Scale</span>
+            <span className="font-bold text-emerald-400">100m Strips</span>
+          </div>
         </div>
       </div>
 
-      {/* Map + Side Inspect Drawer Layout */}
+      {/* Main Grid: Map (8 cols) + Inspector (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Leaflet Map Frame */}
-        <div className="lg:col-span-8 h-[520px] rounded-xl overflow-hidden border border-slate-800 relative shadow-2xl">
-          <MapContainer
-            center={mapCenter}
-            zoom={mapZoom}
-            scrollWheelZoom={true}
-            style={{ height: "100%", width: "100%" }}
-          >
-            <MapController center={mapCenter} zoom={mapZoom} />
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <GeoJSON
-              key={`corridor-${filterRisk}-${activeParcel?.parcel_id || "none"}`}
-              data={data}
-              style={geojsonStyle}
-              onEachFeature={onEachFeature}
-            />
-          </MapContainer>
+        {/* Left Map Canvas (8 cols) */}
+        <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+          {/* Controls Header */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            {/* Filter Buttons */}
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-semibold text-slate-300">RoW Parcels:</span>
+              <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+                <button
+                  onClick={() => setActiveFilter("ALL")}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition ${
+                    activeFilter === "ALL" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  All ({features.length})
+                </button>
+                <button
+                  onClick={() => setActiveFilter("CRITICAL")}
+                  className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
+                    activeFilter === "CRITICAL" ? "bg-red-600 text-white" : "text-red-400 hover:text-white"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                  Critical ({criticalCount})
+                </button>
+                <button
+                  onClick={() => setActiveFilter("MODERATE")}
+                  className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
+                    activeFilter === "MODERATE" ? "bg-amber-600 text-white" : "text-amber-400 hover:text-white"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                  Moderate ({moderateCount})
+                </button>
+                <button
+                  onClick={() => setActiveFilter("LOW")}
+                  className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
+                    activeFilter === "LOW" ? "bg-emerald-600 text-white" : "text-emerald-400 hover:text-white"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  Cleared ({lowCount})
+                </button>
+              </div>
+            </div>
 
-          {/* Map Legend Overlay */}
-          <div className="absolute bottom-4 left-4 z-[400] bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-slate-700/80 shadow-xl text-xs space-y-1.5">
-            <div className="font-bold text-slate-200 text-[11px] uppercase tracking-wider mb-1">
-              Live RoW Risk Level
+            {/* Base Layer Switcher & Fit Corridor */}
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+                <button
+                  onClick={() => setBaseLayer("satellite")}
+                  className={`px-2.5 py-1 rounded-md font-medium transition ${
+                    baseLayer === "satellite" ? "bg-indigo-600 text-white font-semibold" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  🛰️ Satellite
+                </button>
+                <button
+                  onClick={() => setBaseLayer("street")}
+                  className={`px-2.5 py-1 rounded-md font-medium transition ${
+                    baseLayer === "street" ? "bg-indigo-600 text-white font-semibold" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  🗺️ Clean Map
+                </button>
+              </div>
+
+              {mapBounds && (
+                <button
+                  onClick={() => {
+                    const mapEl = document.querySelector(".leaflet-container");
+                    if (mapEl && mapEl._leaflet_map) {
+                      mapEl._leaflet_map.fitBounds(mapBounds, { padding: [50, 50] });
+                    }
+                  }}
+                  className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-lg border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>Fit Corridor</span>
+                </button>
+              )}
             </div>
-            <div className="flex items-center gap-2 text-emerald-400">
-              <span className="w-3 h-3 rounded-sm bg-emerald-500"></span>
-              <span>Low Risk (&lt;30% prob)</span>
-            </div>
-            <div className="flex items-center gap-2 text-amber-400">
-              <span className="w-3 h-3 rounded-sm bg-amber-500"></span>
-              <span>Moderate Risk (30-65% prob)</span>
-            </div>
-            <div className="flex items-center gap-2 text-red-400">
-              <span className="w-3 h-3 rounded-sm bg-red-500"></span>
-              <span>Critical Blocker (&gt;65% prob)</span>
+          </div>
+
+          {/* Leaflet Map Frame */}
+          <div className="h-[540px] rounded-xl overflow-hidden border border-slate-800 relative shadow-2xl">
+            <MapContainer
+              center={mapCenter}
+              zoom={mapZoom}
+              scrollWheelZoom={true}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <MapViewController bounds={mapBounds} center={mapCenter} zoom={mapZoom} />
+
+              {/* Zero-Block Digital Base Layers */}
+              {baseLayer === "satellite" ? (
+                <TileLayer
+                  attribution="&copy; Esri, Maxar & Earthstar Geographics | PM GatiShakti GIS"
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                  maxZoom={19}
+                />
+              ) : (
+                <TileLayer
+                  attribution="&copy; Esri, HERE, Garmin & OpenStreetMap contributors | PM GatiShakti GIS"
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+                  maxZoom={19}
+                />
+              )}
+
+              {/* Glowing Highway Alignment Spine */}
+              {alignmentLine.length > 1 && (
+                <Polyline
+                  positions={alignmentLine}
+                  pathOptions={{
+                    color: "#4f46e5",
+                    weight: 6,
+                    opacity: 0.9,
+                    dashArray: "10, 8",
+                  }}
+                />
+              )}
+
+              {/* City / Key Mile Markers */}
+              {milestones.map((m, idx) => {
+                const isTerminus = idx === 0 || idx === milestones.length - 1;
+                return (
+                  <CircleMarker
+                    key={`milestone-${idx}`}
+                    center={m.coords}
+                    radius={isTerminus ? 8 : 5}
+                    pathOptions={{
+                      color: isTerminus ? (idx === 0 ? "#38bdf8" : "#10b981") : "#94a3b8",
+                      fillColor: isTerminus ? "#0284c7" : "#1e293b",
+                      fillOpacity: 0.9,
+                      weight: 2,
+                    }}
+                  >
+                    <Tooltip sticky>{m.name}</Tooltip>
+                  </CircleMarker>
+                );
+              })}
+
+              {/* 120m Cadastral Strips Layer */}
+              <GeoJSON
+                key={`parcels-${activeFilter}-${activeParcel?.parcel_id || "none"}`}
+                data={filteredGeojson}
+                style={geojsonStyle}
+                onEachFeature={onEachFeature}
+              />
+            </MapContainer>
+
+            {/* Bottom Floating Legend */}
+            <div className="absolute bottom-4 left-4 z-[400] bg-slate-950/90 backdrop-blur-md p-3 rounded-xl border border-slate-700/80 shadow-2xl text-xs space-y-1.5 font-mono">
+              <div className="font-bold text-slate-200 text-[10px] uppercase tracking-wider mb-1">
+                RoW Acquisition Risk Status
+              </div>
+              <div className="flex items-center gap-2 text-red-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                <span>High Risk (Stay Order / Sec 3H Escrow)</span>
+              </div>
+              <div className="flex items-center gap-2 text-amber-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                <span>Moderate Risk (Mutation / Succession)</span>
+              </div>
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>Cleared (Handed to Contractor)</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Interactive Inspect Side-Sheet */}
-        <div className="lg:col-span-4 h-[520px] bg-slate-900/90 rounded-xl border border-slate-800 p-5 flex flex-col justify-between overflow-y-auto shadow-2xl">
-          {activeParcel ? (
-            <div className="space-y-4">
-              {/* Header */}
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
-                    Stationing: {activeParcel.chainage_km || "km 42+000"}
-                  </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
-                      activeParcel.risk_category === "High" ||
-                      activeParcel.risk_category === "Critical"
-                        ? "bg-red-500/20 text-red-300 border-red-500/40"
-                        : activeParcel.risk_category === "Medium" ||
-                            activeParcel.risk_category === "Moderate"
-                          ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                          : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                    }`}
-                  >
-                    {activeParcel.risk_category || "Low"} Risk (
-                    {Math.round((activeParcel.delay_probability || 0) * 100)}
-                    %)
-                  </span>
-                </div>
-                <h3 className="text-xl font-extrabold text-white mt-1">
-                  Khasra No: {activeParcel.khasra_no || activeParcel.parcel_id}
-                </h3>
-                <p className="text-xs text-slate-400">
-                  {activeParcel.village_name || "Village"}, Tehsil{" "}
-                  {activeParcel.tehsil || "Sadar"},{" "}
-                  {activeParcel.district || "District"}
-                </p>
-                <div className="text-[11px] font-mono text-slate-500 mt-0.5">
-                  Khatauni: {activeParcel.khatauni_no || "KH-3912"} &bull; ID:{" "}
-                  {activeParcel.parcel_id}
-                </div>
+        {/* Right Inspector Panel (4 cols) matching gis_demo.html */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-sky-400" />
+                <h4 className="font-bold text-white text-sm">Cadastral Parcel Inspector</h4>
               </div>
+              {activeParcel && (
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider font-mono border ${
+                    activeParcel.risk_category === "Critical" || activeParcel.risk_category === "High"
+                      ? "bg-red-500/20 text-red-400 border-red-500/30"
+                      : activeParcel.risk_category === "Moderate" || activeParcel.risk_category === "Medium"
+                      ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                      : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                  }`}
+                >
+                  {activeParcel.risk_category?.toUpperCase()} RISK (+{activeParcel.predicted_delay_days || 0}D DELAY)
+                </span>
+              )}
+            </div>
 
-              {/* Primary Delay Metrics */}
-              <div className="bg-slate-950/60 p-3.5 rounded-lg border border-slate-800">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs text-slate-400">
-                    Predicted Timeline Delay
-                  </span>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-amber-400">
-                      +{activeParcel.predicted_delay_days || 0}
+            {activeParcel ? (
+              <div className="space-y-4 text-xs">
+                {/* Parcel Header */}
+                <div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-black text-white">
+                      {activeParcel.khasra_no || activeParcel.parcel_id}
+                    </h3>
+                    <span className="text-[11px] font-mono text-sky-400 font-bold">
+                      {activeParcel.chainage_km || "km 00+000"}
                     </span>
-                    <span className="text-xs text-slate-400 font-mono ml-1">
-                      Days
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2 text-slate-300">
+                    <div>
+                      <span className="text-slate-500 block text-[10px] uppercase">Village</span>
+                      <span className="font-medium text-slate-200">{activeParcel.village_name || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[10px] uppercase">District</span>
+                      <span className="font-medium text-slate-200">{activeParcel.district || "N/A"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[10px] uppercase">Package</span>
+                      <span className="font-medium text-slate-200">{activeParcel.package || "Package 1"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[10px] uppercase">Area</span>
+                      <span className="font-medium text-slate-200">{activeParcel.total_area_hectares || 1.4} Hectares</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Statutory Title & Court Stay */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Scale className="w-3.5 h-3.5" />
+                    <span>Statutory Title & Court Stay</span>
+                  </div>
+                  <div className="text-[11px] text-slate-300 space-y-1">
+                    <div>
+                      <span className="text-slate-500">Khatedar / Heirs: </span>
+                      <span className="text-white font-medium">{activeParcel.khatedar || "Landowner Record"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Dispute: </span>
+                      <span className="text-red-300 font-semibold">{activeParcel.court_stay || "None"}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Statutory Section: </span>
+                      <span className="text-sky-300">{activeParcel.statutory_section || "NH Act Section 3D"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Financial KPI Badges */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Compensation Disbursed</span>
+                    <span className="text-sm font-black text-emerald-400">
+                      {activeParcel.compensation_disbursed_pct || 75}%
+                    </span>
+                  </div>
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Locked in Escrow</span>
+                    <span className="text-sm font-black text-amber-400">
+                      {activeParcel.amount_locked || "₹0"}
                     </span>
                   </div>
                 </div>
 
-                {/* Primary Bottleneck Tag */}
-                <div className="mt-3 pt-2.5 border-t border-slate-800">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">
-                    Primary Bottleneck
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-950/50 text-red-300 border border-red-800/40">
-                    <AlertTriangle className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
-                    {activeParcel.primary_bottleneck ||
-                      "Pending Section Verification"}
-                  </span>
+                {/* ML Predictions */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">ML Delay Prediction</span>
+                    <span className="text-sm font-black text-red-400">
+                      +{activeParcel.predicted_delay_days || 0} Days
+                    </span>
+                  </div>
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Delay Probability</span>
+                    <span className="text-sm font-black text-amber-400">
+                      {Math.round((activeParcel.delay_probability || 0) * 100)}%
+                    </span>
+                  </div>
                 </div>
               </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">
+                Click on any colored parcel along the RoW alignment to inspect its statutory title, legal stay, and ML prediction.
+              </p>
+            )}
+          </div>
 
-              {/* Detailed Revenue & Statutory Specs */}
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">Statutory Milestone:</span>
-                  <span className="font-semibold text-white">
-                    {activeParcel.statutory_stage || "Section 3D Declaration"}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">Elapsed in Stage:</span>
-                  <span className="font-mono text-slate-200">
-                    {activeParcel.days_in_current_stage || 45} days
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">Land Classification:</span>
-                  <span className="font-semibold text-slate-200">
-                    {activeParcel.land_type || "Agricultural"}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">Acquisition Footprint:</span>
-                  <span className="font-mono text-slate-200">
-                    {activeParcel.total_area_hectares || 1.5} ha (
-                    {activeParcel.affected_families_count || 12} families)
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">
-                    Compensation Disbursed:
-                  </span>
-                  <span className="font-mono font-bold text-blue-400">
-                    {activeParcel.compensation_disbursed_pct || 0}%
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-800 text-slate-300">
-                  <span className="text-slate-400">Civil Court Stays:</span>
-                  <span
-                    className={`font-mono font-bold ${activeParcel.pending_court_injunctions > 0 ? "text-red-400" : "text-emerald-400"}`}
-                  >
-                    {activeParcel.pending_court_injunctions || 0} active
-                    {activeParcel.sec_3h_escrow_deposited
-                      ? " (Sec 3H Escrowed)"
-                      : ""}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 text-slate-300">
-                  <span className="text-slate-400">
-                    Joint Measurement Survey:
-                  </span>
-                  <span
-                    className={`font-semibold ${activeParcel.jms_completed !== false ? "text-emerald-400" : "text-red-400"}`}
-                  >
-                    {activeParcel.jms_completed !== false
-                      ? "Demarcation Complete"
-                      : "Survey Stalled"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Action Button: Launch Simulation Sandbox */}
-              <div className="pt-2">
-                <button
-                  onClick={() =>
-                    onOpenSimulation && onOpenSimulation(activeParcel)
-                  }
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-0.5 cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4 text-blue-200" />
-                  <span>Launch "What-If" Simulation & XAI</span>
-                  <ArrowUpRight className="w-4 h-4 ml-auto" />
-                </button>
-              </div>
+          {/* Authentic 120m Corridor Engineering Explanatory Box */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs space-y-2 text-slate-300 shadow-xl">
+            <div className="flex items-center gap-2 font-bold text-white">
+              <span className="text-emerald-400">📐</span> Authentic 120m Corridor Engineering
             </div>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center text-slate-400 p-6 space-y-3">
-              <MapPin className="w-10 h-10 text-slate-600 stroke-[1.5]" />
-              <div>
-                <h4 className="font-bold text-slate-200 text-sm">
-                  Select Any Parcel Polygon
-                </h4>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs">
-                  Click on any of the 25 right-of-way corridor polygons on the
-                  GIS map to inspect Khasra details, live AI risk factors, and
-                  statutory SOPs.
-                </p>
-              </div>
-            </div>
-          )}
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              In standard Indian highway engineering (NHAI / UPEIDA guidelines), the Right-of-Way is{" "}
+              <b className="text-slate-200">120 metres wide</b> (60m on either side of the expressway centerline). These parcels represent true{" "}
+              <b className="text-slate-200">100m to 180m linear cadastral strips</b> directly centered on the highway.
+            </p>
+          </div>
         </div>
       </div>
     </div>

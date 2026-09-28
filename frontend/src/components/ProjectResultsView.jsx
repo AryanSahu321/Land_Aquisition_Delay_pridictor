@@ -869,32 +869,13 @@ export default function ProjectResultsView({ projectData, onBackToSearch }) {
         {/* ================================================================= */}
         {/* CARD 6: Interactive GIS Corridor & Cadastral Parcel Inspector */}
         {/* ================================================================= */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">
-                6
-              </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-bold text-white">
-                  Interactive GIS Corridor &amp; Cadastral Parcel Inspector
-                </h2>
-                <p className="text-[11px] text-slate-400">
-                  Geospatial Right-of-Way alignment, khasra parcels, and risk
-                  categorization map.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="h-96 rounded-xl overflow-hidden border border-slate-800">
-            <CorridorMap
-              corridorGeojson={gis_corridor}
-              selectedParcel={selectedParcel}
-              onSelectParcel={setSelectedParcel}
-            />
-          </div>
-        </div>
+        <section aria-label="Interactive GIS Corridor">
+          <CorridorMap
+            corridorGeojson={gis_corridor}
+            selectedParcel={selectedParcel}
+            onSelectParcel={setSelectedParcel}
+          />
+        </section>
 
         {/* ================================================================= */}
         {/* CARD 7: TreeSHAP Factor Attribution & Prescriptive Actions */}
