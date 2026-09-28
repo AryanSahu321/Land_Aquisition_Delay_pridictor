@@ -30,20 +30,33 @@ function getRiskColor(prob) {
   return "#10b981"; // Emerald (Low / Cleared)
 }
 
-// Controller to handle fitBounds and flyTo
+// Controller to handle fitBounds and flyTo with container resize resilience
 function MapViewController({ bounds, center, zoom }) {
   const map = useMap();
 
   useEffect(() => {
-    if (bounds && bounds.length === 2) {
+    const timer = setTimeout(() => {
       try {
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+        map.invalidateSize();
+        if (
+          bounds &&
+          Array.isArray(bounds) &&
+          bounds.length === 2 &&
+          Array.isArray(bounds[0]) &&
+          bounds[0].length === 2
+        ) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+        } else if (center && Array.isArray(center) && center.length === 2) {
+          map.setView(center, zoom || 9);
+        }
       } catch {
-        if (center) map.flyTo(center, zoom || 10, { duration: 1.2 });
+        if (center && Array.isArray(center) && center.length === 2) {
+          map.setView(center, zoom || 9);
+        }
       }
-    } else if (center) {
-      map.flyTo(center, zoom || 10, { duration: 1.2 });
-    }
+    }, 120);
+
+    return () => clearTimeout(timer);
   }, [bounds, center, zoom, map]);
 
   return null;
@@ -79,9 +92,7 @@ export default function CorridorMap({
     const cat = (feat.properties?.risk_category || "").toUpperCase();
     if (activeFilter === "CRITICAL") return cat === "CRITICAL" || prob >= 0.65;
     if (activeFilter === "MODERATE")
-      return (
-        cat === "MODERATE" || (prob >= 0.3 && prob < 0.65)
-      );
+      return cat === "MODERATE" || (prob >= 0.3 && prob < 0.65);
     if (activeFilter === "LOW") return cat === "LOW" || prob < 0.3;
     return true;
   });
@@ -412,15 +423,15 @@ export default function CorridorMap({
                   riskCat === "CRITICAL" || prob >= 0.65
                     ? "#ef4444"
                     : riskCat === "MODERATE" || prob >= 0.3
-                    ? "#f59e0b"
-                    : "#10b981";
+                      ? "#f59e0b"
+                      : "#10b981";
                 const isSelected =
                   activeParcel && activeParcel.parcel_id === props.parcel_id;
                 const radius = isSelected
                   ? 12
                   : riskCat === "CRITICAL" || prob >= 0.65
-                  ? 10
-                  : 8;
+                    ? 10
+                    : 8;
 
                 // Center coordinates
                 let lat = props.center_lat;

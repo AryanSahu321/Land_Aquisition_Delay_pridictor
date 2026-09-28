@@ -158,7 +158,19 @@ export default function ProjectSearchLanding({ onProjectSelected }) {
       });
 
       if (!res.ok) {
-        throw new Error(`Inference error: ${res.statusText}`);
+        let errMsg = res.statusText;
+        try {
+          const errData = await res.json();
+          if (errData?.detail) {
+            errMsg =
+              typeof errData.detail === "string"
+                ? errData.detail
+                : JSON.stringify(errData.detail);
+          }
+        } catch {}
+        throw new Error(
+          `Inference error: ${errMsg || "Server Error (" + res.status + ")"}`,
+        );
       }
 
       const payload = await res.json();
