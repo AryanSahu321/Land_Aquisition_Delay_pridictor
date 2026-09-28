@@ -73,12 +73,16 @@ export default function CorridorMap({
 
   const activeParcel = selectedParcel || internalSelectedParcel;
 
-  // Filter features based on active risk filter
+  // Filter features based on active risk filter (supports both probability and category string)
   const filteredFeatures = features.filter((feat) => {
     const prob = feat.properties?.delay_probability || 0;
-    if (activeFilter === "CRITICAL") return prob >= 0.65;
-    if (activeFilter === "MODERATE") return prob >= 0.3 && prob < 0.65;
-    if (activeFilter === "LOW") return prob < 0.3;
+    const cat = (feat.properties?.risk_category || "").toUpperCase();
+    if (activeFilter === "CRITICAL") return cat === "CRITICAL" || prob >= 0.65;
+    if (activeFilter === "MODERATE")
+      return (
+        cat === "MODERATE" || (prob >= 0.3 && prob < 0.65)
+      );
+    if (activeFilter === "LOW") return cat === "LOW" || prob < 0.3;
     return true;
   });
 
@@ -155,17 +159,28 @@ export default function CorridorMap({
     });
   };
 
-  const criticalCount = features.filter(
-    (f) => (f.properties?.delay_probability || 0) >= 0.65,
-  ).length;
-  const moderateCount = features.filter(
-    (f) =>
-      (f.properties?.delay_probability || 0) >= 0.3 &&
-      (f.properties?.delay_probability || 0) < 0.65,
-  ).length;
-  const lowCount = features.filter(
-    (f) => (f.properties?.delay_probability || 0) < 0.3,
-  ).length;
+  const criticalCount = features.filter((f) => {
+    const p = f.properties || {};
+    return (
+      (p.risk_category || "").toUpperCase() === "CRITICAL" ||
+      (p.delay_probability || 0) >= 0.65
+    );
+  }).length;
+  const moderateCount = features.filter((f) => {
+    const p = f.properties || {};
+    const prob = p.delay_probability || 0;
+    return (
+      (p.risk_category || "").toUpperCase() === "MODERATE" ||
+      (prob >= 0.3 && prob < 0.65)
+    );
+  }).length;
+  const lowCount = features.filter((f) => {
+    const p = f.properties || {};
+    return (
+      (p.risk_category || "").toUpperCase() === "LOW" ||
+      (p.delay_probability || 0) < 0.3
+    );
+  }).length;
 
   return (
     <div className="space-y-4">
@@ -358,29 +373,27 @@ export default function CorridorMap({
                 />
               )}
 
-              {/* City / Key Mile Markers */}
-              {milestones.map((m, idx) => {
-                const isTerminus = idx === 0 || idx === milestones.length - 1;
-                return (
-                  <CircleMarker
-                    key={`milestone-${idx}`}
-                    center={m.coords}
-                    radius={isTerminus ? 8 : 5}
-                    pathOptions={{
-                      color: isTerminus
-                        ? idx === 0
-                          ? "#38bdf8"
-                          : "#10b981"
-                        : "#94a3b8",
-                      fillColor: isTerminus ? "#0284c7" : "#1e293b",
-                      fillOpacity: 0.9,
-                      weight: 2,
-                    }}
-                  >
-                    <Tooltip sticky>{m.name}</Tooltip>
-                  </CircleMarker>
-                );
-              })}
+              {/* Terminus Origin & Destination Mile Markers Only */}
+              {milestones
+                .filter((_, idx) => idx === 0 || idx === milestones.length - 1)
+                .map((m, idx) => {
+                  const isOrigin = idx === 0;
+                  return (
+                    <CircleMarker
+                      key={`milestone-terminus-${idx}`}
+                      center={m.coords}
+                      radius={9}
+                      pathOptions={{
+                        color: isOrigin ? "#38bdf8" : "#10b981",
+                        fillColor: isOrigin ? "#0284c7" : "#059669",
+                        fillOpacity: 0.95,
+                        weight: 3,
+                      }}
+                    >
+                      <Tooltip sticky>{m.name}</Tooltip>
+                    </CircleMarker>
+                  );
+                })}
 
               {/* 120m Cadastral Strips Layer */}
               <GeoJSON
@@ -390,16 +403,26 @@ export default function CorridorMap({
                 onEachFeature={onEachFeature}
               />
 
-              {/* High-Visibility Risk Hotspot Markers (Prominent Red, Amber, Green circular points at macro zoom) */}
+              {/* HIGH-VISIBILITY RISK HOTSPOT DOTS (RED, AMBER, GREEN - EXACTLY AS IN GIS_DEMO.HTML) */}
               {filteredFeatures.map((feat) => {
                 const props = feat.properties || {};
-                const prob = props.delay_probability || 0;
-                const color = getRiskColor(prob);
+                const prob = props.delay_probability ?? 0.1;
+                const riskCat = (props.risk_category || "").toUpperCase();
+                const color =
+                  riskCat === "CRITICAL" || prob >= 0.65
+                    ? "#ef4444"
+                    : riskCat === "MODERATE" || prob >= 0.3
+                    ? "#f59e0b"
+                    : "#10b981";
                 const isSelected =
                   activeParcel && activeParcel.parcel_id === props.parcel_id;
-                const radius = isSelected ? 11 : prob >= 0.65 ? 9 : 7;
+                const radius = isSelected
+                  ? 12
+                  : riskCat === "CRITICAL" || prob >= 0.65
+                  ? 10
+                  : 8;
 
-                // Ensure valid coordinates
+                // Center coordinates
                 let lat = props.center_lat;
                 let lon = props.center_lon;
                 if (
@@ -413,14 +436,14 @@ export default function CorridorMap({
 
                 return (
                   <CircleMarker
-                    key={`hotspot-${props.parcel_id}`}
+                    key={`hotspot-dot-${props.parcel_id}`}
                     center={[lat, lon]}
                     radius={radius}
                     pathOptions={{
                       color: isSelected ? "#ffffff" : color,
                       weight: isSelected ? 3.5 : 2,
                       fillColor: color,
-                      fillOpacity: 0.92,
+                      fillOpacity: 0.95,
                     }}
                     eventHandlers={{
                       click: () => {
@@ -445,30 +468,22 @@ export default function CorridorMap({
                           }}
                         >
                           {props.khasra_no || props.parcel_id} (
-                          {props.chainage_km || "RoW Strip"})
+                          {props.village_name || ""})
                         </div>
                         <div>
-                          {props.village_name || ""}, {props.district || ""}
+                          {props.district || ""} &bull;{" "}
+                          {props.chainage_km || "RoW Strip"}
                         </div>
                         <div
                           style={{
                             marginTop: "4px",
-                            display: "flex",
-                            gap: "8px",
+                            color,
+                            fontWeight: 700,
                           }}
                         >
-                          <span style={{ color, fontWeight: 700 }}>
-                            {props.risk_category ||
-                              (prob >= 0.65
-                                ? "Critical"
-                                : prob >= 0.3
-                                  ? "Moderate"
-                                  : "Low")}{" "}
-                            ({Math.round(prob * 100)}%)
-                          </span>
-                          <span style={{ color: "#cbd5e1" }}>
-                            +{props.predicted_delay_days || 0} Days
-                          </span>
+                          {props.risk_category || "RISK"} &bull; +
+                          {props.predicted_delay_days || 0}d Delay (
+                          {Math.round(prob * 100)}%)
                         </div>
                       </div>
                     </Tooltip>
