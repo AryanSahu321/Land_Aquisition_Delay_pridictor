@@ -49,6 +49,19 @@ export default function CorridorMap({
   const [filterRisk, setFilterRisk] = useState("ALL");
   const [internalSelectedParcel, setInternalSelectedParcel] = useState(null);
 
+  useEffect(() => {
+    if (data && data.center && Array.isArray(data.center)) {
+      setMapCenter(data.center);
+      setMapZoom(data.zoom || 12);
+    } else if (data && data.features && data.features.length > 0) {
+      const firstProps = data.features[0].properties;
+      if (firstProps && firstProps.center_lat && firstProps.center_lon) {
+        setMapCenter([firstProps.center_lat, firstProps.center_lon]);
+        setMapZoom(data.zoom || 12);
+      }
+    }
+  }, [data]);
+
   const activeParcel =
     selectedParcel !== undefined && selectedParcel !== null
       ? selectedParcel
@@ -221,8 +234,8 @@ export default function CorridorMap({
           >
             <MapController center={mapCenter} zoom={mapZoom} />
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &bull; CartoDB Dark'
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <GeoJSON
               key={`corridor-${filterRisk}-${activeParcel?.parcel_id || "none"}`}

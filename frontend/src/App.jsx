@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ProjectSearchLanding from "./components/ProjectSearchLanding";
 import ProjectResultsView from "./components/ProjectResultsView";
 import ApiGatewayModal from "./components/ApiGatewayModal";
-import GisCorridorModal from "./components/GisCorridorModal";
 import RoleRbacModal from "./components/RoleRbacModal";
 import {
   Compass,
@@ -10,7 +9,6 @@ import {
   Database,
   ShieldCheck,
   Zap,
-  Layers,
   Scale,
 } from "lucide-react";
 
@@ -18,7 +16,6 @@ export default function App() {
   const [view, setView] = useState("search"); // 'search' | 'results'
   const [selectedProjectData, setSelectedProjectData] = useState(null);
   const [isApiGatewayOpen, setIsApiGatewayOpen] = useState(false);
-  const [isGisModalOpen, setIsGisModalOpen] = useState(false);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
 
   const handleProjectSelected = (data) => {
@@ -60,19 +57,6 @@ export default function App() {
 
           {/* Right Action: Interactive Prototypes + API Gateway Trigger */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Point 7: Interactive GIS Corridor Prototype Trigger */}
-            <button
-              onClick={() => setIsGisModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition hover:border-sky-500/50 cursor-pointer"
-              title="Point 7: GIS Corridor & Cadastral Mapping Prototype"
-            >
-              <Layers className="w-3.5 h-3.5 text-sky-400" />
-              <span className="hidden sm:inline">GIS Corridor</span>
-              <span className="text-[9px] px-1.5 py-0.5 rounded font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                Point 7
-              </span>
-            </button>
-
             {/* Points 8, 9, 12: Statutory Role RBAC & e-Sign Prototype Trigger */}
             <button
               onClick={() => setIsRoleModalOpen(true)}
@@ -128,12 +112,6 @@ export default function App() {
           />
         )}
       </main>
-
-      {/* Point 7: Interactive GIS Corridor & Cadastral Mapping Modal */}
-      <GisCorridorModal
-        isOpen={isGisModalOpen}
-        onClose={() => setIsGisModalOpen(false)}
-      />
 
       {/* Points 8, 9, 12: Statutory Role RBAC, Autonomous Alerts & e-Sign Modal */}
       <RoleRbacModal

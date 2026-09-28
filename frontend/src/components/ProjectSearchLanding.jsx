@@ -36,8 +36,11 @@ export default function ProjectSearchLanding({ onProjectSelected }) {
   const [scanningStep, setScanningStep] = useState(0);
   const [error, setError] = useState(null);
 
-  // Fetch search options on mount
+  // Fetch search options & eager background pre-warm on mount
   useEffect(() => {
+    // Eager background pre-warm: wakes up the cloud container while user is typing/selecting
+    fetch("/api/v1/health").catch(() => {});
+
     fetch("/api/v1/projects/search-options")
       .then((res) => res.json())
       .then((data) => {

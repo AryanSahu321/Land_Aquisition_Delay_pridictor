@@ -44,6 +44,7 @@ from mock_data import (
 )
 from etl_pipeline import etl_pipeline
 from document_engine.storage import ProjectDatabaseRepository
+from gis_corridor_engine import generate_cadastral_corridor_for_project
 
 class ProjectQueryRequest(BaseModel):
     project_name: str
@@ -89,7 +90,8 @@ DATA_STORE = {
     "explainer": None,
     "expected_value": 0.0,
     "is_production_model": False,
-    "pipeline_report": {}
+    "pipeline_report": {},
+    "project_response_cache": {}
 }
 
 FEATURE_COLS = [
@@ -1304,6 +1306,11 @@ def project_parse_and_predict(req: ProjectQueryRequest):
     and returns comprehensive data for all 7 cards in the All-in-One view.
     """
     start_t = time.perf_counter()
+    cache_key = f"{req.project_name.strip().lower()}_{str(req.agency or '').strip().lower()}"
+    cached_resp = DATA_STORE.get("project_response_cache", {}).get(cache_key)
+    if cached_resp:
+        return cached_resp
+
     repo = DATA_STORE.get("repo")
     if not repo:
         repo = ProjectDatabaseRepository()
@@ -1498,8 +1505,8 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         "status_label": "High Litigation Hazard" if decay_rate < 0.10 else "Standard Statutory Resolution"
     }
 
-    # 8. Card 6: Interactive GIS Corridor & Cadastral Parcel Inspector
-    corridor_geojson = DATA_STORE.get("corridor_geojson", {})
+    # 8. Card 6: Interactive GIS Corridor & Cadastral Parcel Inspector (Dynamic Multi-Project Alignment)
+    corridor_geojson = generate_cadastral_corridor_for_project(proj, count=25)
 
     # 9. Card 7: TreeSHAP Factor Attribution & Statutory Prescriptive SOP Actions
     explainer = DATA_STORE.get("explainer")
@@ -1551,7 +1558,7 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         "storage_mode": "PostgreSQL-Ready Storage Engine"
     }
 
-    return {
+    response_payload = {
         "project": {
             "project_id": str(proj.get("project_id", "PRJ-001")),
             "project_name": str(proj.get("project_name", req.project_name)),
@@ -1590,6 +1597,10 @@ def project_parse_and_predict(req: ProjectQueryRequest):
         },
         "database_audit": audit_meta
     }
+
+    # In-memory Redis-style cache save for instantaneous subsequent queries (<2ms)
+    DATA_STORE.setdefault("project_response_cache", {})[cache_key] = response_payload
+    return response_payload
 
 
 @app.post("/api/v1/ml/feedback")
