@@ -104,7 +104,8 @@ export default function CorridorMap({
   const geojsonStyle = (feature) => {
     const props = feature.properties || {};
     const prob = props.delay_probability || 0;
-    const isSelected = activeParcel && activeParcel.parcel_id === props.parcel_id;
+    const isSelected =
+      activeParcel && activeParcel.parcel_id === props.parcel_id;
     const color = getRiskColor(prob);
 
     return {
@@ -148,12 +149,23 @@ export default function CorridorMap({
         </div>
       </div>
     `;
-    layer.bindTooltip(tooltipHtml, { sticky: true, className: "custom-map-tooltip" });
+    layer.bindTooltip(tooltipHtml, {
+      sticky: true,
+      className: "custom-map-tooltip",
+    });
   };
 
-  const criticalCount = features.filter((f) => (f.properties?.delay_probability || 0) >= 0.65).length;
-  const moderateCount = features.filter((f) => (f.properties?.delay_probability || 0) >= 0.3 && (f.properties?.delay_probability || 0) < 0.65).length;
-  const lowCount = features.filter((f) => (f.properties?.delay_probability || 0) < 0.3).length;
+  const criticalCount = features.filter(
+    (f) => (f.properties?.delay_probability || 0) >= 0.65,
+  ).length;
+  const moderateCount = features.filter(
+    (f) =>
+      (f.properties?.delay_probability || 0) >= 0.3 &&
+      (f.properties?.delay_probability || 0) < 0.65,
+  ).length;
+  const lowCount = features.filter(
+    (f) => (f.properties?.delay_probability || 0) < 0.3,
+  ).length;
 
   return (
     <div className="space-y-4">
@@ -173,7 +185,8 @@ export default function CorridorMap({
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Authentic Cadastral Khasra Strips Hugging the Alignment &bull; Zoom-Resilient Geometry
+              Authentic Cadastral Khasra Strips Hugging the Alignment &bull;
+              Zoom-Resilient Geometry
             </p>
           </div>
         </div>
@@ -181,15 +194,23 @@ export default function CorridorMap({
         {/* Quick Stat Badges */}
         <div className="flex items-center gap-2 text-xs">
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
-            <span className="text-[9px] uppercase text-slate-400 block font-semibold">Length</span>
-            <span className="font-bold text-white">{data.total_km || 340.8} km</span>
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">
+              Length
+            </span>
+            <span className="font-bold text-white">
+              {data.total_km || 340.8} km
+            </span>
           </div>
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
-            <span className="text-[9px] uppercase text-slate-400 block font-semibold">RoW Width</span>
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">
+              RoW Width
+            </span>
             <span className="font-bold text-sky-400">120 Metres</span>
           </div>
           <div className="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-1.5 text-center font-mono">
-            <span className="text-[9px] uppercase text-slate-400 block font-semibold">Scale</span>
+            <span className="text-[9px] uppercase text-slate-400 block font-semibold">
+              Scale
+            </span>
             <span className="font-bold text-emerald-400">100m Strips</span>
           </div>
         </div>
@@ -208,7 +229,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setActiveFilter("ALL")}
                   className={`px-2.5 py-1 rounded-md font-semibold transition ${
-                    activeFilter === "ALL" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+                    activeFilter === "ALL"
+                      ? "bg-indigo-600 text-white"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   All ({features.length})
@@ -216,7 +239,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setActiveFilter("CRITICAL")}
                   className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
-                    activeFilter === "CRITICAL" ? "bg-red-600 text-white" : "text-red-400 hover:text-white"
+                    activeFilter === "CRITICAL"
+                      ? "bg-red-600 text-white"
+                      : "text-red-400 hover:text-white"
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-red-400"></span>
@@ -225,7 +250,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setActiveFilter("MODERATE")}
                   className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
-                    activeFilter === "MODERATE" ? "bg-amber-600 text-white" : "text-amber-400 hover:text-white"
+                    activeFilter === "MODERATE"
+                      ? "bg-amber-600 text-white"
+                      : "text-amber-400 hover:text-white"
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-amber-400"></span>
@@ -234,7 +261,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setActiveFilter("LOW")}
                   className={`px-2.5 py-1 rounded-md font-semibold flex items-center gap-1.5 transition ${
-                    activeFilter === "LOW" ? "bg-emerald-600 text-white" : "text-emerald-400 hover:text-white"
+                    activeFilter === "LOW"
+                      ? "bg-emerald-600 text-white"
+                      : "text-emerald-400 hover:text-white"
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -249,7 +278,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setBaseLayer("satellite")}
                   className={`px-2.5 py-1 rounded-md font-medium transition ${
-                    baseLayer === "satellite" ? "bg-indigo-600 text-white font-semibold" : "text-slate-400 hover:text-white"
+                    baseLayer === "satellite"
+                      ? "bg-indigo-600 text-white font-semibold"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   🛰️ Satellite
@@ -257,7 +288,9 @@ export default function CorridorMap({
                 <button
                   onClick={() => setBaseLayer("street")}
                   className={`px-2.5 py-1 rounded-md font-medium transition ${
-                    baseLayer === "street" ? "bg-indigo-600 text-white font-semibold" : "text-slate-400 hover:text-white"
+                    baseLayer === "street"
+                      ? "bg-indigo-600 text-white font-semibold"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
                   🗺️ Clean Map
@@ -269,7 +302,9 @@ export default function CorridorMap({
                   onClick={() => {
                     const mapEl = document.querySelector(".leaflet-container");
                     if (mapEl && mapEl._leaflet_map) {
-                      mapEl._leaflet_map.fitBounds(mapBounds, { padding: [50, 50] });
+                      mapEl._leaflet_map.fitBounds(mapBounds, {
+                        padding: [50, 50],
+                      });
                     }
                   }}
                   className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-300 rounded-lg border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
@@ -289,7 +324,11 @@ export default function CorridorMap({
               scrollWheelZoom={true}
               style={{ height: "100%", width: "100%" }}
             >
-              <MapViewController bounds={mapBounds} center={mapCenter} zoom={mapZoom} />
+              <MapViewController
+                bounds={mapBounds}
+                center={mapCenter}
+                zoom={mapZoom}
+              />
 
               {/* Zero-Block Digital Base Layers */}
               {baseLayer === "satellite" ? (
@@ -328,7 +367,11 @@ export default function CorridorMap({
                     center={m.coords}
                     radius={isTerminus ? 8 : 5}
                     pathOptions={{
-                      color: isTerminus ? (idx === 0 ? "#38bdf8" : "#10b981") : "#94a3b8",
+                      color: isTerminus
+                        ? idx === 0
+                          ? "#38bdf8"
+                          : "#10b981"
+                        : "#94a3b8",
                       fillColor: isTerminus ? "#0284c7" : "#1e293b",
                       fillOpacity: 0.9,
                       weight: 2,
@@ -346,6 +389,92 @@ export default function CorridorMap({
                 style={geojsonStyle}
                 onEachFeature={onEachFeature}
               />
+
+              {/* High-Visibility Risk Hotspot Markers (Prominent Red, Amber, Green circular points at macro zoom) */}
+              {filteredFeatures.map((feat) => {
+                const props = feat.properties || {};
+                const prob = props.delay_probability || 0;
+                const color = getRiskColor(prob);
+                const isSelected =
+                  activeParcel && activeParcel.parcel_id === props.parcel_id;
+                const radius = isSelected ? 11 : prob >= 0.65 ? 9 : 7;
+
+                // Ensure valid coordinates
+                let lat = props.center_lat;
+                let lon = props.center_lon;
+                if (
+                  (lat == null || lon == null) &&
+                  feat.geometry?.coordinates?.[0]?.[0]
+                ) {
+                  lon = feat.geometry.coordinates[0][0][0];
+                  lat = feat.geometry.coordinates[0][0][1];
+                }
+                if (lat == null || lon == null) return null;
+
+                return (
+                  <CircleMarker
+                    key={`hotspot-${props.parcel_id}`}
+                    center={[lat, lon]}
+                    radius={radius}
+                    pathOptions={{
+                      color: isSelected ? "#ffffff" : color,
+                      weight: isSelected ? 3.5 : 2,
+                      fillColor: color,
+                      fillOpacity: 0.92,
+                    }}
+                    eventHandlers={{
+                      click: () => {
+                        setInternalSelectedParcel(props);
+                        if (onSelectParcel) onSelectParcel(props);
+                      },
+                    }}
+                  >
+                    <Tooltip sticky>
+                      <div
+                        style={{
+                          fontFamily: "inherit",
+                          fontSize: "11px",
+                          color: "#f8fafc",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: 800,
+                            color: "#38bdf8",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          {props.khasra_no || props.parcel_id} (
+                          {props.chainage_km || "RoW Strip"})
+                        </div>
+                        <div>
+                          {props.village_name || ""}, {props.district || ""}
+                        </div>
+                        <div
+                          style={{
+                            marginTop: "4px",
+                            display: "flex",
+                            gap: "8px",
+                          }}
+                        >
+                          <span style={{ color, fontWeight: 700 }}>
+                            {props.risk_category ||
+                              (prob >= 0.65
+                                ? "Critical"
+                                : prob >= 0.3
+                                  ? "Moderate"
+                                  : "Low")}{" "}
+                            ({Math.round(prob * 100)}%)
+                          </span>
+                          <span style={{ color: "#cbd5e1" }}>
+                            +{props.predicted_delay_days || 0} Days
+                          </span>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  </CircleMarker>
+                );
+              })}
             </MapContainer>
 
             {/* Bottom Floating Legend */}
@@ -375,19 +504,24 @@ export default function CorridorMap({
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-sky-400" />
-                <h4 className="font-bold text-white text-sm">Cadastral Parcel Inspector</h4>
+                <h4 className="font-bold text-white text-sm">
+                  Cadastral Parcel Inspector
+                </h4>
               </div>
               {activeParcel && (
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider font-mono border ${
-                    activeParcel.risk_category === "Critical" || activeParcel.risk_category === "High"
+                    activeParcel.risk_category === "Critical" ||
+                    activeParcel.risk_category === "High"
                       ? "bg-red-500/20 text-red-400 border-red-500/30"
-                      : activeParcel.risk_category === "Moderate" || activeParcel.risk_category === "Medium"
-                      ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                      : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                      : activeParcel.risk_category === "Moderate" ||
+                          activeParcel.risk_category === "Medium"
+                        ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                        : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
                   }`}
                 >
-                  {activeParcel.risk_category?.toUpperCase()} RISK (+{activeParcel.predicted_delay_days || 0}D DELAY)
+                  {activeParcel.risk_category?.toUpperCase()} RISK (+
+                  {activeParcel.predicted_delay_days || 0}D DELAY)
                 </span>
               )}
             </div>
@@ -406,20 +540,36 @@ export default function CorridorMap({
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-2 text-slate-300">
                     <div>
-                      <span className="text-slate-500 block text-[10px] uppercase">Village</span>
-                      <span className="font-medium text-slate-200">{activeParcel.village_name || "N/A"}</span>
+                      <span className="text-slate-500 block text-[10px] uppercase">
+                        Village
+                      </span>
+                      <span className="font-medium text-slate-200">
+                        {activeParcel.village_name || "N/A"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px] uppercase">District</span>
-                      <span className="font-medium text-slate-200">{activeParcel.district || "N/A"}</span>
+                      <span className="text-slate-500 block text-[10px] uppercase">
+                        District
+                      </span>
+                      <span className="font-medium text-slate-200">
+                        {activeParcel.district || "N/A"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px] uppercase">Package</span>
-                      <span className="font-medium text-slate-200">{activeParcel.package || "Package 1"}</span>
+                      <span className="text-slate-500 block text-[10px] uppercase">
+                        Package
+                      </span>
+                      <span className="font-medium text-slate-200">
+                        {activeParcel.package || "Package 1"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px] uppercase">Area</span>
-                      <span className="font-medium text-slate-200">{activeParcel.total_area_hectares || 1.4} Hectares</span>
+                      <span className="text-slate-500 block text-[10px] uppercase">
+                        Area
+                      </span>
+                      <span className="font-medium text-slate-200">
+                        {activeParcel.total_area_hectares || 1.4} Hectares
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -433,15 +583,23 @@ export default function CorridorMap({
                   <div className="text-[11px] text-slate-300 space-y-1">
                     <div>
                       <span className="text-slate-500">Khatedar / Heirs: </span>
-                      <span className="text-white font-medium">{activeParcel.khatedar || "Landowner Record"}</span>
+                      <span className="text-white font-medium">
+                        {activeParcel.khatedar || "Landowner Record"}
+                      </span>
                     </div>
                     <div>
                       <span className="text-slate-500">Dispute: </span>
-                      <span className="text-red-300 font-semibold">{activeParcel.court_stay || "None"}</span>
+                      <span className="text-red-300 font-semibold">
+                        {activeParcel.court_stay || "None"}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-slate-500">Statutory Section: </span>
-                      <span className="text-sky-300">{activeParcel.statutory_section || "NH Act Section 3D"}</span>
+                      <span className="text-slate-500">
+                        Statutory Section:{" "}
+                      </span>
+                      <span className="text-sky-300">
+                        {activeParcel.statutory_section || "NH Act Section 3D"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -449,13 +607,17 @@ export default function CorridorMap({
                 {/* Financial KPI Badges */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Compensation Disbursed</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                      Compensation Disbursed
+                    </span>
                     <span className="text-sm font-black text-emerald-400">
                       {activeParcel.compensation_disbursed_pct || 75}%
                     </span>
                   </div>
                   <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Locked in Escrow</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                      Locked in Escrow
+                    </span>
                     <span className="text-sm font-black text-amber-400">
                       {activeParcel.amount_locked || "₹0"}
                     </span>
@@ -465,13 +627,17 @@ export default function CorridorMap({
                 {/* ML Predictions */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">ML Delay Prediction</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                      ML Delay Prediction
+                    </span>
                     <span className="text-sm font-black text-red-400">
                       +{activeParcel.predicted_delay_days || 0} Days
                     </span>
                   </div>
                   <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 text-center">
-                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">Delay Probability</span>
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                      Delay Probability
+                    </span>
                     <span className="text-sm font-black text-amber-400">
                       {Math.round((activeParcel.delay_probability || 0) * 100)}%
                     </span>
@@ -480,7 +646,8 @@ export default function CorridorMap({
               </div>
             ) : (
               <p className="text-xs text-slate-400 italic">
-                Click on any colored parcel along the RoW alignment to inspect its statutory title, legal stay, and ML prediction.
+                Click on any colored parcel along the RoW alignment to inspect
+                its statutory title, legal stay, and ML prediction.
               </p>
             )}
           </div>
@@ -488,12 +655,18 @@ export default function CorridorMap({
           {/* Authentic 120m Corridor Engineering Explanatory Box */}
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs space-y-2 text-slate-300 shadow-xl">
             <div className="flex items-center gap-2 font-bold text-white">
-              <span className="text-emerald-400">📐</span> Authentic 120m Corridor Engineering
+              <span className="text-emerald-400">📐</span> Authentic 120m
+              Corridor Engineering
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              In standard Indian highway engineering (NHAI / UPEIDA guidelines), the Right-of-Way is{" "}
-              <b className="text-slate-200">120 metres wide</b> (60m on either side of the expressway centerline). These parcels represent true{" "}
-              <b className="text-slate-200">100m to 180m linear cadastral strips</b> directly centered on the highway.
+              In standard Indian highway engineering (NHAI / UPEIDA guidelines),
+              the Right-of-Way is{" "}
+              <b className="text-slate-200">120 metres wide</b> (60m on either
+              side of the expressway centerline). These parcels represent true{" "}
+              <b className="text-slate-200">
+                100m to 180m linear cadastral strips
+              </b>{" "}
+              directly centered on the highway.
             </p>
           </div>
         </div>

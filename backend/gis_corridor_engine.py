@@ -7,31 +7,72 @@ milestone markers, and 120m cadastral parcel strips for all Central Database inf
 import math
 from typing import Dict, Any, List, Tuple
 
-def create_row_strip(center_lat: float, center_lon: float, angle_deg: float, length_meters: float = 160, width_meters: float = 120) -> List[List[float]]:
+def compute_intercept_row_strip(alignment_line: List[List[float]], target_lat: float, target_lon: float, length_meters: float = 180, width_meters: float = 120) -> Tuple[List[float], List[List[float]]]:
     """
-    Computes a realistic 120m corridor polygon strip hugging the highway centerline.
-    Returns GeoJSON polygon coordinates [[lon, lat], ...].
+    Projects (target_lat, target_lon) onto the closest segment of alignment_line.
+    Returns:
+      center: [snapped_lat, snapped_lon] (EXACTLY ON THE HIGHWAY CENTERLINE)
+      polygon_coords: [[lon, lat], ...] (120m RoW strip mathematically centered on the highway, 60m left and 60m right)
     """
     meters_per_deg_lat = 111132.0
+    meters_per_deg_lon = 111320.0 * math.cos(math.radians(target_lat))
+
+    best_dist = float("inf")
+    best_center = [target_lat, target_lon]
+    best_tangent = (1.0, 0.0)
+
+    # Check all polyline segments to find closest projection
+    for i in range(len(alignment_line) - 1):
+        p1 = alignment_line[i]
+        p2 = alignment_line[i + 1]
+
+        # Metric vector along segment
+        dx = (p2[1] - p1[1]) * meters_per_deg_lon
+        dy = (p2[0] - p1[0]) * meters_per_deg_lat
+        seg_len_sq = dx * dx + dy * dy
+        if seg_len_sq < 1e-6:
+            continue
+
+        tx = (target_lon - p1[1]) * meters_per_deg_lon
+        ty = (target_lat - p1[0]) * meters_per_deg_lat
+        t = max(0.0, min(1.0, (tx * dx + ty * dy) / seg_len_sq))
+
+        proj_lat = p1[0] + t * (p2[0] - p1[0])
+        proj_lon = p1[1] + t * (p2[1] - p1[1])
+
+        dist_sq = ((target_lon - proj_lon) * meters_per_deg_lon) ** 2 + ((target_lat - proj_lat) * meters_per_deg_lat) ** 2
+        if dist_sq < best_dist:
+            best_dist = dist_sq
+            best_center = [round(proj_lat, 6), round(proj_lon, 6)]
+            seg_len = math.sqrt(seg_len_sq)
+            best_tangent = (dx / seg_len, dy / seg_len)
+
+    # Tangent along highway
+    tx, ty = best_tangent
+    # Normal perpendicular to highway (60m left, 60m right)
+    nx, ny = -ty, tx
+
+    half_l = length_meters / 2.0
+    half_w = width_meters / 2.0
+
+    center_lat, center_lon = best_center
     meters_per_deg_lon = 111320.0 * math.cos(math.radians(center_lat))
 
-    rad = math.radians(angle_deg)
-    perp_rad = rad + math.pi / 2.0
-
-    half_len_lat = ((length_meters / 2.0) * math.cos(rad)) / meters_per_deg_lat
-    half_len_lon = ((length_meters / 2.0) * math.sin(rad)) / meters_per_deg_lon
-
-    half_wid_lat = ((width_meters / 2.0) * math.cos(perp_rad)) / meters_per_deg_lat
-    half_wid_lon = ((width_meters / 2.0) * math.sin(perp_rad)) / meters_per_deg_lon
-
-    # 4 corners in [lon, lat] format for GeoJSON
-    return [
-        [round(center_lon + half_len_lon + half_wid_lon, 6), round(center_lat + half_len_lat + half_wid_lat, 6)],
-        [round(center_lon + half_len_lon - half_wid_lon, 6), round(center_lat + half_len_lat - half_wid_lat, 6)],
-        [round(center_lon - half_len_lon - half_wid_lon, 6), round(center_lat - half_len_lat - half_wid_lat, 6)],
-        [round(center_lon - half_len_lon + half_wid_lon, 6), round(center_lat - half_len_lat + half_wid_lat, 6)],
-        [round(center_lon + half_len_lon + half_wid_lon, 6), round(center_lat + half_len_lat + half_wid_lat, 6)]
+    corners_m = [
+        (+half_l * tx + half_w * nx, +half_l * ty + half_w * ny),
+        (+half_l * tx - half_w * nx, +half_l * ty - half_w * ny),
+        (-half_l * tx - half_w * nx, -half_l * ty - half_w * ny),
+        (-half_l * tx + half_w * nx, -half_l * ty + half_w * ny),
     ]
+
+    poly_coords = []
+    for ox, oy in corners_m:
+        c_lon = center_lon + (ox / meters_per_deg_lon)
+        c_lat = center_lat + (oy / meters_per_deg_lat)
+        poly_coords.append([round(c_lon, 6), round(c_lat, 6)])
+    poly_coords.append(poly_coords[0]) # Close polygon ring for GeoJSON
+
+    return best_center, poly_coords
 
 # Projects alignment definition with geodetic spines and city milestones
 PROJECT_ALIGNMENTS: Dict[str, Dict[str, Any]] = {
@@ -201,7 +242,7 @@ def generate_cadastral_corridor_for_project(proj: Dict[str, Any], count: int = 2
 
         features = []
         for p in parcels_data:
-            polygon_coords = create_row_strip(p["lat"], p["lon"], p.get("angle", -30), length_meters=180, width_meters=120)
+            snapped_center, polygon_coords = compute_intercept_row_strip(alignment_line, p["lat"], p["lon"], length_meters=180, width_meters=120)
             feat = {
                 "type": "Feature",
                 "id": p["id"],
@@ -228,8 +269,8 @@ def generate_cadastral_corridor_for_project(proj: Dict[str, Any], count: int = 2
                     "risk_category": p.get("risk", "Medium"),
                     "confidence_score": 0.94,
                     "primary_bottleneck": p.get("courtStay", "On Schedule"),
-                    "center_lat": p["lat"],
-                    "center_lon": p["lon"]
+                    "center_lat": snapped_center[0],
+                    "center_lon": snapped_center[1]
                 }
             }
             features.append(feat)
@@ -266,7 +307,7 @@ def generate_cadastral_corridor_for_project(proj: Dict[str, Any], count: int = 2
     features = []
     for idx, pt in enumerate(alignment_line):
         p_id = f"ROW-PARCEL-{idx+1:02d}"
-        coords = create_row_strip(pt[0], pt[1], -25, length_meters=200, width_meters=120)
+        snapped_center, coords = compute_intercept_row_strip(alignment_line, pt[0], pt[1], length_meters=200, width_meters=120)
         feat = {
             "type": "Feature",
             "id": p_id,
@@ -290,8 +331,8 @@ def generate_cadastral_corridor_for_project(proj: Dict[str, Any], count: int = 2
                 "risk_category": "Critical" if idx == 0 else "Low",
                 "confidence_score": 0.92,
                 "primary_bottleneck": "Court Stay u/s 3H" if idx == 0 else "On Schedule",
-                "center_lat": pt[0],
-                "center_lon": pt[1]
+                "center_lat": snapped_center[0],
+                "center_lon": snapped_center[1]
             }
         }
         features.append(feat)
